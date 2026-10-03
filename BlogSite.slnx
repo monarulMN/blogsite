@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/BlogSite.Application/BlogSite.Application.csproj" Id="fcdd8964-d804-41e4-8b68-9baf342413d4" />
+  <Project Path="src/BlogSite.Domain/BlogSite.Domain.csproj" Id="13e5f8ed-ce94-4946-9c85-4cef5aa3a161" />
+  <Project Path="src/BlogSite.Infrastructure/BlogSite.Infrastructure.csproj" Id="208e8ce4-ffa2-4473-93bb-6f9e86c94955" />
+  <Project Path="src/BlogSite.Web/BlogSite.Web.csproj" Id="7e721ef1-ee39-442d-b819-95294dec67f0" />
+</Solution>
