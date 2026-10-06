@@ -1,4 +1,5 @@
 using BlogSite.Infrastructure.Data;
+using BlogSite.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -14,6 +15,10 @@ try
     // Add services to the container.
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+    #region Dependency Injection
+    builder.Services.AddInfrastructureDependency();
+    #endregion
 
     #region Serilog Configuration
 
