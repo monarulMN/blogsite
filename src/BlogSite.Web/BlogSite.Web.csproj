@@ -21,4 +21,8 @@
     <ProjectReference Include="..\BlogSite.Infrastructure\BlogSite.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
+
 </Project>
