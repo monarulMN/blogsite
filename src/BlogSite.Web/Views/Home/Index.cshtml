@@ -1,8 +1,28 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Human stories & ideas";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row">
+    <div class="col-lg-6 hero-content">
+        <h1>Human<br>stories & ideas</h1>
+        <p>A place to read, write, and deepen your understanding</p>
+        <a asp-area="Reader" asp-controller="Home" asp-action="Index" class="btn btn-start-reading"> <i class="bi bi-book-half"></i> Start reading</a>
+    </div>
+    <div class="col-lg-6 hero-illustration">
+        <div class="illustration-container">
+            <div class="green-flower">
+                <div class="petal"></div>
+                <div class="petal"></div>
+                <div class="petal"></div>
+                <div class="petal"></div>
+                <div class="petal-center"></div>
+            </div>
+
+            <!-- Stars -->
+            <div class="star">✦</div>
+            <div class="star">✦</div>
+            <div class="star">✦</div>
+            <div class="star">✦</div>
+        </div>
+    </div>
 </div>

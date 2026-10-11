@@ -6,7 +6,14 @@ namespace BlogSite.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly ILogger<HomeController> _logger;
+
+        public HomeController(ILogger<HomeController> logger)
+        {
+            _logger = logger;
+        }
+
+        public async Task<IActionResult> Index()
         {
             return View();
         }

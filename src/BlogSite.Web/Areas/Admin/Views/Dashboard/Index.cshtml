@@ -1,0 +1,25 @@
+﻿@model DashboardModel;
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@section Style {
+    <link rel="stylesheet" href="~/Admin/assets/vendor/libs/apex-charts/apex-charts.css" />
+}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">System Overview</h5>
+            </div>
+            <div class="card-body">
+                <div id="overviewChart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/Admin/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="~/Admin/assets/js/dashboards-analytics.js"></script>
+}
