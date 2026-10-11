@@ -13,34 +13,33 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     // Add services to the container.
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-    var migrationAssembly = typeof(ApplicationDbContext).Assembly;
+    var migrationsAssembly = typeof(ApplicationDbContext).Assembly;
 
     #region Dependency Injection
     builder.Services.AddInfrastructureDependency();
     #endregion
 
     #region Serilog Configuration
-
     builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration
         .MinimumLevel.Debug()
-        .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
         .Enrich.FromLogContext()
-        .ReadFrom.Configuration(context.Configuration)
-        );
-
+        .ReadFrom.Configuration(context.Configuration));
     #endregion
 
     #region DbContext Configuration
-    builder.Services.AddDbContext(connectionString, migrationAssembly);
+    builder.Services.AddDbContext(connectionString, migrationsAssembly);
     #endregion
 
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-    builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-        .AddEntityFrameworkStores<ApplicationDbContext>();
+    #region Identity Configuration
+    builder.Services.AddIdentity();
+    #endregion
+
     builder.Services.AddControllersWithViews();
 
     var app = builder.Build();
@@ -70,10 +69,10 @@ try
         pattern: "{controller=Home}/{action=Index}/{id?}")
         .WithStaticAssets();
 
-    app.MapRazorPages()
-       .WithStaticAssets();
+    //app.MapRazorPages()
+    //   .WithStaticAssets();
 
-    Log.Information("Application started successfully");
+    Log.Information("Application started successfully.");
 
     app.Run();
 }
