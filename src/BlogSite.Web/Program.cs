@@ -1,5 +1,6 @@
 using BlogSite.Infrastructure.Data;
 using BlogSite.Infrastructure.Extensions;
+using Cortex.Mediator.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -28,6 +29,12 @@ try
         .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
         .Enrich.FromLogContext()
         .ReadFrom.Configuration(context.Configuration));
+    #endregion
+
+    #region Cortex Mediator Configuration
+    builder.Services.AddCortexMediator(
+        new[] {typeof(Program)},
+        options => options.AddDefaultBehaviors());
     #endregion
 
     #region DbContext Configuration
