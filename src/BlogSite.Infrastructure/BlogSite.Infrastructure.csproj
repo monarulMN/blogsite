@@ -11,9 +11,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.4" />
   </ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\BlogSite.Application\BlogSite.Application.csproj" />
 	  <ProjectReference Include="..\BlogSite.Domain\BlogSite.Domain.csproj" />
 	</ItemGroup>
 

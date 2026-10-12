@@ -1,0 +1,29 @@
+﻿<div class="offcanvas offcanvas-top"
+     tabindex="-1"
+     id="offcanvasTop"
+     aria-labelledby="offcanvasTopLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasTopLabel" class="offcanvas-title confirm-title">Confirm Delete</h5>
+        <button type="button"
+                class="btn-close text-reset"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <p class="text-danger" id="alert-message">
+           
+        </p>
+        <form id="delete-form" asp-antiforgery="true" method="post" action="">
+            <!-- Hidden field for ID -->
+            <input type="hidden" name="id" id="delete-id">
+            <!-- Buttons aligned right -->
+        </form>
+
+        <div class="d-flex justify-content-end mt-3">
+            <button type="button" id="delete-button-submit-button" class="btn btn-danger btn-sm me-2">Yes</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="offcanvas">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
