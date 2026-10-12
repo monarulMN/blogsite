@@ -1,0 +1,133 @@
+﻿@model RegisterModel
+@{
+    ViewData["Title"] = "Get started";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="fw-bold display-6">Create your account</h1>
+                <p class="text-muted">
+                    Join ShareThought to read, write, and share ideas
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <form id="registerForm"
+                  asp-controller="Account"
+                  asp-action="Register"
+                  asp-route-returnUrl="@Model.ReturnUrl"
+                  method="post">
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <input asp-for="FirstName"
+                               class="form-control form-control-sm"
+                               placeholder="First name" />
+                        <span asp-validation-for="FirstName"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <input asp-for="LastName"
+                               class="form-control form-control-sm"
+                               placeholder="Last name" />
+                        <span asp-validation-for="LastName"
+                              class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <input asp-for="DateOfBirth"
+                           type="date"
+                           class="form-control form-control-sm"
+                           min="1979-12-31"
+                           max="@DateTime.Today.AddYears(-10).ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="DateOfBirth"
+                          class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <input asp-for="Email"
+                           class="form-control form-control-sm"
+                           placeholder="Email address"
+                           autocomplete="username" />
+                    <span asp-validation-for="Email"
+                          class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <input asp-for="Password"
+                           class="form-control form-control-sm"
+                           placeholder="Password"
+                           autocomplete="new-password" />
+                    <span asp-validation-for="Password"
+                          class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <input asp-for="ConfirmPassword"
+                           class="form-control form-control-sm"
+                           placeholder="Confirm password"
+                           autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmPassword"
+                          class="text-danger small"></span>
+                </div>
+
+                <button id="registerSubmit"
+                        type="submit"
+                        class="btn btn-sm btn-dark w-100 py-2 rounded-pill">
+                    Get started
+                </button>
+            </form>
+
+            <!-- External login -->
+            @* <div class="mt-5">
+                <h6 class="text-center text-muted mb-3">
+                    Or sign up using another service
+                </h6>
+
+                <hr class="mb-4" />
+
+                @if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <p class="text-muted small text-center">
+                        No external authentication services configured.
+                        <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                            Learn how to add one
+                        </a>.
+                    </p>
+                }
+                else
+                {
+                    <form id="external-account"
+                          asp-page="./ExternalLogin"
+                          asp-route-returnUrl="@Model.ReturnUrl"
+                          method="post"
+                          class="d-grid gap-2">
+                        @foreach (var provider in Model.ExternalLogins!)
+                        {
+                            <button type="submit"
+                                    class="btn btn-outline-dark rounded-pill"
+                                    name="provider"
+                                    value="@provider.Name">
+                                Continue with @provider.DisplayName
+                            </button>
+                        }
+                    </form>
+                }
+            </div> *@
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -48,6 +48,36 @@ namespace BlogSite.Infrastructure.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("547a073e-6ee6-4758-a4ac-02c6992250d0"),
+                            ConcurrencyStamp = "547A073E-6EE6-4758-A4AC-02C6992250D0",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("de73df51-26b6-49f9-9a5f-b9ccb64c1a34"),
+                            ConcurrencyStamp = "DE73DF51-26B6-49F9-9A5F-B9CCB64C1A34",
+                            Name = "Support",
+                            NormalizedName = "SUPPORT"
+                        },
+                        new
+                        {
+                            Id = new Guid("5be73deb-2597-4433-ac4b-192b321b06af"),
+                            ConcurrencyStamp = "5BE73DEB-2597-4433-AC4B-192B321B06AF",
+                            Name = "Blogger",
+                            NormalizedName = "BLOGGER"
+                        },
+                        new
+                        {
+                            Id = new Guid("66507895-f2e5-4fc3-96c8-0f676f2d2280"),
+                            ConcurrencyStamp = "66507895-F2E5-4FC3-96C8-0F676F2D2280",
+                            Name = "Reader",
+                            NormalizedName = "READER"
+                        });
                 });
 
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationRoleClaim", b =>
@@ -158,6 +188,52 @@ namespace BlogSite.Infrastructure.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("23fe4e81-5015-42a0-8d76-d1f08c6b227a"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "23FE4E81-5015-42A0-8D76-D1F08C6B227A",
+                            DateOfBirth = new DateTime(2000, 9, 23, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "admin@gmail.com",
+                            EmailConfirmed = false,
+                            FirstName = "Monarul",
+                            HasBlog = false,
+                            IsBlocked = false,
+                            LastName = "Islam",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@GMAIL.COM",
+                            NormalizedUserName = "ADMIN@GMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAELtPfTQCxOzTjT1XtYFxxDNEx8wjHMT7NtWBINbQ5yJ866K7e32K4nbIzIBCvwBB4Q==",
+                            PhoneNumberConfirmed = false,
+                            RegistrationDate = new DateTime(2026, 2, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SecurityStamp = "23FE4E81-5015-42A0-8D76-D1F08C6B227A",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@gmail.com"
+                        },
+                        new
+                        {
+                            Id = new Guid("dd19f57f-c1af-480c-b2f3-d39f34e308a2"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "DD19F57F-C1AF-480C-B2F3-D39F34E308A2",
+                            DateOfBirth = new DateTime(1999, 11, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "support@gmail.com",
+                            EmailConfirmed = false,
+                            FirstName = "Support",
+                            HasBlog = false,
+                            IsBlocked = false,
+                            LastName = "User",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "SUPPORT@GMAIL.COM",
+                            NormalizedUserName = "SUPPORT@GMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG3/UEMRjIVozINkjgEBKRfOC6kIeNaHw7qqEnMSmHRU+8ZqkFC3117+8cZ5bzo+QQ==",
+                            PhoneNumberConfirmed = false,
+                            RegistrationDate = new DateTime(2026, 2, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SecurityStamp = "DD19F57F-C1AF-480C-B2F3-D39F34E308A2",
+                            TwoFactorEnabled = false,
+                            UserName = "support@gmail.com"
+                        });
                 });
 
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationUserClaim", b =>
@@ -218,6 +294,18 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("23fe4e81-5015-42a0-8d76-d1f08c6b227a"),
+                            RoleId = new Guid("547a073e-6ee6-4758-a4ac-02c6992250d0")
+                        },
+                        new
+                        {
+                            UserId = new Guid("dd19f57f-c1af-480c-b2f3-d39f34e308a2"),
+                            RoleId = new Guid("de73df51-26b6-49f9-9a5f-b9ccb64c1a34")
+                        });
                 });
 
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationUserToken", b =>

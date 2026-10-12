@@ -1,0 +1,55 @@
+﻿@{
+    Layout = "";
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Access Denied</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Boxicons (optional) -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+        }
+        .access-card {
+            max-width: 420px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center justify-content-center">
+
+    <div class="card access-card shadow-sm text-center p-4">
+        <div class="card-body">
+            <i class="bx bx-lock-alt fs-1 text-danger mb-3"></i>
+
+            <h4 class="fw-semibold">Access Denied</h4>
+
+            <p class="text-muted mt-2">
+                You do not have permission to access this page.
+                If you believe this is an error, please contact the administrator.
+            </p>
+
+            <div class="d-flex justify-content-center gap-2 mt-4">
+                <a href="/" class="btn btn-primary btn-sm">
+                    <i class="bx bx-home"></i> Home
+                </a>
+
+                <button onclick="history.back()" class="btn btn-outline-secondary btn-sm">
+                    Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

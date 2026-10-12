@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BlogSite.Infrastructure.Identity
 {
-    public class ApplicationUser : IdentityUser<Guid>
+    public class ApplicationUser : IdentityUser<Guid>, IAggregateRoot<Guid>
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;

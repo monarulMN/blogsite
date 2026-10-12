@@ -1,5 +1,7 @@
 ﻿using BlogSite.Application.Contracts;
+using BlogSite.Application.Contracts.Repositories;
 using BlogSite.Infrastructure.Data;
+using BlogSite.Infrastructure.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,7 @@ namespace BlogSite.Infrastructure.Extensions
         {
             // Add your infrastructure services here
             services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWork>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
         }
