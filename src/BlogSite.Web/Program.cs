@@ -1,6 +1,9 @@
+using BlogSite.Infrastructure;
 using BlogSite.Infrastructure.Data;
 using BlogSite.Infrastructure.Extensions;
 using Cortex.Mediator.DependencyInjection;
+using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -35,6 +38,16 @@ try
     builder.Services.AddCortexMediator(
         new[] {typeof(Program)},
         options => options.AddDefaultBehaviors());
+    #endregion
+
+    #region Mapster Configuration
+    builder.Services.AddMapster();
+
+    //custom configuration
+    //var config = TypeAdapterConfig.GlobalSettings;
+    //config.Scan(typeof(MapsterConfiguration).Assembly);
+    //builder.Services.AddSingleton(config);
+    //builder.Services.AddScoped<IMapper, ServiceMapper>();
     #endregion
 
     #region DbContext Configuration
