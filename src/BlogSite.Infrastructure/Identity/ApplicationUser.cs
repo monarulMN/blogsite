@@ -1,4 +1,5 @@
 ﻿using BlogSite.Domain.Contracts;
+using BlogSite.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace BlogSite.Infrastructure.Identity
         public DateTime DateOfBirth { get; set; }
         public bool IsBlocked { get; set; } = false;
         public bool HasBlog { get; set; } = false;
+        public Blogsite? BlogSite { get; set; }
 
     }
 }

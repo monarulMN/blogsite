@@ -16,6 +16,9 @@ namespace BlogSite.Infrastructure.Extensions
             // Add your infrastructure services here
             services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IBlogSiteRepository, BlogSiteRepository>();
+
+            services.AddSingleton<IServerTime, ServerTime>();
 
             return services;
         }

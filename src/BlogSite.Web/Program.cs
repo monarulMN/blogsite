@@ -6,7 +6,9 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 using Serilog;
+using System.Text.RegularExpressions;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day)
@@ -48,6 +50,24 @@ try
     //config.Scan(typeof(MapsterConfiguration).Assembly);
     //builder.Services.AddSingleton(config);
     //builder.Services.AddScoped<IMapper, ServiceMapper>();
+    #endregion
+
+    #region SlugHelper Configuration
+    //builder.Services.AddSingleton(sp =>
+    //{
+    //    var config = new SlugHelperConfiguration
+    //    {
+    //        DeniedCharactersRegex = new Regex("[^a-zA-Z0-9-]"),
+    //        StringReplacements = { { " ", "-" } },
+    //        ForceLowerCase = true,
+    //        CollapseDashes = true,
+    //        TrimWhitespace = true
+    //    };
+
+    //    return new SlugHelper(config);
+    //});
+
+    //builder.Services.AddScoped<ISlugHelper, SlugHelper>();
     #endregion
 
     #region DbContext Configuration

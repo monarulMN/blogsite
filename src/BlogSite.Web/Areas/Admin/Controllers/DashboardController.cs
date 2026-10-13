@@ -1,20 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BlogSite.Web.Areas.Admin.Models;
+using Cortex.Mediator;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlogSite.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize(Roles = "Admin, Support")]
     public class DashboardController : Controller
     {
         private readonly ILogger<DashboardController> _logger;
+        private readonly IMediator _mediator;
 
-        public DashboardController(ILogger<DashboardController> logger)
+        public DashboardController(ILogger<DashboardController> logger, IMediator mediator)
         {
             _logger = logger;
+            _mediator = mediator;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            return View();
+            var model = new DashboardModel();
+
+            try
+            {
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching dashboard data");
+
+                return View(model);
+            }
         }
     }
 }

@@ -14,5 +14,6 @@ namespace BlogSite.Domain.Entities
         public DateTime DateOfBirth { get; set; }
         public string Email { get; set; } = null!;
         public bool HasBlog { get; set; }
+        public Blogsite? BlogSite { get; set; }
     }
 }

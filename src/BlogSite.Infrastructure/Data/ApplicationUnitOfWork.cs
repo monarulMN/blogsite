@@ -10,11 +10,14 @@ namespace BlogSite.Infrastructure.Data
     public class ApplicationUnitOfWork : UnitOfWork, IApplicationUnitOfWork
     {
         public IUserRepository UserRepository { get; set; }
+        public IBlogSiteRepository BlogSiteRepository { get; set; }
 
         public ApplicationUnitOfWork(ApplicationDbContext dbContext,
-            IUserRepository userRepository) : base(dbContext)
+            IUserRepository userRepository,
+            IBlogSiteRepository blogSiteRepository) : base(dbContext)
         {
             UserRepository = userRepository;
+            BlogSiteRepository = blogSiteRepository;
         }
     }
 }

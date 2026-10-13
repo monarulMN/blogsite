@@ -9,5 +9,6 @@ namespace BlogSite.Application.Contracts
     public interface IApplicationUnitOfWork : IUnitOfWork
     {
         public IUserRepository UserRepository { get; set; }
+        public IBlogSiteRepository BlogSiteRepository { get; set; }
     }
 }
