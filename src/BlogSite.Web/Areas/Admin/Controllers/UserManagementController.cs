@@ -44,7 +44,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
         }
 
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> GetUserData([FromBody] UserListModel model)
         {
             try
@@ -132,7 +132,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                     });
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
 

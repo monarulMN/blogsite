@@ -21,7 +21,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> Index()
         {
             var roles = _roleManager.Roles.ToList();
             var model = new List<RoleWithUserCountViewModel>();

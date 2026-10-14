@@ -8,5 +8,6 @@ namespace BlogSite.Application.Contracts.Repositories
 {
     public interface IBlogSiteRepository : IRepository<Blogsite, Guid>
     {
+        Task<bool> ActiveAsync(Guid id, CancellationToken cancellationToken);
     }
 }
