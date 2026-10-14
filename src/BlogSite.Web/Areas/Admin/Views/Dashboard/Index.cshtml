@@ -22,4 +22,51 @@
 @section Scripts {
     <script src="~/Admin/assets/vendor/libs/apex-charts/apexcharts.js"></script>
     <script src="~/Admin/assets/js/dashboards-analytics.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var options = {
+                series: [{
+                    name: 'Total Count',
+                    data: [@Model.TotalUsers, @Model.TotalBlogSites, @Model.TotalCategories, @Model.TotalTags, @Model.TotalPosts, @Model.TotalComments]
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: { show: false }
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 6,
+                        columnWidth: '50%',
+                        distributed: true
+                    }
+                },
+                dataLabels: {
+                    enabled: true
+                },
+                xaxis: {
+                    categories: [
+                        'Users',
+                        'Blog Sites',
+                        'Categories',
+                        'Tags',
+                        'Posts',
+                        'Comments'
+                    ]
+                },
+                colors: [
+                    '#696cff',
+                    '#71dd37',
+                    '#ffab00',
+                    '#03c3ec',
+                    '#ff3e1d',
+                    '#8592a3'
+                ]
+            };
+
+            var chart = new ApexCharts(document.querySelector("#overviewChart"), options);
+            chart.render();
+        });
+    </script>    
 }

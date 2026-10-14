@@ -27,6 +27,29 @@ namespace BlogSite.Infrastructure.Data.Repositories
             _dbContext = dbContext;
         }
 
+        public async Task<int> GetCountAsync(bool isBlocked, CancellationToken cancellationToken)
+        {
+            return await _dbContext.Users.Where(x => x.IsBlocked == isBlocked).CountAsync();
+        }
+
+        public async Task<(IList<User> data, int total, int totalDisplay)> GetPagedBlockedUsersAsync(GetAllBlockedUsersQuery query, 
+            CancellationToken cancellationToken)
+        {
+            return ((IList<User> data, int total, int totalDisplay))await GetDynamicAsync(
+                x => (string.IsNullOrWhiteSpace(query.SearchText) ||
+                      x.Email.Contains(query.SearchText) ||
+                      (x.UserName != null &&
+                       x.UserName.Contains(query.SearchText)))
+                     && x.IsBlocked == true,
+
+                query.SortOrder,
+                u => u.Include(q => q.BlogSite),
+                query.PageIndex,
+                query.PageSize,
+                true,
+                cancellationToken);
+        }
+
         public async Task<(IList<User> data, int total, int totalDisplay)> GetPagedUsersAsync(GetAllUsersByPagingQuery query, 
             CancellationToken cancellationToken)
         {

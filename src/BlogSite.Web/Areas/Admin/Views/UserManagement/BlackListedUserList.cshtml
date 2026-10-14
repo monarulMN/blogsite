@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewData["Title"] = "Black Listed user";
+}
+@section Style {
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.css" />
+}
+
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">User Settings / </span>Black listed user list view</h5>
+
+<div class="row">
+    <div class="card">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="card-title mb-1">
+                <h5>List view</h5>
+            </div>
+        </div>
+        <div class="card-body">
+            <partial name="_ResponsePartial" />
+            <div class="table-responsive text-nowrap">
+                <table class="table table-striped table-sm" id="Users">
+                    <thead>
+                        <tr>
+                            <th>User-Name</th>
+                            <th>Email</th>
+                            <th>Has-Blog</th>
+                            <th>Blog-Site Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0"></tbody>
+                    <tfoot>
+                        <tr>
+                            <th>User-Name</th>
+                            <th>Email</th>
+                            <th>Has-Blog</th>
+                            <th>Blog-Site Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_DeleteCanvasPartial" />
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
+    <script>
+         $(function(){
+             $("#Users").DataTable({
+                  layout: {
+                        topEnd: {
+                            search: {
+                                placeholder: 'username or email'
+                            }
+                        }
+                  },
+                 processing: true,
+                 serverSide: true,
+                 responsive: true,
+                 lengthChange: true,
+                 autoWidth: false,
+                 ajax:{
+                     url:'/Admin/UserManagement/GetBlockedUserData',
+                     type:'post',
+                     contentType:'application/json',
+                     dataType:'json',
+                     data: function(d){
+                         d.searchItem = {
+
+                         };
+
+                         return JSON.stringify(d);
+                     }
+                 },
+                 columnDefs: [
+                     {
+                         targets: 4, orderable: false,render:function(d)
+                         {
+                                     return `
+                                         <button
+                                             onclick="UnBlockUser('${d}')"
+                                             type="button"
+                                             data-bs-toggle="offcanvas"
+                                             data-bs-target="#offcanvasTop"
+                                             aria-controls="offcanvasTop"
+                                             class="btn btn-primary btn-sm"
+                                             title="Unblock User">
+                                             <i class="bx bx-lock-open"></i>
+                                         </button>
+                                         `;
+                         },
+                     },
+                     {targets: 2, orderable: false},
+                     {targets: 3, orderable: false}
+                 ]
+             });
+         });
+
+
+         function UnBlockUser(d){
+             $(".offcanvas-title").html("Confirm Unblock");
+             $("#alert-message").html("Are you sure you want to unblock this user? Once unblocked, this user may violate <strong>Rules Block</strong>, and this action cannot be undone!");
+             $("#delete-id").val(d);
+             $('#delete-form').attr('action', '/admin/UserManagement/Unblock');
+         }
+
+        $('#delete-button-submit-button').click(function(){
+            $('#delete-form').submit();
+        });
+    </script>
+}

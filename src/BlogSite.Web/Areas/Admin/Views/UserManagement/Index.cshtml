@@ -1,0 +1,406 @@
+﻿@using BlogSite.Infrastructure.Identity
+@using Microsoft.AspNetCore.Identity
+@inject ApplicationUserManager UserManager
+@inject ApplicationUserManager UserManager
+@{
+    ViewData["Title"] = "User list";
+}
+@section Style {
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.css" />
+    <style>
+        .offcanvas-body {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+            .offcanvas-body::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .offcanvas-body::-webkit-scrollbar-thumb {
+                background: #ccc;
+                border-radius: 10px;
+            }
+    </style>
+}
+
+
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">User Settings /</span> User list view</h5>
+
+<div class="row">
+    <div class="card">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="card-title mb-1">
+                <h5>List view</h5>
+            </div>
+        </div>
+        <div class="card-body">
+            <partial name="_ResponsePartial" />
+            <div class="table-responsive text-nowrap">
+                <table class="table table-striped table-sm" id="Users">
+                    <thead>
+                        <tr>
+                            <th>User-Name</th>
+                            <th>Email</th>
+                            <th>Has-Blog</th>
+                            <th>Blog-Site Name</th>
+                            <th>Roles</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0"></tbody>
+                    <tfoot>
+                        <tr>
+                            <th>User-Name</th>
+                            <th>Email</th>
+                            <th>Has-Blog</th>
+                            <th>Blog-Site Name</th>
+                            <th>Roles</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end"
+     tabindex="-1"
+     id="offcanvasEnd"
+     aria-labelledby="offcanvasEndLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasEndLabel" class="offcanvas-title">Support <i class="bx bx-message"></i></h5>
+        <button type="button"
+                class="btn-close text-reset"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body my-auto mx-0 flex-grow-0">
+        <div class="d-flex flex-column h-100">
+            <!-- Chat Messages Area -->
+            <div class="flex-grow-1 overflow-auto px-2 mb-3" id="chatMessages" style="max-height: 75vh;"></div>
+
+            
+            <!-- Chat Input Area -->
+            <div class="border-top pt-2">
+                <form asp-action="Create" asp-controller="Message" asp-area="Admin" asp-antiforgery="true" id="message-box" class="d-flex gap-2">
+                    <input type="hidden" id="RecipientId" name="RecipientId">
+                    <input type="text" name="Text" id="MessageText" class="form-control rounded-pill" placeholder="Type a message..." required>
+
+                    <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style="width:45px; height:45px;">
+                        <i class="bx bx-send"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="UserRoleRemoveModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Role remove confirmation</h5>
+                @* <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
+            </div>
+            <div class="modal-body">
+                <p>Are you really want to remove this role?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" onclick="removeOk()">Yes,Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Role Modal -->
+<div class="modal fade" id="UserRoleModal" tabindex="-1" aria-labelledby="UserRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="UserRoleForm" asp-action="AddUserRole" asp-area="Admin" asp-controller="UserManagement" asp-antiforgery="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="UserRoleModalLabel">Assign Role to User</h5>
+                </div>
+                <div class="modal-body">
+
+                    <input type="hidden" name="UserId" id="AssignRoleUserId" value="">
+
+                    <p>Select a role for this user:</p>
+
+                    <div class="btn-group w-100" role="group" aria-label="User role options">
+                        <input type="radio" class="btn-check" name="RoleName" id="roleAdmin" value="Admin" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="roleAdmin">Admin</label>
+
+                        <input type="radio" class="btn-check" name="RoleName" id="roleSupport" value="Support" autocomplete="off">
+                        <label class="btn btn-outline-success" for="roleSupport">Support</label>
+
+                        <input type="radio" class="btn-check" name="RoleName" id="roleReader" value="Reader" autocomplete="off">
+                        <label class="btn btn-outline-warning" for="roleReader">Reader</label>
+
+                        <input type="radio" class="btn-check" name="RoleName" id="roleBlogger" value="Blogger" autocomplete="off">
+                        <label class="btn btn-outline-info" for="roleBlogger">Blogger</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-sm btn-primary">Assign Role</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<partial name="_DeleteCanvasPartial" />
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
+    <script>
+          $(function(){
+              $("#Users").DataTable({
+                   layout: {
+                         topEnd: {
+                             search: {
+                                 placeholder: 'username or email'
+                             }
+                         }
+                   },
+                  processing: true,
+                  serverSide: true,
+                  responsive: true,
+                  lengthChange: true,
+                  autoWidth: false,
+                  ajax:{
+                      url:'/Admin/UserManagement/GetUserData',
+                      type:'post',
+                      contentType:'application/json',
+                      dataType:'json',
+                      data: function(d){
+                          d.searchItem = {
+
+                          };
+
+                          return JSON.stringify(d);
+                      }
+                  },
+                  columnDefs: [
+                      {
+                          targets: 5, orderable: false,render:function(d)
+                          {
+                                      return `
+
+                                          <button
+                                              class="btn btn-info btn-sm" onclick="AddRole('${d}')">
+                                                <i class="bx bx-user-plus" title="Add Role"></i>
+                                           </button>
+
+
+                                          <button
+                                              onclick="BlockUser('${d}')"
+                                              type="button"
+                                              data-bs-toggle="offcanvas"
+                                              data-bs-target="#offcanvasTop"
+                                              aria-controls="offcanvasTop"
+                                              class="btn btn-danger btn-sm"
+                                              title="Block User">
+                                              <i class="bx bx-user-x"></i>
+                                          </button>
+
+                                          <button
+                                             class="btn btn-primary btn-sm"
+                                             type="button"
+                                             data-id="${d}"
+                                             onclick="UserMassages('${d}')"
+                                             data-bs-toggle="offcanvas"
+                                             data-bs-target="#offcanvasEnd"
+                                             aria-controls="offcanvasEnd" title="contact">
+                                             <i class="bx bx-message"></i>
+                                          </button>
+                                          `;
+                          },
+                      },
+                      {targets: 2, orderable: false},
+                      {targets: 3, orderable: false}
+                  ]
+              });
+
+
+
+              //Message
+             $("#message-box").on("submit", function (e) {
+                 e.preventDefault();
+                 var form = $(this);
+                 $.ajax({
+                     url: form.attr("action"),
+                     type: "POST",
+                     data: form.serialize(),
+                     success: function (response) {
+                         $("#MessageText").val("");
+                         if (response && response.text) {
+
+                             $("#chatMessages").append(`
+                                 <div class="d-flex justify-content-end mb-3">
+                                     <div class="bg-primary text-white rounded-3 p-2 px-3 shadow-sm" style="max-width: 75%;">
+                                         <div>${response.text}</div>
+                                         <small class="d-block text-end text-white-50">
+                                             Just now
+                                         </small>
+                                     </div>
+                                 </div>
+                             `);
+                             var chatContainer = document.getElementById("chatMessages");
+                             chatContainer.scrollTop = chatContainer.scrollHeight;
+                         }
+                     },
+                     error: function (err) {
+                         console.log(err);
+                         alert("Message sending failed!");
+                     }
+                 });
+             });
+          });
+
+
+          function BlockUser(d){
+              $(".offcanvas-title").html("Confirm Block");
+              $("#alert-message").html("Are you sure you want to block this user? This user will be <strong>permanently Block</strong> and cannot be undone!");
+              $("#delete-id").val(d);
+              $('#delete-form').attr('action', '/admin/UserManagement/Block');
+          }
+
+         $('#delete-button-submit-button').click(function(){
+             $('#delete-form').submit();
+         });
+
+         function UserMassages(userId){
+             $("#RecipientId").val(userId);
+             $.ajax({
+                 url: '/Admin/Message/GetUserMessages',
+                 type: 'POST',
+                 data: { userId: userId },
+
+                 success: function (response) {
+                     console.log(response);
+                     $("#chatMessages").html("");
+                     $.each(response, function (index, message) {
+                         console.log(message);
+                         let isMine = message.userType === 3;
+                         let messageHtml = "";
+
+                         if (!isMine) {
+                             messageHtml = `
+                                 <div class="d-flex mb-3">
+                                     <div class="bg-light rounded-3 p-2 px-3 shadow-sm" style="max-width: 75%;">
+                                         <div>${message.text}</div>
+                                         <small class="text-muted d-block text-end">
+                                             ${formatTime(message.createdAt)}
+                                         </small>
+                                     </div>
+                                 </div>
+                             `;
+                         } else {
+                             messageHtml = `
+                                 <div class="d-flex justify-content-end mb-3">
+                                     <div class="bg-primary text-white rounded-3 p-2 px-3 shadow-sm" style="max-width: 75%;">
+                                         <div>${message.text}</div>
+                                         <small class="d-block text-end text-white-50">
+                                             ${formatTime(message.createdAt)}
+                                         </small>
+                                     </div>
+                                 </div>
+                             `;
+                         }
+
+                         $("#chatMessages").append(messageHtml);
+                     });
+                 },
+
+                 error: function (err) {
+                     console.log(err);
+                 }
+             });
+         }
+
+         function formatTime(dateString) {
+             let date = new Date(dateString);
+             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+         }
+
+         const offcanvasElement = document.getElementById('offcanvasEnd');
+         const chatContainer = document.getElementById('chatMessages');
+
+         offcanvasElement.addEventListener('shown.bs.offcanvas', function () {
+             chatContainer.scrollTop = chatContainer.scrollHeight;
+         });
+
+         var currentUserId = null;
+         var currentRoleName = null;
+
+
+         function removeRole(userId,name){
+             currentUserId = userId;
+             currentRoleName = name;
+             $("#UserRoleRemoveModal").modal("show");
+         }
+
+         function removeOk(){
+           $.ajax({
+              url: '/Admin/UserManagement/RemoveUserRole',
+             type: 'POST',
+             data: {
+                 userId: currentUserId,
+                 roleName: currentRoleName
+             },
+             success: function(response) {
+                 if (response.success) {
+                     $("#UserRoleRemoveModal").modal("hide");
+                      location.reload(true);
+                 } else {
+                      $("#UserRoleRemoveModal").modal("hide");
+                       location.reload(true);
+                 }
+             },
+             error: function() {
+                   $("#UserRoleRemoveModal").modal("hide");
+                    location.reload(true);
+             }
+         });
+        }
+
+         function AddRole(userId){
+              $("#AssignRoleUserId").val(userId);
+              $("#UserRoleModal").modal("show");
+         }
+
+               // AJAX form submit
+         $('#UserRoleForm').submit(function(e) {
+           e.preventDefault();
+
+           var $form = $(this);
+           var actionUrl = $form.attr('action');
+           var data = $form.serialize();
+
+           var selectedRole = $('input[name="RoleName"]:checked').val();
+           if (!selectedRole) {
+             alert('Please select a role.');
+             return;
+           }
+
+           $.ajax({
+             type: "POST",
+             url: actionUrl,
+             data: data,
+             success: function(response) {
+               $('#UserRoleModal').modal('hide');
+               location.reload();
+             },
+             error: function(xhr, status, error) {
+                $('#UserRoleModal').modal('hide');
+                location.reload();
+             }
+           });
+         });
+    </script>
+}

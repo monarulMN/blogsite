@@ -1,4 +1,5 @@
-﻿using BlogSite.Web.Areas.Admin.Models;
+﻿using BlogSite.Application.Features.Users.Queries;
+using BlogSite.Web.Areas.Admin.Models;
 using Cortex.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,11 +20,12 @@ namespace BlogSite.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> IndexAsync()
         {
+            var userQuery = new GetTotalUserAdminQuery { IsBlocked = false };
             var model = new DashboardModel();
 
             try
             {
-
+                model.TotalUsers = await _mediator.SendQueryAsync<GetTotalUserAdminQuery, int>(userQuery);
                 return View(model);
             }
             catch (Exception ex)

@@ -8,6 +8,9 @@ namespace BlogSite.Application.Contracts.Repositories
 {
     public interface IUserRepository
     {
+        Task<int> GetCountAsync(bool isBlocked, CancellationToken cancellationToken);
+        Task<(IList<User> data, int total, int totalDisplay)> GetPagedBlockedUsersAsync(GetAllBlockedUsersQuery query, 
+            CancellationToken cancellationToken);
         Task<(IList<User> data, int total, int totalDisplay)> GetPagedUsersAsync(GetAllUsersByPagingQuery query, 
             CancellationToken cancellationToken);
     }
