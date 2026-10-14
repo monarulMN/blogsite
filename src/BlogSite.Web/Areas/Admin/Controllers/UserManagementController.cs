@@ -45,7 +45,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
 
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> GetUserDataAsync([FromBody] UserListModel model)
+        public async Task<IActionResult> GetUserData([FromBody] UserListModel model)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> BlockAsync(Guid id)
+        public async Task<IActionResult> Block(Guid id)
         {
             try
             {
@@ -141,7 +141,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
             return View();
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> GetBlockedUserData([FromBody] UserListModel model)
         {
             try
@@ -184,7 +184,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> UnBlockAsync(Guid id)
+        public async Task<IActionResult> UnBlock(Guid id)
         {
             try
             {
@@ -216,7 +216,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveUserRoleAsync(string userId, string roleName)
+        public async Task<IActionResult> RemoveUserRole(string userId, string roleName)
         {
             try
             {
@@ -247,7 +247,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddUserRoleAsync(AddUserRoleModel model)
+        public async Task<IActionResult> AddUserRole(AddUserRoleModel model)
         {
             if (!ModelState.IsValid)
             {

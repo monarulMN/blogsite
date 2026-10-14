@@ -41,7 +41,7 @@ namespace BlogSite.Web.Controllers
 
 
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterAsync(string returnUrl = null)
+        public async Task<IActionResult> Register(string returnUrl = null)
         {
             var model = new RegisterModel { ReturnUrl = returnUrl };
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -50,7 +50,7 @@ namespace BlogSite.Web.Controllers
 
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterAsync(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterModel model)
         {
             model.ReturnUrl ??= Url.Content("~/");
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -105,7 +105,7 @@ namespace BlogSite.Web.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> LoginAsync(string returnUrl = null)
+        public async Task<IActionResult> Login(string returnUrl = null)
         {
             var model = new LoginModel { ReturnUrl = returnUrl };
 
@@ -125,7 +125,7 @@ namespace BlogSite.Web.Controllers
 
 
         [AllowAnonymous, HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> LoginAsync(LoginModel model)
+        public async Task<IActionResult> Login(LoginModel model)
         {
             model.ReturnUrl ??= Url.Content("~/");
 
@@ -172,7 +172,7 @@ namespace BlogSite.Web.Controllers
 
         [Authorize]
 
-        public async Task<IActionResult> LogoutAsync(string returnUrl = null)
+        public async Task<IActionResult> Logout(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");

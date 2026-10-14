@@ -18,7 +18,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
             _mediator = mediator;
         }
 
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> Index()
         {
             var userQuery = new GetTotalUserAdminQuery { IsBlocked = false };
             var model = new DashboardModel();
