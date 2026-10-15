@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
 using Serilog;
+using Slugify;
 using System.Text.RegularExpressions;
 
 Log.Logger = new LoggerConfiguration()
@@ -53,21 +54,21 @@ try
     #endregion
 
     #region SlugHelper Configuration
-    //builder.Services.AddSingleton(sp =>
-    //{
-    //    var config = new SlugHelperConfiguration
-    //    {
-    //        DeniedCharactersRegex = new Regex("[^a-zA-Z0-9-]"),
-    //        StringReplacements = { { " ", "-" } },
-    //        ForceLowerCase = true,
-    //        CollapseDashes = true,
-    //        TrimWhitespace = true
-    //    };
+    builder.Services.AddSingleton(sp =>
+    {
+        var config = new SlugHelperConfiguration
+        {
+            DeniedCharactersRegex = new Regex("[^a-zA-Z0-9-]"),
+            StringReplacements = { { " ", "-" } },
+            ForceLowerCase = true,
+            CollapseDashes = true,
+            TrimWhitespace = true
+        };
 
-    //    return new SlugHelper(config);
-    //});
+        return new SlugHelper(config);
+    });
 
-    //builder.Services.AddScoped<ISlugHelper, SlugHelper>();
+    builder.Services.AddScoped<ISlugHelper, SlugHelper>();
     #endregion
 
     #region DbContext Configuration

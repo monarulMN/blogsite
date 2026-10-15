@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Cortex.Mediator" Version="3.1.2" />
     <PackageReference Include="Mapster" Version="10.0.13" />
+    <PackageReference Include="Slugify.Core" Version="5.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\BlogSites\Queries\" />
     <Folder Include="Features\Users\Commands\" />
   </ItemGroup>
 
