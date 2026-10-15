@@ -1,7 +1,9 @@
 ﻿using BlogSite.Application.Contracts;
 using BlogSite.Application.Features.BlogSites.Commands;
 using BlogSite.Application.Features.BlogSites.Queries;
+using BlogSite.Domain.Dtos;
 using BlogSite.Domain.Entities;
+using BlogSite.Domain.Utilities;
 using BlogSite.Infrastructure.Extensions;
 using BlogSite.Web.Areas.Admin.Models;
 using BlogSite.Web.Areas.Admin.Models.BlogSite;
@@ -11,6 +13,7 @@ using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata;
+using System.Web;
 
 namespace BlogSite.Web.Areas.Admin.Controllers
 {
@@ -85,9 +88,79 @@ namespace BlogSite.Web.Areas.Admin.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetBlogSiteData([FromBody] BlogSiteListModel model)
+        {
+            try
+            {
+                var query = _mapper.Map<GetAllBlogSitesQueries>(model);
+                query.SearchText = model.Search.Value;
+                query.SortOrder = model.FormatSortExpression("Name");
+
+                var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetAllBlogSitesQueries,
+                    (IList<BlogSiteDto>, int, int)>(query);
+
+                var categories = new
+                {
+                    recordsTotal = total,
+                    recordsFiltered = totalDisplay,
+
+                    data = (from blogSite in items
+                            select new string[]
+                            {
+                                HttpUtility.HtmlEncode(blogSite.Name),
+                                HttpUtility.HtmlEncode(blogSite.UserName),
+                                HttpUtility.HtmlEncode(blogSite.Email),
+                                HttpUtility.HtmlEncode(blogSite.TotalPost),
+                                HttpUtility.HtmlEncode(blogSite.TotalPost),
+                                HttpUtility.HtmlEncode(blogSite.CreatedAt
+                                    .ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")),
+                                blogSite.Id.ToString()
+                            }).ToArray()
+                };
+
+                return Json(categories);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching blog sites data");
+                return Json(DataTables.EmptyResult);
+            }
+        }
+
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Active(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                var deleteCommand = new BlogSiteDeleteCommand { Id = id };
+                var deletedId = await _mediator.SendCommandAsync<BlogSiteDeleteCommand, Guid>(deleteCommand);
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = $"Blogsite Deleted Successfully",
+                        Type = ResponseType.Success
+                    });
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to delete blog site with Id: {id}");
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Failed To Delete Blogsite",
+                        Type = ResponseType.Danger
+                    });
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Active(Guid id)
         {
             try
             {

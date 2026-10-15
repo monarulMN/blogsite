@@ -1,4 +1,6 @@
 ﻿using BlogSite.Application.Contracts.Repositories;
+using BlogSite.Application.Features.BlogSites.Queries;
+using BlogSite.Domain.Dtos;
 using BlogSite.Domain.Entities;
 using BlogSite.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +53,95 @@ namespace BlogSite.Infrastructure.Data.Repositories
 
             await _applicationDbContext.SaveChangesAsync(cancellationToken);
             return true;
+        }
+
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var blogSite = await _applicationDbContext.Blogsites
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (blogSite is null)
+                return false;
+
+            var now = DateTime.UtcNow;
+
+            blogSite.Status = Status.Inactive;
+            blogSite.UpdatedAt = now;
+
+            //var posts = await _applicationDbContext.Blogsites
+            //    .Where(x => x.BlogSiteId == id)
+            //    .ToListAsync();
+
+            //foreach(var post in posts)
+            //{
+            //    post.Status = Status.Inactive;
+            //    post.UpdatedAt = now;
+            //}
+
+            //var categories = await _applicationDbContext.Blogsites
+            //    .Where(x => x.BlogSiteId == id)
+            //    .ToListAsync();
+
+            //foreach(var category in categories)
+            //{
+            //    category.Status = Status.Inactive;
+            //    category.UpdatedAt = now;
+            //}
+
+            await _applicationDbContext.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+
+        public async Task<(IList<BlogSiteDto>, int, int)> GetPagedBlogSiteAsync(int pageIndex, 
+            int pageSize, 
+            string? searchText, 
+            string? sortOrder, CancellationToken cancellationToken)
+        {
+            var result = await (
+                from blog in _applicationDbContext.Blogsites
+                join user in _applicationDbContext.Users
+                    on blog.AuthorId equals user.Id
+                where blog.Name.Contains(searchText)
+                    && blog.Status == Status.Inactive
+                select new
+                {
+                    BlogSiteId = blog.Id,
+                    BlogSiteName = blog.Name,
+
+                    AuthorName = $"{user.FirstName} {user.LastName}",
+                    AuthorEmail = user.Email,
+
+                    //TotalPosts = _applicationDbContext.BlogPosts
+                    //    .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
+
+                    //TotalCategories = _applicationDbContext.Categories
+                    //    .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
+                    CreatedAt = blog.CreatedAt
+
+                })
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            IList<BlogSiteDto> data = result.Select(r => new BlogSiteDto
+            {
+                Id = r.BlogSiteId,
+                Name = r.BlogSiteName,
+                UserName = r.AuthorName,
+                Email = r.AuthorEmail,
+                //TotalPost = r.TotalPosts,
+                //TotalCategory = r.TotalCategories,
+                CreatedAt = r.CreatedAt
+            }).ToList();
+
+            var totalSites = await GetDynamicAsync(pageIndex: pageIndex,
+                pageSize: pageSize,
+                orderBy: sortOrder,
+                filter:
+                    x => x.Name.Contains(searchText) &&
+                    x.Status == Status.Active);
+
+            return (data, totalSites.total, totalSites.totalDisplay);
         }
     }
 }
