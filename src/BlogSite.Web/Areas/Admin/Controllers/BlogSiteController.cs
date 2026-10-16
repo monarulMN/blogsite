@@ -187,5 +187,52 @@ namespace BlogSite.Web.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult InactiveList()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetBlogSiteRestrictedData([FromBody] BlogSiteListModel model)
+        {
+            try
+            {
+                var query = _mapper.Map<GetRestrictedBlogSitesQuery>(model);
+                query.SearchText = model.Search.Value;
+                query.SortOrder = model.FormatSortExpression("Name");
+
+                var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetRestrictedBlogSitesQuery,
+                    (IList<BlogSiteDto>, int , int)>(query);
+
+                var categories = new
+                {
+                    recordsTotal = total,
+                    recordsFiltered = totalDisplay,
+
+                    data = (from blogSite in items
+                            select new string[]
+                    {
+                        HttpUtility.HtmlEncode(blogSite.Name),
+                        HttpUtility.HtmlEncode(blogSite.UserName),
+                        HttpUtility.HtmlEncode(blogSite.Email),
+                        HttpUtility.HtmlEncode(blogSite.TotalPost),
+                        HttpUtility.HtmlEncode(blogSite.TotalPost),
+                        HttpUtility.HtmlEncode(blogSite.CreatedAt
+                            .ToLocalTime()
+                            .ToString("dd MMM yyyy, hh:mm tt")),
+                        blogSite.Id.ToString()
+
+                    }).ToArray()
+                };
+
+                return Json(model);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching blog sites data");
+                return Json(DataTables.EmptyResult);
+            }
+        }
     }
 }

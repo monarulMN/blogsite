@@ -1,4 +1,6 @@
-﻿using BlogSite.Application.Features.Users.Queries;
+﻿using BlogSite.Application.Features.BlogSites.Queries;
+using BlogSite.Application.Features.Users.Queries;
+using BlogSite.Domain.Enums;
 using BlogSite.Web.Areas.Admin.Models;
 using Cortex.Mediator;
 using Microsoft.AspNetCore.Authorization;
@@ -7,24 +9,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace BlogSite.Web.Areas.Admin.Controllers
 {
     [Area("Admin"), Authorize(Roles = "Admin, Support")]
-    public class DashboardController : Controller
+    public class DashboardController(ILogger<DashboardController> logger, 
+        IMediator mediator) : Controller
     {
-        private readonly ILogger<DashboardController> _logger;
-        private readonly IMediator _mediator;
-
-        public DashboardController(ILogger<DashboardController> logger, IMediator mediator)
-        {
-            _logger = logger;
-            _mediator = mediator;
-        }
-
+        private readonly ILogger<DashboardController> _logger = logger;
+        private readonly IMediator _mediator = mediator;
+        
         public async Task<IActionResult> Index()
         {
+            var blogSiteQuery = new GetTotalBlogSiteAdminQuery { Status = Status.Active };
             var userQuery = new GetTotalUserAdminQuery { IsBlocked = false };
             var model = new DashboardModel();
 
             try
             {
+                model.TotalBlogSites = await _mediator.SendQueryAsync<GetTotalBlogSiteAdminQuery, int>(blogSiteQuery);
                 model.TotalUsers = await _mediator.SendQueryAsync<GetTotalUserAdminQuery, int>(userQuery);
                 return View(model);
             }
