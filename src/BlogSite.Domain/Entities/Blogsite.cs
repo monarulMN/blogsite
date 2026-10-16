@@ -17,5 +17,7 @@ namespace BlogSite.Domain.Entities
         public DateTime UpdatedAt { get; set; }
         public Status Status { get; set; } = Status.Active;
 
+        public IList<Category> Categories { get; set; }
+
     }
 }

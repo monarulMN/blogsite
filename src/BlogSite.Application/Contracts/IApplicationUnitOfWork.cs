@@ -10,5 +10,6 @@ namespace BlogSite.Application.Contracts
     {
         public IUserRepository UserRepository { get; set; }
         public IBlogSiteRepository BlogSiteRepository { get; set; }
+        public ICategoryRepository CategoryRepository { get; }
     }
 }

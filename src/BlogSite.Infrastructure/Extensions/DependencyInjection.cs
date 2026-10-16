@@ -18,6 +18,7 @@ namespace BlogSite.Infrastructure.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             //services.AddScoped<ISqlUtility, SqlUtility>();
             services.AddScoped<IBlogSiteRepository, BlogSiteRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             services.AddSingleton<IServerTime, ServerTime>();
 

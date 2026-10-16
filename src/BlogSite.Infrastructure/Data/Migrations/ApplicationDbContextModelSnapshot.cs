@@ -66,6 +66,40 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.ToTable("Blogsites");
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BlogSiteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogSiteId");
+
+                    b.HasIndex("Name", "BlogSiteId")
+                        .IsUnique()
+                        .HasFilter("[Status] = 0");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -380,6 +414,17 @@ namespace BlogSite.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("BlogSite.Domain.Entities.Blogsite", "Blogsite")
+                        .WithMany("Categories")
+                        .HasForeignKey("BlogSiteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Blogsite");
+                });
+
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("BlogSite.Infrastructure.Identity.ApplicationRole", null)
@@ -429,6 +474,11 @@ namespace BlogSite.Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BlogSite.Domain.Entities.Blogsite", b =>
+                {
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationUser", b =>
