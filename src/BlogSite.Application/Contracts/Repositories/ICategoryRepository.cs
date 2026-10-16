@@ -15,7 +15,7 @@ namespace BlogSite.Application.Contracts.Repositories
             Guid blogSiteId, 
             CancellationToken cancellationToken);
 
-        Task<(IList<Category>, int, int)> GetPagedCategoriesAsync(int pageSize, 
+        Task<(IList<Category>, int, int)> GetPagedAdminCategoriesAsync(int pageSize, 
             int pageIndex,
             string? sortOrder, 
             string? searchText, 

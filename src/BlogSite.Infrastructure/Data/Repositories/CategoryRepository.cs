@@ -33,7 +33,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 include: null);
         }
 
-        public async Task<(IList<Category>, int, int)> GetPagedCategoriesAsync(int pageSize,
+        public async Task<(IList<Category>, int, int)> GetPagedAdminCategoriesAsync(int pageSize,
             int pageIndex,
             string? sortOrder,
             string? searchText,

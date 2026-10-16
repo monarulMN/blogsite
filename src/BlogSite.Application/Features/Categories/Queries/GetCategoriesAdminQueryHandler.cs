@@ -16,7 +16,7 @@ namespace BlogSite.Application.Features.Categories.Queries
         public async Task<(IList<Category>, int, int)> Handle(GetCategoriesAdminQuery query, 
             CancellationToken cancellationToken)
         {
-            return await _applicationUnitOfWork.CategoryRepository.GetPagedCategoriesAsync(
+            return await _applicationUnitOfWork.CategoryRepository.GetPagedAdminCategoriesAsync(
                 query.PageSize,
                 query.PageIndex,
                 query.SortOrder,

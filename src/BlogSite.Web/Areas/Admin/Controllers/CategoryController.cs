@@ -1,8 +1,12 @@
 ﻿using BlogSite.Application.Contracts;
+using BlogSite.Application.Features.Categories.Commands;
 using BlogSite.Application.Features.Categories.Queries;
 using BlogSite.Domain.Entities;
 using BlogSite.Domain.Utilities;
+using BlogSite.Infrastructure.Extensions;
+using BlogSite.Web.Areas.Admin.Models;
 using BlogSite.Web.Areas.Admin.Models.Category;
+using BlogSite.Web.Codes;
 using Cortex.Mediator;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -62,6 +66,36 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                 _logger.LogError(ex, "Error occurred while fetching category data");
                 return Json(DataTables.EmptyResult);
             }
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                var deleteCommand = new CategoryDeleteCommand { Id = id };
+                var deletedId = await _mediator.SendCommandAsync<CategoryDeleteCommand, 
+                    Guid>(deleteCommand);
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Category deleted successfully",
+                        Type = ResponseType.Success
+                    });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to delete category with id: {id}");
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = " Failed to delete category",
+                        Type = ResponseType.Danger
+                    });
+            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }
