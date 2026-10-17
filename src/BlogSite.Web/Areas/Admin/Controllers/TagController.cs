@@ -1,8 +1,12 @@
 ﻿using BlogSite.Application.Contracts;
+using BlogSite.Application.Features.Tags.Commands;
 using BlogSite.Application.Features.Tags.Queries;
 using BlogSite.Domain.Entities;
 using BlogSite.Domain.Utilities;
+using BlogSite.Infrastructure.Extensions;
+using BlogSite.Web.Areas.Admin.Models;
 using BlogSite.Web.Areas.Admin.Models.Tag;
+using BlogSite.Web.Codes;
 using Cortex.Mediator;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -61,6 +65,153 @@ namespace BlogSite.Web.Areas.Admin.Controllers
             {
                 _logger.LogError(ex, "Error occurred while fetching tag data");
                 return Json(DataTables.EmptyResult);
+            }
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(AddTagModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var query = new TagExistCheckQuery { Name = model.Name };
+                var isExists = await _mediator.SendQueryAsync<TagExistCheckQuery, bool>(query);
+
+                if (!isExists)
+                {
+                    var command = _mapper.Map<TagAddCommand>(model);
+                    command.CreatedAt = _serverTime.DateTime;
+                    command.UpdatedAt = _serverTime.DateTime;
+                    await _mediator.SendCommandAsync<TagAddCommand, Tag>(command);
+
+                    TempData.Put(Constants.ResponseTemkey,
+                        new ResponseModel
+                        {
+                            Message = "Tag created successfully",
+                            Type = ResponseType.Success
+                        });
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    TempData.Put(Constants.ResponseTemkey,
+                        new ResponseModel
+                        {
+                            Message = "Tag already exists",
+                            Type = ResponseType.Danger
+                        });
+                    return View(model);
+                }
+            }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError("Error", "Faild to create tag.");
+                _logger.LogError(ex, "Error occurred while creating tag");
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Failed to create tag",
+                        Type = ResponseType.Danger
+                    });
+
+                return View(model);
+            }
+        }
+
+
+        public async Task<IActionResult> Update(Guid id)
+        {
+            try
+            {
+                var query = new TagGetQuery { Id = id };
+                var tag = await _mediator.SendQueryAsync<TagGetQuery, Tag>(query);
+
+                if(tag is null)
+                {
+                    TempData.Put(Constants.ResponseTemkey,
+                        new ResponseModel
+                        {
+                            Message = " Tag not found",
+                            Type = ResponseType.Danger
+                        });
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var model = _mapper.Map<UpdateTagModel>(tag);
+                return View(model);
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching tag for edit with id {tagId}", id);
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Failed to load tag for editing.",
+                        Type = ResponseType.Danger
+                    });
+
+                return RedirectToAction("Index");
+            }
+        }
+
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(UpdateTagModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var query = new TagExistCheckQuery { Name = model.Name, Id = model.Id };
+                var isExist = await _mediator.SendQueryAsync<TagExistCheckQuery, bool>(query);
+                if (!isExist)
+                {
+                    var command = _mapper.Map<TagEditCommand>(model);
+                    await _mediator.SendCommandAsync<TagUpdateCommand, Tag>(command);
+
+                    TempData.Put(Constants.ResponseTemkey,
+                        new ResponseModel
+                        {
+                            Message = "Tag updated successfully.",
+                            Type = ResponseType.Success
+                        });
+
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData.Put("ResponseMessage", new ResponseModel
+                    {
+                        Message = "Tag already exists.",
+                        Type = ResponseType.Danger
+                    });
+                    return View(model);
+                }
+            }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError("Error", "Failed to update Tag.");
+                _logger.LogError(ex, "Error occurred while updating Tag");
+                TempData.Put("ResponseMessage", new ResponseModel
+                {
+                    Message = "Failed to update tag.",
+                    Type = ResponseType.Danger
+                });
+                return View(model);
             }
         }
     }

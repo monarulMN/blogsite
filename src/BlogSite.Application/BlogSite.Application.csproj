@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Tags\Commands\" />
     <Folder Include="Features\Users\Commands\" />
   </ItemGroup>
 
