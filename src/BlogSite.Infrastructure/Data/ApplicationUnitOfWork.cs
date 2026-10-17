@@ -12,15 +12,18 @@ namespace BlogSite.Infrastructure.Data
         public IUserRepository UserRepository { get; set; }
         public IBlogSiteRepository BlogSiteRepository { get; set; }
         public ICategoryRepository CategoryRepository { get; private set; }
+        public ITagRepository TagRepository { get; private set; }
 
         public ApplicationUnitOfWork(ApplicationDbContext dbContext,
             IUserRepository userRepository,
             IBlogSiteRepository blogSiteRepository,
-            ICategoryRepository categoryRepository) : base(dbContext)
+            ICategoryRepository categoryRepository,
+            ITagRepository tagRepository) : base(dbContext)
         {
             UserRepository = userRepository;
             BlogSiteRepository = blogSiteRepository;
             CategoryRepository = categoryRepository;
+            TagRepository = tagRepository;
         }
     }
 }

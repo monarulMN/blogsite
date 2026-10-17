@@ -11,11 +11,13 @@ using BlogSite.Web.Areas.Admin.Models.Category;
 using BlogSite.Web.Codes;
 using Cortex.Mediator;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 
 namespace BlogSite.Web.Areas.Admin.Controllers
 {
+    [Area("Admin"), Authorize(Roles ="Admin, Support")]
     public class CategoryController(IMediator mediator,
         IMapper mapper,
         ILogger<CategoryController> logger,

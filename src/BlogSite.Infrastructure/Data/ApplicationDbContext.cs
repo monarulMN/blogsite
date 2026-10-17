@@ -17,6 +17,7 @@ namespace BlogSite.Infrastructure.Data
     {
         public DbSet<Blogsite> Blogsites { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -72,6 +73,25 @@ namespace BlogSite.Infrastructure.Data
                     .HasForeignKey<Blogsite>(e => e.AuthorId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
+
+
+            builder.Entity<Tag>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(x => x.Status).IsRequired();
+                entity.Property(x => x.CreatedAt).IsRequired();
+                entity.Property(x => x.UpdatedAt).IsRequired();
+
+                entity.HasIndex(x => x.Name)
+                    .IsUnique()
+                    .HasFilter("[Status] = 0");
+            });
+
 
             base.OnModelCreating(builder);
             // Seed roles
