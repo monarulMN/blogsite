@@ -22,7 +22,9 @@ namespace BlogSite.Application.Contracts.Repositories
             string? searchText, 
             CancellationToken cancellationToken);
 
-        Task<IList<Category>> GetSearchCategoriesAsync(Guid blogSiteId, string? searchText);
+        Task<IList<Category>> GetSearchCategoriesAsync(string? searchText, 
+            Guid blogSiteId, 
+            CancellationToken cancellationToken);
         Task<IList<CategoryDto>> GetCategoryByBlogSiteId(Guid blogSiteId);
     }
 }

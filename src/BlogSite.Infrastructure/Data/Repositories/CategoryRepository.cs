@@ -50,12 +50,13 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     x => x.Include(b => b.Blogsite));
         }
 
-        public async Task<IList<Category>> GetSearchCategoriesAsync(Guid blogSiteId, string? searchText)
+        public async Task<IList<Category>> GetSearchCategoriesAsync(string? searchText, Guid blogSiteId , 
+            CancellationToken cancellationToken)
         {
             return await GetAsync(x => x.Name.Contains(searchText) && 
                 x.BlogSiteId == blogSiteId && 
                 x.Status == Status.Active, 
-                null);
+                null, cancellationToken);
         }
 
         public async Task<IList<CategoryDto>> GetCategoryByBlogSiteId(Guid blogSiteId)
@@ -66,10 +67,10 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 .Select(c => new CategoryDto
                 {
                     Id = c.Id,
-                    Name = c.Name,
-                    PostCount = c.BlogPostCategories.Count(bpc =>
-                        bpc.BlogPost.Status == Status.Active &&
-                        bpc.Status == Status.Active)
+                    Name = c.Name
+                    //PostCount = c.BlogPostCategories.Count(bpc =>
+                    //    bpc.BlogPost.Status == Status.Active &&
+                    //    bpc.Status == Status.Active)
                 })
                 .OrderByDescending(t => t.PostCount)
                 .ToListAsync();

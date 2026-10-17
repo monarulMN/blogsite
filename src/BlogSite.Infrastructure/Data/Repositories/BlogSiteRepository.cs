@@ -79,7 +79,11 @@ namespace BlogSite.Infrastructure.Data.Repositories
             //    post.UpdatedAt = now;
             //}
 
-            var categories = await _applicationDbContext.Blogsites
+            await _applicationDbContext.Categories
+                .Where(x => x.BlogSiteId == id && x.Status == Status.Inactive)
+                .ExecuteDeleteAsync();
+
+            var categories = await _applicationDbContext.Categories
                 .Where(x => x.BlogSiteId == id)
                 .ToListAsync();
 

@@ -15,7 +15,7 @@ namespace BlogSite.Application.Features.Categories.Queries
             CancellationToken cancellationToken)
         {
             return await _applicationUnitOfWork.CategoryRepository.GetSearchCategoriesAsync(
-                query.BlogSiteId, query.Name);
+                query.Name, query.BlogSiteId, cancellationToken);
         }
     }
 }
