@@ -1,4 +1,5 @@
 ﻿using BlogSite.Domain.Contracts;
+using BlogSite.Domain.Dtos;
 using BlogSite.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -20,5 +21,8 @@ namespace BlogSite.Application.Contracts.Repositories
             string? sortOrder, 
             string? searchText, 
             CancellationToken cancellationToken);
+
+        Task<IList<Category>> GetSearchCategoriesAsync(Guid blogSiteId, string? searchText);
+        Task<IList<CategoryDto>> GetCategoryByBlogSiteId(Guid blogSiteId);
     }
 }

@@ -42,15 +42,15 @@ namespace BlogSite.Infrastructure.Data.Repositories
             //    post.UpdatedAt = now;
             //}
 
-            //var categories = await _applicationDbContext.Categories
-            //    .Where(x => x.BlogSiteId == id)
-            //    .ToListAsync();
+            var categories = await _applicationDbContext.Categories
+                .Where(x => x.BlogSiteId == id)
+                .ToListAsync();
 
-            //foreach(var category in categories)
-            //{
-            //    category.Status = Status.Active;
-            //    category.UpdatedAt = now;
-            //}
+            foreach (var category in categories)
+            {
+                category.Status = Status.Active;
+                category.UpdatedAt = now;
+            }
 
             await _applicationDbContext.SaveChangesAsync(cancellationToken);
             return true;
@@ -79,15 +79,15 @@ namespace BlogSite.Infrastructure.Data.Repositories
             //    post.UpdatedAt = now;
             //}
 
-            //var categories = await _applicationDbContext.Blogsites
-            //    .Where(x => x.BlogSiteId == id)
-            //    .ToListAsync();
+            var categories = await _applicationDbContext.Blogsites
+                .Where(x => x.BlogSiteId == id)
+                .ToListAsync();
 
-            //foreach(var category in categories)
-            //{
-            //    category.Status = Status.Inactive;
-            //    category.UpdatedAt = now;
-            //}
+            foreach (var category in categories)
+            {
+                category.Status = Status.Inactive;
+                category.UpdatedAt = now;
+            }
 
             await _applicationDbContext.SaveChangesAsync(cancellationToken);
             return true;
@@ -148,8 +148,8 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     //TotalPosts = _applicationDbContext.BlogPosts
                     //    .Count(p => p.BlogSiteId == blog.Id && p.Status == Status.Inactive),
 
-                    //TotalCategories = _applicationDbContext.Categories
-                    //    .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
+                    TotalCategories = _applicationDbContext.Categories
+                        .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
                     CreatedAt = blog.CreatedAt
                 }
             )
@@ -164,7 +164,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 UserName = r.AuthorName,
                 Email = r.AuthorEmail,
                 //TotalPost = r.TotalPosts,
-                //TotalCategory = r.TotalCategories,
+                TotalCategory = r.TotalCategories,
                 CreatedAt = r.CreatedAt
             }).ToList();
 
@@ -201,8 +201,8 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     //TotalPosts = _applicationDbContext.BlogPosts
                     //    .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
 
-                    //TotalCategories = _applicationDbContext.Categories
-                    //    .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
+                    TotalCategories = _applicationDbContext.Categories
+                        .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
                     CreatedAt = blog.CreatedAt
 
                 })
@@ -217,7 +217,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 UserName = r.AuthorName,
                 Email = r.AuthorEmail,
                 //TotalPost = r.TotalPosts,
-                //TotalCategory = r.TotalCategories,
+                TotalCategory = r.TotalCategories,
                 CreatedAt = r.CreatedAt
             }).ToList();
 

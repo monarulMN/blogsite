@@ -1,4 +1,5 @@
 ﻿using BlogSite.Application.Contracts.Repositories;
+using BlogSite.Domain.Dtos;
 using BlogSite.Domain.Entities;
 using BlogSite.Domain.Enums;
 using Microsoft.Data.SqlClient;
@@ -47,6 +48,31 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     x.Status == Status.Active,
                 include:
                     x => x.Include(b => b.Blogsite));
+        }
+
+        public async Task<IList<Category>> GetSearchCategoriesAsync(Guid blogSiteId, string? searchText)
+        {
+            return await GetAsync(x => x.Name.Contains(searchText) && 
+                x.BlogSiteId == blogSiteId && 
+                x.Status == Status.Active, 
+                null);
+        }
+
+        public async Task<IList<CategoryDto>> GetCategoryByBlogSiteId(Guid blogSiteId)
+        {
+            return await _applicationDbContext.Categories
+                .Where(c => c.BlogSiteId == blogSiteId &&
+                    c.Status == Status.Active)
+                .Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    PostCount = c.BlogPostCategories.Count(bpc =>
+                        bpc.BlogPost.Status == Status.Active &&
+                        bpc.Status == Status.Active)
+                })
+                .OrderByDescending(t => t.PostCount)
+                .ToListAsync();
         }
     }
 }
