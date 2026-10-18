@@ -59,11 +59,13 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                                 tag.Id.ToString()
                             }).ToArray()
                 };
+
                 return Json(tags);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while fetching tag data");
+
                 return Json(DataTables.EmptyResult);
             }
         }
@@ -99,6 +101,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                             Message = "Tag created successfully",
                             Type = ResponseType.Success
                         });
+
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -109,12 +112,14 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                             Message = "Tag already exists",
                             Type = ResponseType.Danger
                         });
+
                     return View(model);
                 }
             }
             catch(Exception ex)
             {
                 ModelState.AddModelError("Error", "Faild to create tag.");
+
                 _logger.LogError(ex, "Error occurred while creating tag");
 
                 TempData.Put(Constants.ResponseTemkey,
@@ -144,16 +149,19 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                             Message = " Tag not found",
                             Type = ResponseType.Danger
                         });
+
                     return RedirectToAction(nameof(Index));
                 }
 
                 var model = _mapper.Map<UpdateTagModel>(tag);
+
                 return View(model);
 
             }
             catch(Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while fetching tag for edit with id {tagId}", id);
+
                 TempData.Put(Constants.ResponseTemkey,
                     new ResponseModel
                     {
@@ -180,7 +188,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                 var isExist = await _mediator.SendQueryAsync<TagExistCheckQuery, bool>(query);
                 if (!isExist)
                 {
-                    var command = _mapper.Map<TagEditCommand>(model);
+                    var command = _mapper.Map<TagUpdateCommand>(model);
                     await _mediator.SendCommandAsync<TagUpdateCommand, Tag>(command);
 
                     TempData.Put(Constants.ResponseTemkey,
@@ -205,13 +213,109 @@ namespace BlogSite.Web.Areas.Admin.Controllers
             catch(Exception ex)
             {
                 ModelState.AddModelError("Error", "Failed to update Tag.");
+
                 _logger.LogError(ex, "Error occurred while updating Tag");
+
                 TempData.Put("ResponseMessage", new ResponseModel
                 {
                     Message = "Failed to update tag.",
                     Type = ResponseType.Danger
                 });
+
                 return View(model);
+            }
+        }
+
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                var deleteCommand = new TagDeleteCommand { Id = id };
+                var deletedId = await _mediator.SendCommandAsync<TagDeleteCommand, Guid>(deleteCommand);
+
+                TempData.Put(Constants.ResponseTemkey,
+                     new ResponseModel
+                     {
+                         Message = "Tag deleted successfully",
+                         Type = ResponseType.Success
+                     });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to delete tag with Id: {id}");
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Failed to delete data",
+                        Type = ResponseType.Danger
+                    });
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetTagSearchData([FromBody] Select2SearchModel model)
+        {
+            try
+            {
+                var command = new TagSearchQuery { Name = model.SearchText };
+                var tags = await _mediator.SendQueryAsync<TagSearchQuery, IList<Tag>>(command);
+
+                var data = (from tag in tags
+                            select new
+                            {
+                                id = tag.Id,
+                                text = tag.Name
+                            }).ToArray();
+
+                return Json(data);
+            }
+            catch (Exception)
+            {
+                return Json(null);
+            }
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Select2Create(AddTagModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(null);
+            }
+
+            try
+            {
+                var checkQuery = new TagExistCheckQuery { Name = model.Name };
+                var IsExists = await _mediator.SendQueryAsync<TagExistCheckQuery, bool>(checkQuery);
+
+                if (!IsExists)
+                {
+                    var command = new TagAddCommand();
+                    command.Name = model.Name;
+                    command.CreatedAt = _serverTime.DateTime;
+                    command.UpdatedAt = _serverTime.DateTime;
+
+                    var tag = await _mediator.SendCommandAsync<TagAddCommand, Tag>(command);
+
+                    return Json(new { id = tag.Id, text = tag.Name });
+                }
+                else
+                {
+                    return Json(null);
+                }
+            }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError("Error", "Faild to create tag.");
+
+                _logger.LogError(ex, "Error occurred while creating tag");
+
+                return Json(null);
             }
         }
     }

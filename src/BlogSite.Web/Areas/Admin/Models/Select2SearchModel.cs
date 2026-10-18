@@ -1,4 +1,4 @@
-﻿namespace BlogSite.Web.Areas.Admin.Models.Category
+﻿namespace BlogSite.Web.Areas.Admin.Models
 {
     public class Select2SearchModel
     {

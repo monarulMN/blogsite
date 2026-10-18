@@ -18,6 +18,7 @@ namespace BlogSite.Domain.Entities
         public Status Status { get; set; } = Status.Active;
 
         public IList<Category> Categories { get; set; }
+        public IList<BlogPost> BlogPosts { get; set; }
 
     }
 }
