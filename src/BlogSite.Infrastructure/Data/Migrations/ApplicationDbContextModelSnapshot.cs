@@ -64,6 +64,54 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.ToTable("BlogPosts");
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.BlogPostCategory", b =>
+                {
+                    b.Property<Guid>("BlogPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("BlogPostId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("BlogPostCategories");
+                });
+
+            modelBuilder.Entity("BlogSite.Domain.Entities.BlogPostTag", b =>
+                {
+                    b.Property<Guid>("BlogPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("BlogPostId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("BlogPostTags");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Blogsite", b =>
                 {
                     b.Property<Guid>("Id")
@@ -487,6 +535,44 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.Navigation("Blogsite");
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.BlogPostCategory", b =>
+                {
+                    b.HasOne("BlogSite.Domain.Entities.BlogPost", "BlogPost")
+                        .WithMany("BlogPostCategories")
+                        .HasForeignKey("BlogPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlogSite.Domain.Entities.Category", "Category")
+                        .WithMany("BlogPostCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlogPost");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("BlogSite.Domain.Entities.BlogPostTag", b =>
+                {
+                    b.HasOne("BlogSite.Domain.Entities.BlogPost", "BlogPost")
+                        .WithMany("BlogPostTags")
+                        .HasForeignKey("BlogPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlogSite.Domain.Entities.Tag", "Tag")
+                        .WithMany("BlogPostTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlogPost");
+
+                    b.Navigation("Tag");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Blogsite", b =>
                 {
                     b.HasOne("BlogSite.Infrastructure.Identity.ApplicationUser", null)
@@ -558,11 +644,28 @@ namespace BlogSite.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.BlogPost", b =>
+                {
+                    b.Navigation("BlogPostCategories");
+
+                    b.Navigation("BlogPostTags");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Blogsite", b =>
                 {
                     b.Navigation("BlogPosts");
 
                     b.Navigation("Categories");
+                });
+
+            modelBuilder.Entity("BlogSite.Domain.Entities.Category", b =>
+                {
+                    b.Navigation("BlogPostCategories");
+                });
+
+            modelBuilder.Entity("BlogSite.Domain.Entities.Tag", b =>
+                {
+                    b.Navigation("BlogPostTags");
                 });
 
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationUser", b =>

@@ -19,5 +19,10 @@ namespace BlogSite.Domain.Entities
         public Guid BlogSiteId { get; set; }
         public Blogsite Blogsite { get; set; }
 
+        public IList<BlogPostCategory> BlogPostCategories { get; set; } 
+            = new List<BlogPostCategory>();
+        public IList<BlogPostTag> BlogPostTags { get; set; }
+            = new List<BlogPostTag>();
+
     }
 }

@@ -20,6 +20,9 @@ namespace BlogSite.Infrastructure.Data
         public DbSet<Tag> Tags { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
 
+        public DbSet<BlogPostCategory> BlogPostCategories { get; set; }
+        public DbSet<BlogPostTag> BlogPostTags { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Category>(entity =>
@@ -124,6 +127,43 @@ namespace BlogSite.Infrastructure.Data
                     .WithMany(x => x.BlogPosts)
                     .HasForeignKey(x => x.BlogSiteId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<BlogPostCategory>(entity =>
+            {
+                entity.HasKey(x => new { x.BlogPostId, x.CategoryId });
+
+                entity.Property(x => x.CreatedAt).IsRequired();
+                entity.Property(x => x.UpdatedAt).IsRequired();
+
+                entity.HasOne(x => x.BlogPost)
+                    .WithMany(x => x.BlogPostCategories)
+                    .HasForeignKey(x => x.BlogPostId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.Category)
+                    .WithMany(x => x.BlogPostCategories)
+                    .HasForeignKey(x => x.CategoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+
+            builder.Entity<BlogPostTag>(entity =>
+            {
+                entity.HasKey(x => new { x.BlogPostId, x.TagId });
+
+                entity.Property(x => x.CreatedAt).IsRequired();
+                entity.Property(x => x.UpdatedAt).IsRequired();
+
+                entity.HasOne(x => x.BlogPost)
+                    .WithMany(x => x.BlogPostTags)
+                    .HasForeignKey(x => x.BlogPostId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.Tag)
+                    .WithMany(x => x.BlogPostTags)
+                    .HasForeignKey(x => x.TagId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
 
