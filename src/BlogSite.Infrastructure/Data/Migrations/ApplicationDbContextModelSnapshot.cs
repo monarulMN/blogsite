@@ -22,6 +22,48 @@ namespace BlogSite.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.BlogPost", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BlogSiteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PostStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ThumbnailPath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogSiteId");
+
+                    b.ToTable("BlogPosts");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Blogsite", b =>
                 {
                     b.Property<Guid>("Id")
@@ -434,6 +476,17 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.BlogPost", b =>
+                {
+                    b.HasOne("BlogSite.Domain.Entities.Blogsite", "Blogsite")
+                        .WithMany("BlogPosts")
+                        .HasForeignKey("BlogSiteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Blogsite");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Blogsite", b =>
                 {
                     b.HasOne("BlogSite.Infrastructure.Identity.ApplicationUser", null)
@@ -507,6 +560,8 @@ namespace BlogSite.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("BlogSite.Domain.Entities.Blogsite", b =>
                 {
+                    b.Navigation("BlogPosts");
+
                     b.Navigation("Categories");
                 });
 

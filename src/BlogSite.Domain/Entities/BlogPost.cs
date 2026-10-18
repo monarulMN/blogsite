@@ -17,6 +17,7 @@ namespace BlogSite.Domain.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Guid BlogSiteId { get; set; }
+        public Blogsite Blogsite { get; set; }
 
     }
 }

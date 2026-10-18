@@ -18,6 +18,7 @@ namespace BlogSite.Infrastructure.Data
         public DbSet<Blogsite> Blogsites { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<BlogPost> BlogPosts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -90,6 +91,39 @@ namespace BlogSite.Infrastructure.Data
                 entity.HasIndex(x => x.Name)
                     .IsUnique()
                     .HasFilter("[Status] = 0");
+            });
+
+
+            builder.Entity<BlogPost>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Title)
+                    .IsRequired()
+                    .HasMaxLength(250);
+
+                entity.Property(x => x.Body)
+                    .IsRequired();
+
+                entity.Property(x => x.ThumbnailPath)
+                    .HasMaxLength(500);
+
+                entity.Property(x => x.PostStatus)
+                    .IsRequired();
+
+                entity.Property(x => x.Status)
+                    .IsRequired();
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired();
+
+                entity.Property(x => x.UpdatedAt)
+                    .IsRequired();
+
+                entity.HasOne(x => x.Blogsite)
+                    .WithMany(x => x.BlogPosts)
+                    .HasForeignKey(x => x.BlogSiteId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
 
