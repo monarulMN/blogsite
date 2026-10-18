@@ -16,7 +16,7 @@ namespace BlogSite.Application.Contracts.Repositories
         Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
         Task<Blogsite> GetBlogSiteBySlugAsync(string slug, CancellationToken cancellationToken);
         Task<IList<Blogsite>> GetBlogSiteByStatusAsync(Status status, CancellationToken cancellationToken);
-        Task<Blogsite> GetByAuthorIdAsync(Guid authorId, CancellationToken cancellationToken);
+        Task<Blogsite?> GetByAuthorIdAsync(Guid authorId, CancellationToken cancellationToken);
         Task<(IList<BlogSiteDto>, int, int)> GetPaagedRestrrictedBlogSiteAsync(int pageSize, 
             int pageIndex, 
             string? sortOrder, 

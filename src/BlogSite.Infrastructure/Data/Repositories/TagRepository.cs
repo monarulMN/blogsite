@@ -45,28 +45,48 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 cancellationToken);
         }
 
-        //public async Task<IList<TagDto>> GetTagsByStatusAsync(Status status, 
-        //    CancellationToken cancellationToken)
-        //{
-        //    return await _applicationDbContext.BlogPostTags
-        //        .Where(bpt =>
-        //            bpt.BlogPost.Status == Status.Active &&
-        //            bpt.Status == Status.Active &&
-        //            bpt.Tag.Status == Status.Active)
-        //        .GroupBy(bpt => new
-        //        {
-        //            bpt.Tag.Id,
-        //            bpt.Tag.Name
-        //        })
-        //        .Select(g =>
-        //            new TagDto
-        //            {
-        //                Id = g.Key.Id,
-        //                Name = g.Key.Name,
-        //                PostCount = g.Count()
-        //            })
-        //        .OrderByDescending(t => t.PostCount)
-        //        .ToListAsync();
-        //}
+        public async Task<IReadOnlyList<TagDto>> GetTagsByBlogSiteAsync(Guid blogSiteId, 
+            CancellationToken cancellationToken)
+        {
+            return await _applicationDbContext.BlogPostTags
+                .Where(bpt =>
+                    bpt.BlogPost.BlogSiteId == blogSiteId &&
+                    bpt.BlogPost.Status == Status.Active &&
+                    bpt.Status == Status.Active &&
+                    bpt.Tag.Status == Status.Active)
+                .GroupBy(bpt => new { bpt.Tag.Id, bpt.Tag.Name })
+                .Select(g => new TagDto
+                {
+                    Id = g.Key.Id,
+                    Name = g.Key.Name,
+                    PostCount = g.Count()
+                })
+                .OrderByDescending(t => t.PostCount)
+                .ToListAsync();
+        }
+
+        public async Task<IList<TagDto>> GetTagsByStatusAsync(Status status,
+            CancellationToken cancellationToken)
+        {
+            return await _applicationDbContext.BlogPostTags
+                .Where(bpt =>
+                    bpt.BlogPost.Status == Status.Active &&
+                    bpt.Status == Status.Active &&
+                    bpt.Tag.Status == Status.Active)
+                .GroupBy(bpt => new
+                {
+                    bpt.Tag.Id,
+                    bpt.Tag.Name
+                })
+                .Select(g =>
+                    new TagDto
+                    {
+                        Id = g.Key.Id,
+                        Name = g.Key.Name,
+                        PostCount = g.Count()
+                    })
+                .OrderByDescending(t => t.PostCount)
+                .ToListAsync();
+        }
     }
 }

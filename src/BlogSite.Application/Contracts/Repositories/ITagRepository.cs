@@ -16,8 +16,9 @@ namespace BlogSite.Application.Contracts.Repositories
 
         Task<IList<Tag>> GetSearchTagsAsync(string? searchText, 
             CancellationToken cancellationToken);
-        
-        //Task<IList<TagDto>> GetTagsByStatusAsync(Status status, 
-        //    CancellationToken cancellationToken);
+        Task<IReadOnlyList<TagDto>> GetTagsByBlogSiteAsync(Guid blogSiteId, 
+            CancellationToken cancellationToken);
+        Task<IList<TagDto>> GetTagsByStatusAsync(Status status,
+            CancellationToken cancellationToken);
     }
 }

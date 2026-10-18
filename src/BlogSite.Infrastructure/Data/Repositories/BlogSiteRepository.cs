@@ -32,15 +32,15 @@ namespace BlogSite.Infrastructure.Data.Repositories
             blogSite.Status = Status.Active;
             blogSite.UpdatedAt = now;
 
-            //var posts = await _applicationDbContext.BlogPosts
-            //    .Where(x => x.BlogSiteId == id)
-            //    .ToListAsync();
+            var posts = await _applicationDbContext.BlogPosts
+                .Where(x => x.BlogSiteId == id)
+                .ToListAsync();
 
-            //foreach(var post in posts)
-            //{
-            //    post.Status = Status.Active;
-            //    post.UpdatedAt = now;
-            //}
+            foreach (var post in posts)
+            {
+                post.Status = Status.Active;
+                post.UpdatedAt = now;
+            }
 
             var categories = await _applicationDbContext.Categories
                 .Where(x => x.BlogSiteId == id)
@@ -69,15 +69,15 @@ namespace BlogSite.Infrastructure.Data.Repositories
             blogSite.Status = Status.Inactive;
             blogSite.UpdatedAt = now;
 
-            //var posts = await _applicationDbContext.Blogsites
-            //    .Where(x => x.BlogSiteId == id)
-            //    .ToListAsync();
+            var posts = await _applicationDbContext.BlogPosts
+                .Where(x => x.BlogSiteId == id)
+                .ToListAsync();
 
-            //foreach(var post in posts)
-            //{
-            //    post.Status = Status.Inactive;
-            //    post.UpdatedAt = now;
-            //}
+            foreach (var post in posts)
+            {
+                post.Status = Status.Inactive;
+                post.UpdatedAt = now;
+            }
 
             await _applicationDbContext.Categories
                 .Where(x => x.BlogSiteId == id && x.Status == Status.Inactive)
@@ -123,7 +123,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
             return randomSites;
         }
 
-        public async Task<Blogsite> GetByAuthorIdAsync(Guid authorId, CancellationToken cancellationToken)
+        public async Task<Blogsite?> GetByAuthorIdAsync(Guid authorId, CancellationToken cancellationToken)
         {
             return await _applicationDbContext.Blogsites.FirstOrDefaultAsync(b => b.AuthorId == authorId,
                 cancellationToken);

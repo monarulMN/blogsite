@@ -67,10 +67,10 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 .Select(c => new CategoryDto
                 {
                     Id = c.Id,
-                    Name = c.Name
-                    //PostCount = c.BlogPostCategories.Count(bpc =>
-                    //    bpc.BlogPost.Status == Status.Active &&
-                    //    bpc.Status == Status.Active)
+                    Name = c.Name,
+                    PostCount = c.BlogPostCategories.Count(bpc =>
+                        bpc.BlogPost.Status == Status.Active &&
+                        bpc.Status == Status.Active)
                 })
                 .OrderByDescending(t => t.PostCount)
                 .ToListAsync();
