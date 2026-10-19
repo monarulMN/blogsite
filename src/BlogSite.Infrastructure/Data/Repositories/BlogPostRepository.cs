@@ -35,7 +35,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 x.Include(b => b.Blogsite));
         }
 
-        public async Task<(IList<BlogPost>, int, int)> GetPagedBlogPostsAsync(GetBlogPostsQuery query, 
+        public async Task<(IList<BlogPost>, int, int)> GetPagedBlogPostsAsync(GetAllBlogPostsQuery query, 
             CancellationToken cancellationToken)
         {
             return await GetDynamicAsync(x =>

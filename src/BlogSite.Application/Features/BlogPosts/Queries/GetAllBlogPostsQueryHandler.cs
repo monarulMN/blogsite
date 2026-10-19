@@ -7,13 +7,13 @@ using System.Text;
 
 namespace BlogSite.Application.Features.BlogPosts.Queries
 {
-    public class GetBlogPostsQueryHandler(IApplicationUnitOfWork applicationUnitOfWork) : 
-        IQueryHandler<GetBlogPostsQuery,
+    public class GetAllBlogPostsQueryHandler(IApplicationUnitOfWork applicationUnitOfWork) : 
+        IQueryHandler<GetAllBlogPostsQuery,
         (IList<BlogPost>, int, int)>
     {
         private readonly IApplicationUnitOfWork _applicationUnitOfWork = applicationUnitOfWork;
 
-        public async Task<(IList<BlogPost>, int, int)> Handle(GetBlogPostsQuery query,
+        public async Task<(IList<BlogPost>, int, int)> Handle(GetAllBlogPostsQuery query,
             CancellationToken cancellationToken)
         {
             return await _applicationUnitOfWork.BlogPostRepository.GetPagedBlogPostsAsync(query, 

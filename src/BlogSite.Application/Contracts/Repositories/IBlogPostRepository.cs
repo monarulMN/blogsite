@@ -15,7 +15,7 @@ namespace BlogSite.Application.Contracts.Repositories
             string? searchText, 
             CancellationToken cancellationToken);
 
-        Task<(IList<BlogPost>, int, int)> GetPagedBlogPostsAsync(GetBlogPostsQuery query, 
+        Task<(IList<BlogPost>, int, int)> GetPagedBlogPostsAsync(GetAllBlogPostsQuery query, 
             CancellationToken cancellationToken);
     }
 }

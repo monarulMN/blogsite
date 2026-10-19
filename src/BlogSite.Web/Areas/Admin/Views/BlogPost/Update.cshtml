@@ -1,0 +1,385 @@
+﻿@model UpdateBlogPostModel;
+
+@{
+    ViewData["Title"] = "BlogPost update";
+}
+
+@section Style {
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@editorjs/editorjs@latest/dist/editor.css">
+}
+
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">BlogPost /</span> Blog post update view</h5>
+
+<div class="row">
+    <div class="col-xl">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Update blog post form</h5>
+            </div>
+            <div class="card-body">
+                <partial name="_ResponsePartial" />
+
+                <form asp-antiforgery="true" asp-area="Admin" asp-controller="BlogPost"
+                      asp-action="Update" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Title"></label>
+                        <div class="input-group input-group-merge">
+                            <input type="hidden" asp-for="Id" />
+                            <input type="hidden" asp-for="BlogSiteId" />
+
+                            <input type="text"
+                                   asp-for="Title"
+                                   class="form-control"
+                                   placeholder="Title"
+                                   aria-label="Title"
+                                   aria-describedby="body" />
+                        </div>
+                        <div asp-for="Title" class="form-text">
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-folder2-open"></i> Categories
+                        </label>
+                        <select asp-for="Categories"
+                                class="form-control form-control-sm select2"
+                                multiple required>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Categories" class="text-danger"></span>
+                    <!-- Tags -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-tags"></i> Tags
+                        </label>
+                        <select asp-for="Tags"
+                                class="form-control form-control-sm select2-tags"
+                                multiple required>
+                        </select>
+                        <span asp-validation-for="Tags" class="text-danger"></span>
+                    </div>
+
+                    <!-- Thumbnail -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-image"></i> Thumbnail
+                        </label>
+                        <input asp-for="Thumbnail"
+                               type="file"
+                               accept="image/*"
+                               class="form-control form-control-sm">
+
+                        <div class="mt-2">
+                            <small class="text-muted d-block mb-1">Current Thumbnail</small>
+
+                            <img src="~/uploads/blogPost/@Model.ThumbnailPath"
+                                 class="img-thumbnail"
+                                 style="max-height: 150px;"
+                                 alt="Current thumbnail" />
+                            <input type="hidden" asp-for="ThumbnailPath" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-pencil-square"></i> Post Content
+                        </label>
+
+                        <div id="editorjs"
+                             class="border rounded p-2"
+                             style="min-height:300px;background:#fff">
+                        </div>
+
+                        <input type="hidden" asp-for="Body" />
+                        <span asp-validation-for="Body" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-toggle-on"></i> Status
+                        </label>
+                        <select asp-for="PostStatus"
+                                class="form-control form-control-sm" required>
+                            <option selected disabled>choose post publishing status</option>
+                            <option value="0">Draft</option>
+                            <option value="1">Publish</option>
+                        </select>
+                        <span asp-validation-for="PostStatus" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 text-center">
+                        <button type="submit" class="btn btn-primary btn-sm ">update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/editorjs@latest/dist/editor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/list@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/paragraph@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/checklist@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/code@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/inline-code@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/marker@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/underline@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/table@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/delimiter@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/warning@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-text-alignment-blocktune@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-text-color-plugin@2.0.3/dist/bundle.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            var tagsData = @Html.Raw(Json.Serialize(Model.TagsData));
+            var categoriesData = @Html.Raw(Json.Serialize(Model.CategoriesData));
+
+            var $tags = $("#Tags");
+
+            tagsData.forEach(function(tag) {
+                var option = new Option(tag.name, tag.id, true, true);
+                $tags.append(option);
+            });
+
+            $tags.trigger('change');
+
+            var categories = $("#Categories");
+
+            categoriesData.forEach(function(category) {
+                var option = new Option(category.name, category.id, true, true);
+                categories.append(option);
+            });
+
+            categories.trigger('change');
+
+            $("#Categories").select2({
+                placeholder: "search categories here..",
+                tags: true,
+                minimumInputLength: 2,
+                ajax: {
+                    url: "/Admin/Category/GetCategorySearchData",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    delay: 300,
+
+                    data: function (params) {
+                        const payload = {
+                            SearchText: params.term,
+                            BlogSiteId: $('#BlogSiteId').val()
+                        };
+
+                        return JSON.stringify(payload);
+                    },
+
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    }
+                },
+                createTag: function (params) {
+                    return {
+                        id: params.term,
+                        text: params.term,
+                        isNew: true
+                    };
+                }
+            });
+
+
+            $('#Categories').on('select2:select', function (e) {
+                const data = e.params.data;
+                if (data.isNew) {
+                    const select = $(this);
+                    $.post('/Admin/Category/Select2Create', {
+                        Name: data.text,
+                        BlogSiteId: $('#BlogSiteId').val()
+                    }, function (response) {
+                        const newOption = new Option(response.text, response.id, true, true);
+                        select.find("option[value='" + data.id + "']").remove();
+                        $('#Categories').append(newOption).trigger('change');
+                   });
+                }
+            });
+
+            $("#Tags").select2({
+                placeholder: "search tags here..",
+                tags: true,
+                minimumInputLength: 2,
+                ajax: {
+                    url: "/Admin/Tag/GetTagSearchData",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    delay: 300,
+                    data: function (params) {
+                        const payload = {
+                            SearchText: params.term,
+                            BlogSiteId: $('#BlogSiteId').val()
+                        };
+                        return JSON.stringify(payload);
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                },
+                createTag: function (params) {
+                    return {
+                        id: params.term,
+                        text: params.term,
+                        isNew: true
+                    };
+                }
+            });
+
+           $('#Tags').on('select2:select', function (e) {
+                const data = e.params.data;
+                if (data.isNew) {
+                    const select = $(this);
+                    $.post('/Admin/Tag/Select2Create', {
+                        Name: data.text,
+                        BlogSiteId: $('#BlogSiteId').val()
+                    }, function (response) {
+                        const newOption = new Option(response.text, response.id, true, true);
+                        select.find("option[value='" + data.id + "']").remove();
+                        $('#Tags').append(newOption).trigger('change');
+                   });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+           const editorData = @Html.Raw(Model.Body);
+           const editor = new EditorJS({
+                  holder : 'editorjs',
+                  autofocus: true,
+                  placeholder: 'Start typing your post...',
+                  data: editorData,
+                  tools: {
+                      alignmentTune: {
+                        class: AlignmentBlockTune,
+                        config: {
+                          default: "left",
+                          blocks: {
+                            header: 'center',
+                            list: 'left'
+                          }
+                        },
+                      },
+                      header: {
+                          class: Header,
+
+                          config: {
+                              levels: [2, 3, 4, 5, 6],
+                              defaultLevel: 3,
+                              placeholder: 'Enter a header'
+                          },
+                          inlineToolbar: ['Color','marker','bold','italic'],
+                          tunes: ['alignmentTune']
+                      },
+                      paragraph: {
+                        class: Paragraph,
+                        inlineToolbar: ['Color','marker','bold','italic'],
+                        tunes: ['alignmentTune']
+                      },
+                      list: {
+                          class: EditorjsList,
+                          inlineToolbar: true,
+                          config: {
+                              defaultStyle: 'unordered'
+                          }
+                      },
+                      code: {
+                          class: CodeTool,
+                          inlineToolbar: true
+                      },
+                      inlineCode: {
+                          class: InlineCode,
+                          inlineToolbar: true
+                      },
+                      Color: {
+                        class: window.ColorPlugin,
+                        inlineToolbar: true,
+                        config: {
+                           colorCollections: ['#EC7878','#9C27B0','#673AB7','#3F51B5','#0070FF','#03A9F4','#00BCD4','#4CAF50','#8BC34A','#CDDC39', '#FFF'],
+                           defaultColor: '#FF1300',
+                           type: 'text',
+                              icon: `<svg viewBox="0 0 32 32" width="20" height="20"><path d="M17.6,6L6.9,16.7c-0.2,0.2-0.3,0.4-0.3,0.6L6,23.9c0,0.3,0.1,0.6,0.3,0.8C6.5,24.9,6.7,25,7,25c0,0,0.1,0,0.1,0l6.6-0.6 c0.2,0,0.5-0.1,0.6-0.3L25,13.4L17.6,6z"></path><path d="M26.4,12l1.4-1.4c1.2-1.2,1.1-3.1-0.1-4.3l-3-3c-0.6-0.6-1.3-0.9-2.2-0.9c-0.8,0-1.6,0.3-2.2,0.9L19,4.6L26.4,12z"></path><path d="M28,29H4c-0.6,0-1-0.4-1-1s0.4-1,1-1h24c0.6,0,1,0.4,1,1S28.6,29,28,29z"></path></svg>`,
+                           customPicker: true
+                        }
+                      },
+                      marker: {
+                          class: window.ColorPlugin,
+                             config: {
+                              defaultColor: '#FFBF00',
+                              type: 'marker',
+                              icon: `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M18.5,2.5c-0.6-0.6-1.5-0.6-2.1,0L11.5,7.4L16.6,12.5l4.9-4.9c0.6-0.6,0.6-1.5,0-2.1L18.5,2.5z M15.2,13.9l-5.1-5.1L4.4,14.5C4.1,14.8,4,15.1,4,15.5V19c0,0.6,0.4,1,1,1h3.5c0.4,0,0.7-0.1,1-0.4L15.2,13.9z"/><rect x="3" y="21" width="18" height="2"/></svg>`,
+                              customPicker: true
+                             },
+                             inlineToolbar: true
+                      },
+                      table: {
+                             class: Table,
+                             inlineToolbar: true,
+                             config: {
+                             rows: 2,
+                             cols: 3,
+                             maxRows: 5,
+                             maxCols: 5,
+                          }
+                      },
+                      warning: {
+                        class: Warning,
+                        inlineToolbar: true,
+                        shortcut: 'CMD+SHIFT+W',
+                        config: {
+                          titlePlaceholder: 'Title',
+                          messagePlaceholder: 'Message',
+                        },
+                      },
+                      Marker: {
+                        class: Marker,
+                        shortcut: 'CMD+SHIFT+M',
+                        inlineToolbar:true
+                      },
+                      delimiter: Delimiter
+                  }
+              });
+
+              // Save editor data
+              document.querySelector('form').addEventListener('submit', async function(e){
+                  e.preventDefault();
+                  try {
+                      const data = await editor.save();
+                      document.getElementById('Body').value = JSON.stringify(data);
+                      this.submit();
+                  } catch (err){
+                      console.error('Saving failed:', err);
+                  }
+              });
+
+              document.querySelector('#editorjs').addEventListener('paste', function(e) {
+                  const text = e.clipboardData.getData('text/plain');
+                  document.execCommand('insertText', false, text);
+                  e.preventDefault();
+              });
+        });
+    </script>
+}

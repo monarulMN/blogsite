@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BlogSite.Application.Features.BlogPosts.Queries
 {
-    public class GetBlogPostsQuery : IQuery<(IList<BlogPost>, int, int)>
+    public class GetAllBlogPostsQuery : IQuery<(IList<BlogPost>, int, int)>
     {
         public int PageSize { get; set; }
         public int PageIndex { get; set; }

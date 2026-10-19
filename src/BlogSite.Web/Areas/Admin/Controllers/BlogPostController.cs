@@ -2,7 +2,12 @@
 using BlogSite.Application.Features.BlogPosts.Queries;
 using BlogSite.Domain.Entities;
 using BlogSite.Domain.Utilities;
+using BlogSite.Infrastructure.Extensions;
+using BlogSite.Web.Areas.Admin.Models;
 using BlogSite.Web.Areas.Admin.Models.BlogPost;
+using BlogSite.Web.Areas.Admin.Models.Category;
+using BlogSite.Web.Areas.Admin.Models.Tag;
+using BlogSite.Web.Codes;
 using Cortex.Mediator;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -67,6 +72,83 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                 _logger.LogError(ex, "Error occurred while fetching blog posts data");
 
                 return Json(DataTables.EmptyResult);
+            }
+        }
+
+        public async Task<IActionResult> Update(Guid id)
+        {
+            try
+            {
+                var query = new GetBlogPostQuery { Id = id };
+                var post = await _mediator.SendQueryAsync<GetBlogPostQuery, BlogPost?>(query);
+                var model = _mapper.Map<UpdateBlogPostModel>(post);
+                model.BlogSiteId = post.BlogSiteId;
+
+                model.CategoriesData = post.BlogPostCategories
+                    .Select(x => new CategoryViewModel
+                    {
+                        Id = x.Category.Id,
+                        Name = x.Category.Name
+                    }).ToList();
+
+                model.TagsData = post.BlogPostTags
+                    .Select(x => new TagViewModel
+                    {
+                        Id = x.Tag.Id,
+                        Name = x.Tag.Name
+                    }).ToList();
+
+                return View(model);
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while fetching blog post for edit with Id: {id}");
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Failed to load blogPost for updating data",
+                        Type = ResponseType.Danger
+                    });
+
+                return RedirectToAction(nameof(Index));
+
+            }
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(UpdateBlogPostModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Model state is invalid while updating blog post",
+                        Type = ResponseType.Danger
+                    });
+
+                ModelState.AddModelError("Error", "Model state not valid");
+                return View();
+            }
+
+            try
+            {
+                var command = _mapper.Map<BlogPostUpdateCommand>(model);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error occourred while updating blog post");
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Error occourred while updating blog post",
+                        Type = ResponseType.Danger
+                    });
+
+                return View(model);
             }
         }
     }
