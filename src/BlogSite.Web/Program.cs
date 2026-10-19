@@ -1,3 +1,4 @@
+using BlogSite.Application.Features.BlogPosts.Commands;
 using BlogSite.Infrastructure;
 using BlogSite.Infrastructure.Data;
 using BlogSite.Infrastructure.Extensions;
@@ -39,7 +40,7 @@ try
 
     #region Cortex Mediator Configuration
     builder.Services.AddCortexMediator(
-        new[] {typeof(Program)},
+        new[] {typeof(Program), typeof(BlogPostAddCommand)},
         options => options.AddDefaultBehaviors());
     #endregion
 

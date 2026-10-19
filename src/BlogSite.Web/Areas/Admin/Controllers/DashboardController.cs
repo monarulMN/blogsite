@@ -1,4 +1,6 @@
 ﻿using BlogSite.Application.Features.BlogSites.Queries;
+using BlogSite.Application.Features.Categories.Queries;
+using BlogSite.Application.Features.Tags.Queries;
 using BlogSite.Application.Features.Users.Queries;
 using BlogSite.Domain.Enums;
 using BlogSite.Web.Areas.Admin.Models;
@@ -17,12 +19,16 @@ namespace BlogSite.Web.Areas.Admin.Controllers
         
         public async Task<IActionResult> Index()
         {
+            var categoryQuery = new GetTotalCategoriesAdminQuery { Status = Status.Active };
+            var tagQuery = new GetTotalTagsAdminQuery { Status = Status.Active };
             var blogSiteQuery = new GetTotalBlogSiteAdminQuery { Status = Status.Active };
             var userQuery = new GetTotalUserAdminQuery { IsBlocked = false };
             var model = new DashboardModel();
 
             try
             {
+                model.TotalCategories = await _mediator.SendQueryAsync<GetTotalCategoriesAdminQuery, int>(categoryQuery);
+                model.TotalTags = await _mediator.SendQueryAsync<GetTotalTagsAdminQuery, int>(tagQuery);
                 model.TotalBlogSites = await _mediator.SendQueryAsync<GetTotalBlogSiteAdminQuery, int>(blogSiteQuery);
                 model.TotalUsers = await _mediator.SendQueryAsync<GetTotalUserAdminQuery, int>(userQuery);
                 return View(model);

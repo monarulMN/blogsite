@@ -26,7 +26,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 (
                     query.SearchText == null || 
                     x.Name.Contains(query.SearchText)
-                ) && x.Status == Domain.Enums.Status.Active,
+                ) && x.Status == Status.Active ,
                 query.SortOrder,
                 null,
                 query.PageIndex,

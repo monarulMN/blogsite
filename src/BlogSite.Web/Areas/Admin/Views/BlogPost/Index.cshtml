@@ -1,0 +1,228 @@
+﻿@{
+    ViewData["Title"] = "BlogPost list";
+}
+@section Style {
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.css" />
+}
+
+<h5 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">BlogPost /</span> Blog post list view</h5>
+
+<div class="row">
+    <div class="card">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="card-title mb-1">
+                <h5>List view</h5>
+            </div>
+        </div>
+        <div class="card-body">
+            <partial name="_ResponsePartial" />
+            <div class="table-responsive text-nowrap">
+                <table class="table table-striped table-sm" id="blogPosts">
+                    <thead>
+                        <tr>
+                            <th>Thumbnail</th>
+                            <th>Title</th>
+                            <th>Body</th>
+                            <th>Post Status</th>
+                            <th>Blog Site</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0"></tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Thumbnail</th>
+                            <th>Title</th>
+                            <th>Body</th>
+                            <th>Post Status</th>
+                            <th>Blog Site</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_DeleteCanvasPartial" />
+
+
+<div class="modal fade" id="blog-preview-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalFullTitle">Post Preview</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="blog-data"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-view">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Post Thumbnail</h5>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" class="rounded" height="250" width="350" id="post-view-img" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-html@3.4.0/build/edjsHTML.browser.min.js"></script>
+    <script>
+         $(function(){
+             $("#blogPosts").DataTable({
+                 processing: true,
+                 serverSide: true,
+                 responsive: true,
+                 lengthChange: true,
+                 autoWidth: false,
+                 layout: { topEnd:{search:{ placeholder: 'search here by title'}}},
+                 ajax:{
+                     url:'/Admin/BlogPost/GetBlogsData',
+                     type:'post',
+                     contentType:'application/json',
+                     dataType:'json',
+                     data: function(d){
+                         d.searchItem = {
+
+                         };
+
+                         return JSON.stringify(d);
+                     }
+                 },
+                 columnDefs: [
+                     {
+                         targets: 6, orderable: false,render:function(d)
+                         {
+                                     return `
+                                         <button
+                                             onclick="window.location.href='/Admin/BlogPost/Update/${d}'"
+                                             type="button"
+                                             class="btn btn-info btn-sm"
+                                             title="Edit data">
+                                             <i class="bx bx-edit"></i>
+                                         </button>
+
+                                         <button
+                                             onclick="deleteBlog('${d}')"
+                                             type="button"
+                                             data-bs-toggle="offcanvas"
+                                             data-bs-target="#offcanvasTop"
+                                             aria-controls="offcanvasTop"
+                                             class="btn btn-danger btn-sm"
+                                             title="Delete data">
+                                             <i class="bx bx-trash-alt"></i>
+                                         </button>
+                                         `;
+                         }
+                     },
+
+                     {
+                         targets: 2, orderable: false, render: function (data, type, row) {
+                                return `
+                                    <span class="badge bg-info btn-preview" data-content="${data}" style="cursor: pointer;">
+                                        <i class="bx bx-book-open"></i>
+                                    </span>
+                                `;
+                         }
+                     },
+                     {
+                         targets: 3, orderable: false
+                     },
+                     {
+                         targets: 4, orderable: false
+                     },
+                     {
+                        targets: 1, orderable: true,render:function(d)
+                        {
+                            var maxLength = 35;
+
+                            return `
+                              <p class="mb-0 text-truncate"
+                                 style="max-width:250px;cursor:pointer"
+                                 data-bs-toggle="tooltip"
+                                 title="${d.replace(/"/g, '&quot;')}">
+                                ${d.length > maxLength ? d.substring(0, maxLength) + '...' : d}
+                              </p>
+                            `;
+                        }
+                    },
+                    {
+                         targets: 0, orderable: false, render: function(d) {
+
+                                return `
+                                    <img
+                                        src="/uploads/blogPost/${d}"
+                                        class="img-thumbnail rounded"
+                                        style="width:40px; height:40px; object-fit:cover; cursor:pointer"
+                                        data-img="${d}"
+                                        onclick="thumbnailView('${d}')"
+                                    />`;
+                         }
+                     },
+                     {
+                        targets: 3,orderable: true,render:function(d)
+                        {
+                            if (d == "Draft") {
+                                return `<span class="badge bg-danger">${d}</span>`;
+                            }
+                            return `<span class="badge bg-success">${d}</span>`;
+                        }
+                    }
+                 ]
+             });
+         });
+
+
+         function deleteBlog(d){
+             $("#alert-message").html("Are you sure you want to delete this post? This action is <strong>permanent</strong> and cannot be undone!");
+             $("#delete-id").val(d);
+             $('#delete-form').attr('action', '/admin/blogpost/delete');
+         }
+
+        $('#delete-button-submit-button').click(function(){
+            $('#delete-form').submit();
+        });
+
+               
+        $('#blogPosts').on('click', '.btn-preview', function() {
+            let content = $(this).data('content');
+            preview(content);
+        });
+
+        
+        function preview(data){
+            const parsed = edjsHTML().parse(data);
+            $('#blog-data').html(parsed);
+            $('#blog-preview-modal').modal('show');
+        }
+
+        function thumbnailView(data){
+            $("#post-view-img").attr('src',`/uploads/blogPost/${data}`);
+            $("#modal-view").modal("show");
+        }
+    </script>
+}
