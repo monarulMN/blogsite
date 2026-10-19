@@ -40,7 +40,7 @@ namespace BlogSite.Web.Areas.Admin.Models.BlogPost
         public List<TagViewModel> TagsData { get; set; } = new();
 
 
-        public async Task<string?> SaveImageFile(IWebHostEnvironment environment)
+        public async Task<string?> SaveImageFileAsync(IWebHostEnvironment environment)
         {
             if(Thumbnail is not null)
             {

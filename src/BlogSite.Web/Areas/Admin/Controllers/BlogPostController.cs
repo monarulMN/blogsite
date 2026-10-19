@@ -1,4 +1,5 @@
 ﻿using BlogSite.Application.Contracts;
+using BlogSite.Application.Features.BlogPosts.Commands;
 using BlogSite.Application.Features.BlogPosts.Queries;
 using BlogSite.Domain.Entities;
 using BlogSite.Domain.Utilities;
@@ -20,12 +21,14 @@ namespace BlogSite.Web.Areas.Admin.Controllers
     public class BlogPostController(IMediator mediator,
         IMapper mapper,
         ILogger<BlogPostController> logger,
-        IServerTime serverTime) : Controller
+        IServerTime serverTime,
+        IWebHostEnvironment environment) : Controller
     {
         private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BlogPostController> _logger = logger;
         private readonly IServerTime _serverTime = serverTime;
+        private readonly IWebHostEnvironment _environment = environment;
 
         public IActionResult Index()
         {
@@ -42,7 +45,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                 query.SearchText = model.Search.Value;
                 query.SortOrder = model.FormatSortExpression("ThumbnailPath", "Title", "Body", "PostStatus", "BlogSite", "CreatedAt");
 
-                var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetBlogPostsAdminQuery, 
+                var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetBlogPostsAdminQuery,
                     (IList<BlogPost>, int, int)>(query);
 
                 var blogs = new
@@ -67,7 +70,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
 
                 return Json(blogs);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while fetching blog posts data");
 
@@ -101,7 +104,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                 return View(model);
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while fetching blog post for edit with Id: {id}");
 
@@ -136,8 +139,26 @@ namespace BlogSite.Web.Areas.Admin.Controllers
             try
             {
                 var command = _mapper.Map<BlogPostUpdateCommand>(model);
+
+                if (model.Thumbnail is not null)
+                {
+                    command.ThumbnailPath = await model.SaveImageFileAsync(_environment);
+                }
+
+                command.UpdatedAt = _serverTime.DateTime;
+                await _mediator.SendCommandAsync<BlogPostUpdateCommand, BlogPost>(command);
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Blog post updated successfully ",
+                        Type = ResponseType.Success
+                    });
+
+                return RedirectToAction(nameof(Index));
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occourred while updating blog post");
 
@@ -150,6 +171,40 @@ namespace BlogSite.Web.Areas.Admin.Controllers
 
                 return View(model);
             }
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                var deleteCommand = new BlogPostDeleteCommand { Id = id };
+                var deleteId = await _mediator.SendCommandAsync<BlogPostDeleteCommand, Guid>(deleteCommand);
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Blog post deleted successfully",
+                        Type = ResponseType.Success
+                    });
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to delete post with id: {id}");
+
+                ModelState.AddModelError("Error", "Failed to delete post");
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Failed to delete post",
+                        Type = ResponseType.Danger
+                    });
+
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
