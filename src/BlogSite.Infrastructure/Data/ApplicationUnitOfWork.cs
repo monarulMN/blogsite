@@ -15,6 +15,8 @@ namespace BlogSite.Infrastructure.Data
         public ITagRepository TagRepository { get; private set; }
         public IBlogPostRepository BlogPostRepository { get; private set; }
 
+        public ISqlUtility SqlUtility { get; private set; }
+
         public ApplicationUnitOfWork(ApplicationDbContext dbContext,
             IUserRepository userRepository,
             IBlogSiteRepository blogSiteRepository,
@@ -22,6 +24,7 @@ namespace BlogSite.Infrastructure.Data
             ITagRepository tagRepository,
             IBlogPostRepository blogPostRepository) : base(dbContext)
         {
+            SqlUtility = new SqlUtility(dbContext.Database.GetDbConnection());
             UserRepository = userRepository;
             BlogSiteRepository = blogSiteRepository;
             CategoryRepository = categoryRepository;

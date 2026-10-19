@@ -1,6 +1,7 @@
 ﻿using BlogSite.Application.Contracts;
 using BlogSite.Application.Features.BlogPosts.Commands;
 using BlogSite.Application.Features.BlogPosts.Queries;
+using BlogSite.Domain.Dtos;
 using BlogSite.Domain.Entities;
 using BlogSite.Domain.Utilities;
 using BlogSite.Infrastructure.Extensions;
@@ -205,6 +206,52 @@ namespace BlogSite.Web.Areas.Admin.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult AdvanceSearch()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetBlogsDataAdvanceSearch([FromBody] BlogPostListModel model)
+        {
+            try
+            {
+                var query = new GetBlogPostsAdvanceSearchQuery
+                {
+                    PageIndex = model.PageIndex,
+                    PageSize = model.PageSize,
+                    Title = model.SearchItem.Title,
+                    DateFrom = model.SearchItem.DateFrom,
+                    DateTo = model.SearchItem.DateTo,
+                    SortOrder = model.FormatSortExpression("Title", "Body", "CreatedAt")
+                };
+
+                var (blogPosts, total, totalDisplay) = await _mediator.SendQueryAsync<GetBlogPostsAdvanceSearchQuery,
+                    (IList<BlogPostDto>, int, int)>(query);
+
+                var posts = new
+                {
+                    recordsTotal = total,
+                    recordsFiltered = totalDisplay,
+                    data = (from post in blogPosts
+                            select new string[]
+                    {
+                        HttpUtility.HtmlEncode(post.Title),
+                        HttpUtility.HtmlEncode(post.Body),
+                        HttpUtility.HtmlEncode(post.CreatedAt),
+                        post.Id.ToString()
+                    }).ToArray()
+                };
+
+                return Json(posts);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error occourred while getting post data.");
+                return Json(DataTables.EmptyResult);
+            }
         }
     }
 }
