@@ -11,7 +11,10 @@ namespace BlogSite.Application.Contracts.Repositories
         Task<int> GetCountAsync(bool isBlocked, CancellationToken cancellationToken);
         Task<(IList<User> data, int total, int totalDisplay)> GetPagedBlockedUsersAsync(GetAllBlockedUsersQuery query, 
             CancellationToken cancellationToken);
-        Task<(IList<User> data, int total, int totalDisplay)> GetPagedUsersAsync(GetAllUsersByPagingQuery query, 
+        Task<(IList<User> data, int total, int totalDisplay)> GetPagedUsersAsync(int pageIndex, 
+            int pageSize, 
+            string? searchText, 
+            string? sortOrder, 
             CancellationToken cancellationToken);
     }
 }

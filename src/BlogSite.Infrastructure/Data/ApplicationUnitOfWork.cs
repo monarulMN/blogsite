@@ -17,12 +17,15 @@ namespace BlogSite.Infrastructure.Data
 
         public ISqlUtility SqlUtility { get; private set; }
 
+        public IMessageRepository MessageRepository { get; set; }
+
         public ApplicationUnitOfWork(ApplicationDbContext dbContext,
             IUserRepository userRepository,
             IBlogSiteRepository blogSiteRepository,
             ICategoryRepository categoryRepository,
             ITagRepository tagRepository,
-            IBlogPostRepository blogPostRepository) : base(dbContext)
+            IBlogPostRepository blogPostRepository,
+            IMessageRepository messageRepository) : base(dbContext)
         {
             SqlUtility = new SqlUtility(dbContext.Database.GetDbConnection());
             UserRepository = userRepository;
@@ -30,6 +33,7 @@ namespace BlogSite.Infrastructure.Data
             CategoryRepository = categoryRepository;
             TagRepository = tagRepository;
             BlogPostRepository = blogPostRepository;
+            MessageRepository = messageRepository;
         }
     }
 }

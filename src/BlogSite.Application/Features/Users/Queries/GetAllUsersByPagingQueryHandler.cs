@@ -20,7 +20,11 @@ namespace BlogSite.Application.Features.Users.Queries
         public async Task<(IList<User> data, int total, int totalDisplay)> Handle(GetAllUsersByPagingQuery query,
             CancellationToken cancellationToken)
         {
-            return await _applicationUnitOfWork.UserRepository.GetPagedUsersAsync(query, cancellationToken);
+            return await _applicationUnitOfWork.UserRepository.GetPagedUsersAsync(query.PageSize,
+                query.PageIndex,
+                query.SortOrder,
+                query.SearchText,
+                cancellationToken);
         }
     }
 }

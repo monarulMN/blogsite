@@ -16,11 +16,11 @@ namespace BlogSite.Infrastructure.Extensions
             // Add your infrastructure services here
             services.AddScoped<IApplicationUnitOfWork, ApplicationUnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
-            //services.AddScoped<ISqlUtility, SqlUtility>();
             services.AddScoped<IBlogSiteRepository, BlogSiteRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
 
             services.AddSingleton<IServerTime, ServerTime>();
 

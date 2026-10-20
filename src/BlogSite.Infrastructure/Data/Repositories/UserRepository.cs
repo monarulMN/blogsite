@@ -50,22 +50,23 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 cancellationToken);
         }
 
-        public async Task<(IList<User> data, int total, int totalDisplay)> GetPagedUsersAsync(GetAllUsersByPagingQuery query, 
+        public async Task<(IList<User> data, int total, int totalDisplay)> GetPagedUsersAsync(int pageIndex, 
+            int pageSize, 
+            string? sortOrder,
+            string? searchText,
             CancellationToken cancellationToken)
         {
-            return ((IList<User> data, int total, int totalDisplay))await GetDynamicAsync(
-                x => (string.IsNullOrWhiteSpace(query.SearchText) ||
-                      x.Email.Contains(query.SearchText) ||
-                      (x.UserName != null &&
-                       x.UserName.Contains(query.SearchText)))
-                     && x.IsBlocked == true,
+            var result = await GetDynamicAsync(pageIndex: pageIndex,
+                pageSize: pageSize,
+                orderBy: sortOrder,
+                filter: x =>
+                    (x.Email.Contains(searchText)) &&
+                    x.IsBlocked != true,
+                include: x =>
+                    x.Include(p => p.BlogSite));
 
-                query.SortOrder,
-                u => u.Include(q => q.BlogSite),
-                query.PageIndex,
-                query.PageSize,
-                true,
-                cancellationToken);
+            IList<User> users = _mapper.Map<IList<User>>(result.data);
+            return (users, result.total, result.totalDisplay);
         }
     }
 }
