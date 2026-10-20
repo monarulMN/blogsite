@@ -190,6 +190,43 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.Message", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("RecipientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("UserType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId", "RecipientId");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Tag", b =>
                 {
                     b.Property<Guid>("Id")
@@ -593,6 +630,21 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.Navigation("Blogsite");
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.Message", b =>
+                {
+                    b.HasOne("BlogSite.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany("ReceivedMessages")
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BlogSite.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany("SentMessages")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("BlogSite.Infrastructure.Identity.ApplicationRole", null)
@@ -671,6 +723,10 @@ namespace BlogSite.Infrastructure.Data.Migrations
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("BlogSite");
+
+                    b.Navigation("ReceivedMessages");
+
+                    b.Navigation("SentMessages");
                 });
 #pragma warning restore 612, 618
         }

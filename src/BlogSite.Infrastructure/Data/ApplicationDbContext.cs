@@ -22,6 +22,7 @@ namespace BlogSite.Infrastructure.Data
 
         public DbSet<BlogPostCategory> BlogPostCategories { get; set; }
         public DbSet<BlogPostTag> BlogPostTags { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -166,6 +167,31 @@ namespace BlogSite.Infrastructure.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
+
+            builder.Entity<Message>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Text)
+                    .IsRequired()
+                    .HasMaxLength(2000);
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired();
+
+                entity.HasOne<ApplicationUser>()
+                    .WithMany(u => u.SentMessages)
+                    .HasForeignKey(m => m.SenderId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne<ApplicationUser>()
+                    .WithMany(u => u.ReceivedMessages)
+                    .HasForeignKey(m => m.RecipientId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(m => new { m.SenderId, m.RecipientId });
+                entity.HasIndex(m => m.CreatedAt);
+            });
 
             base.OnModelCreating(builder);
             // Seed roles
