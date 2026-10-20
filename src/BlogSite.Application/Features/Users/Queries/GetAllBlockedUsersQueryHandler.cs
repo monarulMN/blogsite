@@ -19,7 +19,11 @@ namespace BlogSite.Application.Features.Users.Queries
         public async Task<(IList<User> data, int total, int totalDisplay)> Handle(GetAllBlockedUsersQuery query, 
             CancellationToken cancellationToken)
         {
-            return await _applicationUnitOfWork.UserRepository.GetPagedBlockedUsersAsync(query, cancellationToken);
+            return await _applicationUnitOfWork.UserRepository.GetPagedBlockedUsersAsync(query.PageSize,
+                query.PageIndex,
+                query.SortOrder,
+                query.SearchText,
+                cancellationToken);
         }
     }
 }

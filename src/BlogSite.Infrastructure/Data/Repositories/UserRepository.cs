@@ -4,6 +4,7 @@ using BlogSite.Application.Features.Users.Queries;
 using BlogSite.Domain.Entities;
 using BlogSite.Infrastructure.Identity;
 using MapsterMapper;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -32,22 +33,25 @@ namespace BlogSite.Infrastructure.Data.Repositories
             return await _dbContext.Users.Where(x => x.IsBlocked == isBlocked).CountAsync();
         }
 
-        public async Task<(IList<User> data, int total, int totalDisplay)> GetPagedBlockedUsersAsync(GetAllBlockedUsersQuery query, 
+        public async Task<(IList<User> data, int total, int totalDisplay)> GetPagedBlockedUsersAsync(int pageIndex,
+            int pageSize,
+            string? sortOrder,
+            string? searchText,
             CancellationToken cancellationToken)
         {
-            return ((IList<User> data, int total, int totalDisplay))await GetDynamicAsync(
-                x => (string.IsNullOrWhiteSpace(query.SearchText) ||
-                      x.Email.Contains(query.SearchText) ||
-                      (x.UserName != null &&
-                       x.UserName.Contains(query.SearchText)))
-                     && x.IsBlocked == true,
+            var result = await GetDynamicAsync(pageIndex: pageIndex, 
+                pageSize: pageSize, 
+                orderBy: sortOrder, 
+                filter: x => 
+                    (x.Email.Contains(searchText) || 
+                    x.UserName.Contains(searchText)) 
+                    && x.IsBlocked != true, 
+                include: x => 
+                    x.Include(p => p.BlogSite));
 
-                query.SortOrder,
-                u => u.Include(q => q.BlogSite),
-                query.PageIndex,
-                query.PageSize,
-                true,
-                cancellationToken);
+            IList<User> users = _mapper.Map<IList<User>>(result.data);
+
+            return (users, result.total, result.totalDisplay);
         }
 
         public async Task<(IList<User> data, int total, int totalDisplay)> GetPagedUsersAsync(int pageIndex, 
@@ -66,6 +70,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     x.Include(p => p.BlogSite));
 
             IList<User> users = _mapper.Map<IList<User>>(result.data);
+
             return (users, result.total, result.totalDisplay);
         }
     }
