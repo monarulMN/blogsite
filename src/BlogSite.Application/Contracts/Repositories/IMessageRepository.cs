@@ -8,5 +8,6 @@ namespace BlogSite.Application.Contracts.Repositories
 {
     public interface IMessageRepository : IRepository<Message, Guid>
     {
+        Task<IList<Message>> GetUserMessagesAsync(Guid id);
     }
 }
