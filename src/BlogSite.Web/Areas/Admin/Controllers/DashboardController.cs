@@ -1,4 +1,5 @@
-﻿using BlogSite.Application.Features.BlogSites.Queries;
+﻿using BlogSite.Application.Features.BlogPosts.Queries;
+using BlogSite.Application.Features.BlogSites.Queries;
 using BlogSite.Application.Features.Categories.Queries;
 using BlogSite.Application.Features.Tags.Queries;
 using BlogSite.Application.Features.Users.Queries;
@@ -19,6 +20,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
         
         public async Task<IActionResult> Index()
         {
+            var blogPostQuery = new GetTotalBlogPostAdminQuery { Status = Status.Active };
             var categoryQuery = new GetTotalCategoriesAdminQuery { Status = Status.Active };
             var tagQuery = new GetTotalTagsAdminQuery { Status = Status.Active };
             var blogSiteQuery = new GetTotalBlogSiteAdminQuery { Status = Status.Active };
@@ -27,6 +29,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
 
             try
             {
+                model.TotalPosts = await _mediator.SendQueryAsync<GetTotalBlogPostAdminQuery, int>(blogPostQuery);
                 model.TotalCategories = await _mediator.SendQueryAsync<GetTotalCategoriesAdminQuery, int>(categoryQuery);
                 model.TotalTags = await _mediator.SendQueryAsync<GetTotalTagsAdminQuery, int>(tagQuery);
                 model.TotalBlogSites = await _mediator.SendQueryAsync<GetTotalBlogSiteAdminQuery, int>(blogSiteQuery);
