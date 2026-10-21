@@ -227,6 +227,33 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.ToTable("Messages");
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.Report", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BlogPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReportText")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogPostId");
+
+                    b.ToTable("Reports");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Tag", b =>
                 {
                     b.Property<Guid>("Id")
@@ -645,6 +672,17 @@ namespace BlogSite.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.Report", b =>
+                {
+                    b.HasOne("BlogSite.Domain.Entities.BlogPost", "BlogPost")
+                        .WithMany("Reports")
+                        .HasForeignKey("BlogPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlogPost");
+                });
+
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("BlogSite.Infrastructure.Identity.ApplicationRole", null)
@@ -701,6 +739,8 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.Navigation("BlogPostCategories");
 
                     b.Navigation("BlogPostTags");
+
+                    b.Navigation("Reports");
                 });
 
             modelBuilder.Entity("BlogSite.Domain.Entities.Blogsite", b =>

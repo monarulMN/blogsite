@@ -23,6 +23,7 @@ namespace BlogSite.Infrastructure.Data
         public DbSet<BlogPostCategory> BlogPostCategories { get; set; }
         public DbSet<BlogPostTag> BlogPostTags { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Report> Reports { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -191,6 +192,23 @@ namespace BlogSite.Infrastructure.Data
 
                 entity.HasIndex(m => new { m.SenderId, m.RecipientId });
                 entity.HasIndex(m => m.CreatedAt);
+            });
+
+            builder.Entity<Report>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ReportText)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+
+                entity.Property(x => x.BlogPostId)
+                    .IsRequired();
+
+                entity.HasOne(x => x.BlogPost)
+                    .WithMany(x => x.Reports)
+                    .HasForeignKey(x => x.BlogPostId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             base.OnModelCreating(builder);
