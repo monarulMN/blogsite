@@ -21,6 +21,7 @@ namespace BlogSite.Infrastructure.Extensions
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IBlogPostRepository, BlogPostRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IReportRepository, ReportRepository>();
 
             services.AddSingleton<IServerTime, ServerTime>();
 

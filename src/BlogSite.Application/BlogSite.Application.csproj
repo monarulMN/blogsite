@@ -17,6 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Reports\Commands\" />
+    <Folder Include="Features\Reports\Queries\" />
     <Folder Include="Features\Users\Commands\" />
   </ItemGroup>
 

@@ -15,5 +15,6 @@ namespace BlogSite.Application.Contracts
         public ITagRepository TagRepository { get; }
         public IBlogPostRepository BlogPostRepository { get; }
         public IMessageRepository MessageRepository { get; set; }
+        public IReportRepository ReportRepository { get; set; }
     }
 }
