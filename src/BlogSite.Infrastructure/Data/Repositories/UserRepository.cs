@@ -16,7 +16,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
     {
         private readonly IMapper _mapper;
         private readonly IServerTime _serverTime;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _applicationDbContext;
 
         public UserRepository(ApplicationDbContext dbContext,
             IMapper mapper,
@@ -25,12 +25,12 @@ namespace BlogSite.Infrastructure.Data.Repositories
         {
             _mapper = mapper;
             _serverTime = serverTime;
-            _dbContext = dbContext;
+            _applicationDbContext = dbContext;
         }
 
         public async Task<int> GetCountAsync(bool isBlocked, CancellationToken cancellationToken)
         {
-            return await _dbContext.Users.Where(x => x.IsBlocked == isBlocked).CountAsync();
+            return await _applicationDbContext.Users.Where(x => x.IsBlocked == isBlocked).CountAsync();
         }
 
         public async Task<(IList<User> data, int total, int totalDisplay)> GetPagedBlockedUsersAsync(int pageIndex,
@@ -45,7 +45,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 filter: x => 
                     (x.Email.Contains(searchText) || 
                     x.UserName.Contains(searchText)) 
-                    && x.IsBlocked != true, 
+                    && x.IsBlocked == true, 
                 include: x => 
                     x.Include(p => p.BlogSite));
 
@@ -64,7 +64,8 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 pageSize: pageSize,
                 orderBy: sortOrder,
                 filter: x =>
-                    (x.Email.Contains(searchText)) &&
+                    (x.Email.Contains(searchText) ||
+                    x.UserName.Contains(searchText)) &&
                     x.IsBlocked != true,
                 include: x =>
                     x.Include(p => p.BlogSite));
