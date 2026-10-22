@@ -33,10 +33,7 @@
     <Folder Include="Areas\Blogger\Data\" />
     <Folder Include="Areas\Blogger\Models\" />
     <Folder Include="Areas\Blogger\Views\" />
-    <Folder Include="Areas\Reader\Controllers\" />
     <Folder Include="Areas\Reader\Data\" />
-    <Folder Include="Areas\Reader\Models\" />
-    <Folder Include="Areas\Reader\Views\" />
     <Folder Include="Logs\" />
   </ItemGroup>
 

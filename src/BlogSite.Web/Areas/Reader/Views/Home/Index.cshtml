@@ -1,0 +1,302 @@
+﻿
+@model PublicPagesBuilderModel
+
+
+@{
+    ViewData["Title"] = " Human stories & ideas";
+}
+
+@{
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    ApplicationUser? user = null;
+
+    if (isSignedIn)
+    {
+        user = await UserManager.GetUserAsync(User);
+    }
+}
+
+@section Styles {
+    <link href="~/css/chat-style.css" rel="stylesheet">
+    <style>
+        /* Content Grid Layout */
+        .content-grid {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        /* Left Sidebar */
+        .left-sidebar {
+            width: 250px;
+            flex-shrink: 0;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 250px;
+            flex-shrink: 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            min-width: 0; /* prevents flexbox overflow */
+        }
+
+        /* Tag Buttons */
+        .tag-button {
+            display: block;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Centered Loading Spinner */
+        #loading {
+            position: fixed; /* fixed in window center */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            padding: 1em 2em;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 9999;
+        }
+
+        .empty-box {
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        /* Remove flick / extra scroll */
+        html, body {
+            overflow-x: hidden;
+        }
+    </style>
+}
+
+@if (!isSignedIn || (user != null && !user.HasBlog))
+{
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <h2>Discover stories that matter to you, curated based on your interests</h2>
+        <a asp-controller="Blog"
+           asp-area="Blogger"
+           asp-action="Index"
+           class="btn-start-blog"
+           style="text-decoration:none">
+            <i class="bi bi-pencil-square me-2"></i>Start Your Own Blog
+        </a>
+    </div>
+}
+
+<!-- Content Grid -->
+<div class="content-grid">
+    <!-- Left Sidebar -->
+    <aside class="left-sidebar">
+        <h3 class="sidebar-title">
+            <i class="bi bi-tags-fill"></i>Tags
+        </h3>
+        <div class="tag-grid">
+            <button class="tag-button active full-width">All Posts</button>
+            @foreach (var tag in Model.Tags)
+            {
+                <button class="tag-button" data-tagid="@tag.Id">@tag.Name <span class="badge bg-info">@tag.PostCount</span></button>
+            }
+        </div>
+    </aside>
+
+    <!-- Main Content - Blog Posts -->
+    <main class="main-content" id="post-container"></main>
+    <div id="loading" style="display:none; text-align:center;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Right Sidebar - Blogs to Follow -->
+    <aside class="right-sidebar">
+        <div class="sidebar-section">
+            @foreach (var site in Model.BlogSites)
+            {
+                <div class="blog-item">
+                    <div class="blog-details">
+                        <div class="blog-name">@site.Name</div>
+                        <button class="btn-follow-small" onclick="window.location.href='/blog/@site.Slug'">Visit</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </aside>
+</div>
+
+@if (isSignedIn && SignInManager.IsSignedIn(User))
+{
+    <input type="hidden" id="userId" value="@UserManager.GetUserId(User)" />
+    <partial name="_ChatViewPartial" />
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/chat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-html@3.4.0/build/edjsHTML.browser.min.js"></script>
+    <script>
+        let page = 1;
+        let isLoading = false;
+        let hasMore = true;
+        let currentTagId = null;
+
+        $(document).ready(function () {
+            loadPosts();
+
+            
+            $(window).on('scroll', function () {
+                if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+                    if (!isLoading && hasMore) {
+                        page++;
+                        loadPosts();
+                    }
+                }
+            });
+
+            // Tag click
+            $(".tag-button").on("click", function () {
+                $(".tag-button").removeClass("active");
+                $(this).addClass("active");
+
+                const tagId = $(this).data("tagid"); // We'll set data-tagid
+                if(tagId){
+                    currentTagId = tagId;
+                    page = 1;
+                    hasMore = true;
+                    $("#post-container").html('');
+                    loadPosts();
+                } else {
+                    // All Posts
+                    currentTagId = null;
+                    page = 1;
+                    hasMore = true;
+                    $("#post-container").html('');
+                    loadPosts();
+                }
+            });
+        });
+
+        function loadPosts() {
+            isLoading = true;
+            $("#loading").show();
+
+            let url = '';
+            let requestData = { page: page };
+
+            if (currentTagId) {
+                url = '/reader/home/GetPostByTag';
+                requestData.tagId = currentTagId;
+            } else {
+                url = '/reader/home/loadmore';
+            }
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: requestData,
+                success: function (response) {
+
+                    if (!response.data || response.data.length === 0) {
+                        hasMore = false;
+                        if (page === 1) {
+                            $("#post-container").html(`<div class="empty-box">
+                                <i class="bi bi-emoji-frown empty-icon"></i>
+                                <h4>No posts found.</h4>
+                                <p>Check back later or explore other tags.</p>
+                            </div>`);
+                        }
+                    } else {
+                        response.data.forEach(function (post) {
+                            renderPost(post);
+                        });
+                        hasMore = response.hasMore;
+                    }
+
+                    isLoading = false;
+                    $("#loading").hide();
+                },
+                error: function () {
+                    isLoading = false;
+                    $("#loading").hide();
+                }
+            });
+        }
+
+        function renderPost(post) {
+            let tagsHtml = '';
+            if (post.tags) {
+                post.tags.forEach(function (tag) {
+                    tagsHtml += `<a href="#" class="post-tag-inline">${tag.name}</a>`;
+                });
+            }
+
+            let parsedText = '';
+            if (post.body) {
+                try {
+                    const bodyObj = JSON.parse(post.body);
+                    const html = edjsHTML().parse(bodyObj).join('');
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    parsedText = temp.textContent || temp.innerText || '';
+                } catch {
+                    parsedText = post.body;
+                }
+            }
+
+            const html = `
+                <article class="blog-post">
+                    <div class="post-content">
+                        <div class="author-info">
+                            <img src="/img/c.jpg" class="author-avatar-small">
+                            <div class="author-details">
+                                <a href='/blog/${post.authorSlag}' style="text-decoration: none;">
+                                    <span class="author-name">${post.author}</span>
+                                </a>
+                                <span class="post-date">• ${formatDate(post.createdAt)}</span>
+                            </div>
+                        </div>
+
+                        <a href="/blog/post/${post.id}" style="text-decoration:none">
+                            <h2 class="post-title">${post.title ?? ''}</h2>
+                        </a>
+
+                        <p style="text-align: justify; line-height: 1.6; margin: 0.5em 0;">
+                            ${truncate(parsedText, 200)}
+                        </p>
+
+                        <div class="post-footer">
+                            ${tagsHtml}
+                        </div>
+                    </div>
+
+                    <img src="/uploads/blogPost/${post.thumbnailPath}" class="post-image">
+                </article>
+            `;
+
+            $("#post-container").append(html);
+        }
+
+        function truncate(text, max) {
+            if (!text) return '';
+            return text.length > max ? text.substring(0, max) + "..." : text;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+    </script>
+}
