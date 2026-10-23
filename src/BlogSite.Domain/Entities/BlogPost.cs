@@ -25,5 +25,6 @@ namespace BlogSite.Domain.Entities
             = new List<BlogPostTag>();
 
         public IList<Report> Reports { get; set; } = new List<Report>();
+        public IList<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

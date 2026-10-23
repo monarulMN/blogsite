@@ -25,6 +25,7 @@ namespace BlogSite.Infrastructure.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<Library> Libraries { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -235,6 +236,40 @@ namespace BlogSite.Infrastructure.Data
 
                 entity.HasIndex(x => new { x.ApplicationUserId, x.BlogPostId })
                     .IsUnique();
+            });
+
+            builder.Entity<Comment>(builder =>
+            {
+                builder.HasKey(c => c.Id);
+
+                builder.Property(c => c.Name)
+                    .IsRequired()
+                    .HasMaxLength(150);
+
+                builder.Property(c => c.Email)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                builder.Property(c => c.Text)
+                    .IsRequired()
+                    .HasMaxLength(2000);
+
+                builder.Property(c => c.Status)
+                    .IsRequired()
+                    .HasConversion<int>();
+
+                builder.HasOne(c => c.BlogPost)
+                    .WithMany(b => b.Comments)
+                    .HasForeignKey(c => c.BlogPostId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasOne(c => c.ParentComment)
+                    .WithMany(c => c.Replies)
+                    .HasForeignKey(c => c.ParentCommentId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                builder.Property(c => c.ParentCommentId)
+                    .IsRequired(false);
             });
 
             base.OnModelCreating(builder);

@@ -190,6 +190,51 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BlogPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BlogSiteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogPostId");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Library", b =>
                 {
                     b.Property<Guid>("Id")
@@ -685,6 +730,24 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.Navigation("Blogsite");
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.Comment", b =>
+                {
+                    b.HasOne("BlogSite.Domain.Entities.BlogPost", "BlogPost")
+                        .WithMany("Comments")
+                        .HasForeignKey("BlogPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlogSite.Domain.Entities.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BlogPost");
+
+                    b.Navigation("ParentComment");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Library", b =>
                 {
                     b.HasOne("BlogSite.Domain.Entities.BlogPost", "BlogPost")
@@ -779,6 +842,8 @@ namespace BlogSite.Infrastructure.Data.Migrations
 
                     b.Navigation("BlogPostTags");
 
+                    b.Navigation("Comments");
+
                     b.Navigation("Reports");
                 });
 
@@ -792,6 +857,11 @@ namespace BlogSite.Infrastructure.Data.Migrations
             modelBuilder.Entity("BlogSite.Domain.Entities.Category", b =>
                 {
                     b.Navigation("BlogPostCategories");
+                });
+
+            modelBuilder.Entity("BlogSite.Domain.Entities.Comment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("BlogSite.Domain.Entities.Tag", b =>
