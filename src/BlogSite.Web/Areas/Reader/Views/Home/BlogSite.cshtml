@@ -1,0 +1,1089 @@
+﻿@model BlogSiteViewModel
+
+@{
+    Layout = "";
+}
+
+@{
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    ApplicationUser? user = null;
+
+    if (isSignedIn)
+    {
+        user = await UserManager.GetUserAsync(User);
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Model.Name - Personal Blog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+            :root {
+                --primary-color: #6366f1;
+                --secondary-color: #8b5cf6;
+                --accent-color: #ec4899;
+                --dark-text: #242424;
+                --light-text: #6B6B6B;
+                --border-color: #e5e7eb;
+                --sidebar-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                background-color: #f9fafb;
+                color: var(--dark-text);
+            }
+
+            /* Header */
+            .main-header {
+                background: white;
+                border-bottom: 1px solid var(--border-color);
+                padding: 16px 0;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            .site-name {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: var(--dark-text);
+                cursor: pointer;
+            }
+
+                .site-name i {
+                    color: var(--primary-color);
+                    margin-right: 8px;
+                }
+
+            .main-nav {
+                display: flex;
+                align-items: center;
+                gap: 32px;
+            }
+
+            .nav-item {
+                position: relative;
+                font-size: 1rem;
+                font-weight: 500;
+                color: var(--dark-text);
+                cursor: pointer;
+                padding: 8px 0;
+                transition: color 0.3s;
+            }
+
+                .nav-item:hover {
+                    color: var(--primary-color);
+                }
+
+                .nav-item.active {
+                    color: var(--primary-color);
+                }
+
+            .dropdown {
+                position: relative;
+            }
+
+            .dropdown-menu-custom {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background: white;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                min-width: 200px;
+                margin-top: 8px;
+                padding: 8px 0;
+                z-index: 1001;
+            }
+
+            .dropdown-menu-custom {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background: white;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+                min-width: 220px;
+                margin-top: 10px;
+                padding: 8px 0;
+                z-index: 1001;
+            }
+
+            .dropdown-item-custom {
+                padding: 12px 20px;
+                color: var(--dark-text);
+                cursor: pointer;
+                transition: all 0.2s;
+                font-size: 0.95rem;
+            }
+
+                .dropdown-item-custom:hover {
+                    background: #f9fafb;
+                    color: var(--primary-color);
+                }
+
+            /* Hero Banner */
+            .hero-banner {
+                background: var(--sidebar-bg);
+                padding: 40px;
+                text-align: center;
+                color: white;
+                margin-bottom: 30px;
+                border-radius: 12px;
+            }
+
+                .hero-banner h2 {
+                    font-size: 1.5rem;
+                    margin-bottom: 20px;
+                    font-weight: 600;
+                }
+
+            .btn-start-blog {
+                background: var(--accent-color);
+                color: white;
+                border: none;
+                padding: 12px 35px;
+                border-radius: 25px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+                box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+            }
+
+                .btn-start-blog:hover {
+                    background: #db2777;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
+                }
+
+            /* Main Layout */
+            .main-container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 30px 20px;
+            }
+
+            .content-grid {
+                display: grid;
+                grid-template-columns: 300px 1fr;
+                gap: 30px;
+            }
+
+            /* Left Sidebar - Your Interests */
+            .left-sidebar {
+                background: var(--sidebar-bg);
+                padding: 30px 24px;
+                border-radius: 12px;
+                height: fit-content;
+                position: sticky;
+                top: 100px;
+            }
+
+            .sidebar-title {
+                color: white;
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-bottom: 24px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .tag-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .tag-button {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                padding: 12px 16px;
+                border-radius: 12px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 500;
+                transition: all 0.3s;
+                text-align: center;
+                backdrop-filter: blur(10px);
+            }
+
+                .tag-button:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                    border-color: rgba(255, 255, 255, 0.5);
+                    transform: translateY(-2px);
+                }
+
+                .tag-button.active {
+                    background: white;
+                    color: var(--primary-color);
+                    border-color: white;
+                    font-weight: 600;
+                }
+
+                .tag-button.full-width {
+                    grid-column: span 2;
+                }
+
+            /* Main Content - Blog Posts */
+            .main-content {
+                background: white;
+                border-radius: 12px;
+                padding: 0;
+                min-height: 500px;
+            }
+
+            /* Blog Post Card */
+            .blog-post {
+                padding: 28px 32px;
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                gap: 24px;
+                transition: background 0.2s;
+                cursor: pointer;
+            }
+
+                .blog-post:hover {
+                    background: #f9fafb;
+                }
+
+                .blog-post:last-child {
+                    border-bottom: none;
+                }
+
+            .post-content {
+                flex: 1;
+            }
+
+            .author-info {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .author-avatar-small {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+
+            .author-details {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.875rem;
+            }
+
+            .author-name {
+                font-weight: 600;
+                color: var(--dark-text);
+            }
+
+            .post-date {
+                color: var(--light-text);
+            }
+
+            .post-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--dark-text);
+                margin-bottom: 10px;
+                line-height: 1.3;
+            }
+
+            .post-excerpt {
+                font-size: 1rem;
+                color: var(--light-text);
+                line-height: 1.6;
+                margin-bottom: 16px;
+            }
+
+            .post-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .post-tag-inline {
+                background: #f3f4f6;
+                color: var(--light-text);
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 0.8125rem;
+                font-weight: 500;
+                text-decoration: none;
+                transition: all 0.2s;
+            }
+
+                .post-tag-inline:hover {
+                    background: #e5e7eb;
+                    color: var(--dark-text);
+                }
+
+            .post-stats {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                color: var(--light-text);
+                font-size: 0.875rem;
+            }
+
+            .stat-item {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+                .stat-item i {
+                    font-size: 1rem;
+                }
+
+            .post-image {
+                width: 200px;
+                height: 150px;
+                object-fit: cover;
+                border-radius: 8px;
+                flex-shrink: 0;
+            }
+
+            /* Floating Action Button */
+            .fab-write {
+                position: fixed;
+                bottom: 32px;
+                right: 32px;
+                width: 60px;
+                height: 60px;
+                background: var(--accent-color);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+                font-size: 1.5rem;
+                cursor: pointer;
+                transition: all 0.3s;
+                z-index: 999;
+            }
+
+            .fab-write:hover {
+                background: #db2777;
+                transform: scale(1.1);
+                box-shadow: 0 8px 25px rgba(236, 72, 153, 0.5);
+            }
+
+            #loading {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(255,255,255,0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+
+            .spinner {
+                width: 60px;
+                height: 60px;
+                border: 6px solid #e5e5e5;
+                border-top: 6px solid #0d6efd;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+            }
+
+            @@keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* Responsive */
+            @@media (max-width: 1200px) {
+                .content-grid {
+                    grid-template-columns: 250px 1fr;
+                    gap: 20px;
+                }
+
+                .tag-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @@media (max-width: 992px) {
+                .content-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .left-sidebar {
+                    display: none;
+                }
+
+                .hero-banner {
+                    margin-left: 0;
+                    margin-right: 0;
+                }
+
+                .main-nav {
+                    gap: 20px;
+                }
+            }
+
+            @@media (max-width: 768px) {
+                .post-image {
+                    width: 120px;
+                    height: 100px;
+                }
+
+                .post-title {
+                    font-size: 1.25rem;
+                }
+
+                .blog-post {
+                    padding: 20px 16px;
+                    gap: 16px;
+                }
+
+                .main-nav {
+                    gap: 16px;
+                }
+
+                .nav-item {
+                    font-size: 0.9rem;
+                }
+            }
+
+            @@media (max-width: 576px) {
+                .site-name {
+                    font-size: 1.25rem;
+                }
+
+                .main-nav {
+                    flex-wrap: wrap;
+                    gap: 12px;
+                }
+
+                .nav-item {
+                    font-size: 0.85rem;
+                }
+            }
+    </style>
+    <style>
+
+            #empty-message {
+                display: none;
+                position: fixed; /* IMPORTANT */
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 9999;
+                width: 100%;
+                max-width: 500px;
+                padding: 0 20px;
+            }
+
+            .empty-box {
+                background: #C9A59D;
+                border-radius: 16px;
+                padding: 50px 60px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+                text-align: center;
+            }
+            .empty-state {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 100px 0;
+            }
+
+            .empty-icon {
+                font-size: 50px;
+                color: #d1d5db;
+                margin-bottom: 20px;
+            }
+
+            .empty-box h4 {
+                margin-bottom: 10px;
+                font-weight: 600;
+            }
+
+            .empty-box p {
+                color: #6b7280;
+            }
+
+            .user-avatar {
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                cursor: pointer;
+                border: 2px solid #e5e7eb;
+                transition: 0.3s;
+            }
+
+                .user-avatar:hover {
+                    border-color: #6366f1;
+                }
+
+            .user-dropdown {
+                position: absolute;
+                right: 0;
+                top: 55px;
+                width: 260px;
+                background: white;
+                border-radius: 14px;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+                padding: 12px 0;
+                display: none;
+                z-index: 2000;
+                animation: dropdownFade 0.2s ease;
+            }
+
+            @@keyframes dropdownFade {
+                from {
+                    opacity: 0;
+                    transform: translateY(-5px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .dropdown-header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 18px;
+            }
+
+            .dropdown-avatar img {
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+            }
+
+            .dropdown-name {
+                font-weight: 600;
+                font-size: 0.95rem;
+            }
+
+            .dropdown-email {
+                font-size: 0.8rem;
+                color: #6b7280;
+            }
+
+            .dropdown-divider {
+                height: 1px;
+                background: #f1f1f1;
+                margin: 8px 0;
+            }
+
+            .dropdown-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 18px;
+                font-size: 0.9rem;
+                color: #374151;
+                text-decoration: none;
+                transition: 0.2s;
+                background: none;
+                border: none;
+                width: 100%;
+            }
+
+                .dropdown-item i {
+                    font-size: 1rem;
+                    color: #6b7280;
+                }
+
+                .dropdown-item:hover {
+                    background: #f9fafb;
+                    color: #6366f1;
+                }
+
+            .logout-btn {
+                color: #ef4444;
+            }
+
+                .logout-btn:hover {
+                    background: #fef2f2;
+                }
+    </style>
+    <link href="~/css/chat-style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <div class="col-md-4" onclick="window.location.href='/blog/@Model.Slug'">
+                    <div class="site-name">
+                        <i class="bi bi-share"></i>@Model.Name
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <nav class="main-nav justify-content-end">
+                        <div class="dropdown">
+                            <div class="nav-item">
+                                Categories <i class="bi bi-chevron-down ms-1"></i>
+                            </div>
+                            <div class="dropdown-menu-custom">
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <div class="dropdown-item-custom" onclick="getPostByCategory('@Model.Id','@category.Id')">@category.Name <span class="badge bg-info">@category.PostCount</span></div>
+                                }
+                            </div>
+                        </div>
+                        <div class="nav-item" onclick="window.location.href = '/blog/@Model.Slug/about'">About</div>
+                        <!-- User Menu -->
+                        <div class="header-menu position-relative">
+                            <img src="~/Reader/images/user.jpg"
+                                 alt="User"
+                                 class="user-avatar"
+                                 id="userAvatar">
+
+                            <div class="user-dropdown" id="userDropdown">
+                                @if (SignInManager.IsSignedIn(User))
+                                {
+                                    <div class="dropdown-header px-3 py-2">
+                                        <div class="fw-semibold">@($"{user?.FirstName} {user?.LastName}".Trim())</div>
+                                    </div>
+
+                                    <hr class="my-1">
+
+                                    <a asp-action="Index"
+                                       asp-controller="Library"
+                                       asp-area="Reader"
+                                       class="dropdown-item d-flex align-items-center gap-2">
+                                        <i class="bi bi-bookmark-fill"></i> Library
+                                    </a>
+
+                                    <a href="/Account/Manage" class="dropdown-item d-flex align-items-center gap-2">
+                                        <i class="bi bi-person-fill-gear"></i> Profile Settings
+                                    </a>
+
+                                    @if (user.HasBlog)
+                                    {
+                                        <hr class="my-1">
+                                        <a asp-action="Index" asp-area="Blogger" asp-controller="Blog" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-file-text"></i> Blog Management
+                                        </a>
+                                    }
+
+                                    <hr class="my-1">
+
+                                    <form asp-controller="Account"
+                                          asp-action="Logout"
+                                          asp-area=""
+                                          method="post">
+                                        <button class="dropdown-item text-danger d-flex align-items-center gap-2">
+                                            <i class="bi bi-box-arrow-right"></i> Logout
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <hr class="my-1">
+                                    <a asp-controller="Account" asp-area="" asp-action="Login" class="dropdown-item d-flex align-items-center gap-2">
+                                        <i class="bi bi-box-arrow-in-right"></i> Sign in
+                                    </a>
+                                    <a class="btn btn-dark btn-sm dropdown-item d-flex align-items-center gap-2"
+                                       asp-controller="Account"
+                                       asp-area=""
+                                       asp-action="Register">
+                                        <i class="bi bi-rocket-takeoff"></i> Get started
+                                    </a>
+                                    <hr class="my-1">
+                                }
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Left Sidebar - Your Interests -->
+            <aside class="left-sidebar">
+                <h3 class="sidebar-title">
+                    <i class="bi bi-tags-fill"></i>Topics
+                </h3>
+                <div class="tag-grid">
+
+                    <button class="tag-button active full-width">All Posts</button>
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <button class="tag-button" onclick="getPostByTag('@Model.Id','@tag.Id')">@tag.Name <span class="badge bg-info">@tag.PostCount</span></button>
+                    }
+                </div>
+            </aside>
+
+            <!-- Main Content - Blog Posts -->
+            <main class="main-content" id="post-container"></main>
+            <div id="empty-message" class="empty-state" style="display:none;"></div>
+            <div id="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <input type="hidden" id="userId" value="@UserManager.GetUserId(User)" />
+        <partial name="_ChatViewPartial" />
+    }
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/chat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-html@3.4.0/build/edjsHTML.browser.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+            // Tag button functionality
+            document.querySelectorAll('.tag-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.tag-button').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // FAB button functionality
+            document.querySelector('.fab-write').addEventListener('click', function() {
+                alert('Opening blog editor...');
+            });
+
+            // Start blog button
+            document.querySelector('.btn-start-blog').addEventListener('click', function() {
+                alert('Let\'s start your blogging journey!');
+            });
+
+            // Navigation items functionality
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (!item.closest('.dropdown')) {
+                    item.addEventListener('click', function() {
+                        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                        this.classList.add('active');
+                        alert('Navigating to ' + this.textContent);
+                    });
+                }
+            });
+
+            // Category dropdown items
+            document.querySelectorAll('.dropdown-item-custom').forEach(item => {
+                item.addEventListener('click', function() {
+                    alert('Filtering by category: ' + this.textContent);
+                });
+            });
+    </script>
+
+    <script>
+
+            let page = 1;
+            let isLoading = false;
+            let hasMore = true;
+
+            let currentFilter = "all";
+            let currentTagId = null;
+            let currentCategoryId = null;
+
+  
+            $(document).ready(function () {
+                loadData();
+
+                 // Toggle dropdown when clicking avatar
+                $("#userAvatar").on("click", function (e) {
+                    e.stopPropagation();
+                    $("#userDropdown").fadeToggle(200);
+                });
+
+                // Optional: Show dropdown when clicking About
+                $("#aboutMenu").on("click", function (e) {
+                    e.stopPropagation();
+                    $("#userDropdown").fadeToggle(200);
+                });
+
+                // Hide dropdown when clicking outside
+                $(document).on("click", function () {
+                    $("#userDropdown").fadeOut(200);
+                });
+
+                // Prevent closing when clicking inside dropdown
+                $("#userDropdown").on("click", function (e) {
+                    e.stopPropagation();
+                });
+
+            
+                $(".dropdown > .nav-item").on("click", function (e) {
+                    e.stopPropagation();
+
+                    const menu = $(this).siblings(".dropdown-menu-custom");
+
+                    $(".dropdown-menu-custom").not(menu).fadeOut(150);
+                    menu.fadeToggle(150);
+                });
+
+            
+                $(".dropdown-menu-custom").on("click", function (e) {
+                    e.stopPropagation();
+                });
+
+                $(document).on("click", function () {
+                    $(".dropdown-menu-custom").fadeOut(150);
+                });
+            });
+
+       
+            $(window).on('scroll', function () {
+
+                if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+
+                    if (!isLoading && hasMore) {
+                        page++;
+                        loadData();
+                    }
+                }
+            });
+
+      
+            function loadData() {
+
+                if (!hasMore) return;
+
+                isLoading = true;
+                $("#loading").show();
+
+                let url = '';
+                let requestData = { page: page };
+
+                if (currentFilter === "tag") {
+
+                    url = '/reader/home/BlogSitePostByTag';
+                    requestData.blogSiteId = '@Model.Id';
+                    requestData.tagId = currentTagId;
+
+                } else if (currentFilter === "category") {
+
+                    url = '/reader/home/BlogSitePostByCategory';
+                    requestData.blogSiteId = '@Model.Id';
+                    requestData.categoryId = currentCategoryId;
+
+                } else {
+
+                    url = '/reader/home/blogLoadMore';
+                    requestData.id = '@Model.Id';
+                }
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: requestData,
+                    success: function (response) {
+
+                        if (page === 1) {
+                            $("#post-container").html('');
+                        }
+
+                        if (!response.data || response.data.length === 0) {
+                            hasMore = false;
+
+                            if (page === 1) {
+                                showEmptyMessage();
+                            }
+
+                        } else {
+                            $("#empty-message").hide();
+                            response.data.forEach(function (post) {
+                                renderPost(post);
+                            });
+
+                            hasMore = response.hasMore;
+                        }
+
+                        isLoading = false;
+                        $("#loading").hide();
+                    },
+                    error: function () {
+                        isLoading = false;
+                        $("#loading").hide();
+                    }
+                });
+            }
+
+      
+            function renderPost(post) {
+
+                let tagsHtml = '';
+
+                if (post.tags) {
+                    post.tags.forEach(function (tag) {
+                        tagsHtml += `<a href="#" class="post-tag-inline">${tag.name}</a>`;
+                    });
+                }
+
+                let parsedText = '';
+
+                if (post.body) {
+                    try {
+                        const bodyObj = JSON.parse(post.body);
+                        const html = edjsHTML().parse(bodyObj).join('');
+                        const temp = document.createElement('div');
+                        temp.innerHTML = html;
+                        parsedText = temp.textContent || temp.innerText || '';
+                    } catch {
+                        parsedText = post.body;
+                    }
+                }
+
+                let html = `
+                    <article class="blog-post">
+                        <div class="post-content">
+
+                            <div class="author-info">
+                                <img src="/img/c.jpg" class="author-avatar-small">
+                                <div class="author-details">
+                                    <a href="/blog/@Model.Slug" style="text-decoration:none;">
+                                        <span class="author-name">${post.author}</span>
+                                    </a>
+                                    <span class="post-date">
+                                        • ${formatDate(post.createdAt)}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <a href="/blog/@Model.Slug/post/${post.id}" style="text-decoration:none">
+                                <h2 class="post-title">${post.title ?? ''}</h2>
+                            </a>
+
+                            <p style="text-align: justify; line-height:1.6; margin:0.5em 0;">
+                                ${truncate(parsedText, 200)}
+                            </p>
+
+                            <div class="post-footer">
+                                ${tagsHtml}
+                            </div>
+
+                        </div>
+
+                        <img src="/uploads/blogPost/${post.thumbnailPath}" class="post-image">
+                    </article>
+                `;
+
+                $("#post-container").append(html);
+            }
+
+     
+            function getPostByTag(blogSiteId, tagId, btn) {
+
+                $(".tag-button").removeClass("active");
+                $(btn).addClass("active");
+
+                currentFilter = "tag";
+                currentTagId = tagId;
+                currentCategoryId = null;
+
+                page = 1;
+                hasMore = true;
+                isLoading = false;
+
+                $("#post-container").html('');
+
+                loadData();
+            }
+
+        
+            function getPostByCategory(blogSiteId, categoryId, btn) {
+
+                $(".tag-button").removeClass("active");
+                $(btn).addClass("active");
+
+                currentFilter = "category";
+                currentCategoryId = categoryId;
+                currentTagId = null;
+
+                page = 1;
+                hasMore = true;
+                isLoading = false;
+
+                $("#post-container").html('');
+
+                loadData();
+            }
+
+ 
+            $(document).on("click", ".full-width", function () {
+
+                $(".tag-button").removeClass("active");
+                $(this).addClass("active");
+
+                currentFilter = "all";
+                currentTagId = null;
+                currentCategoryId = null;
+
+                page = 1;
+                hasMore = true;
+                isLoading = false;
+
+                $("#post-container").html('');
+
+                loadData();
+            });
+
+    
+            function truncate(text, max) {
+                if (!text) return '';
+                return text.length > max ? text.substring(0, max) + "..." : text;
+            }
+
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString();
+            }
+
+            function showEmptyMessage() {
+
+                let message = "No posts available.";
+
+                if (currentFilter === "tag") {
+                    message = "No posts found for this tag.";
+                }
+                else if (currentFilter === "category") {
+                    message = "No posts found in this category.";
+                }
+
+                $("#empty-message").html(`
+                    <div class="empty-box">
+                        <i class="bi bi-emoji-frown empty-icon"></i>
+                        <h4>${message}</h4>
+                        <p>Check back later or explore other content.</p>
+                    </div>
+                `).fadeIn();
+            }
+    </script>
+</body>
+</html>

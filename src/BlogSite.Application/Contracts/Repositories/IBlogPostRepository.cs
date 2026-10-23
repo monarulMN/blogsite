@@ -1,5 +1,6 @@
 ﻿using BlogSite.Application.Features.BlogPosts.Queries;
 using BlogSite.Domain.Contracts;
+using BlogSite.Domain.Dtos;
 using BlogSite.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -17,5 +18,7 @@ namespace BlogSite.Application.Contracts.Repositories
 
         Task<(IList<BlogPost>, int, int)> GetPagedBlogPostsAsync(GetAllBlogPostsQuery query, 
             CancellationToken cancellationToken);
+
+        Task<PublicBlogPostDto> GetPublicBlogPostWithTagAsync(Guid blogPostId);
     }
 }

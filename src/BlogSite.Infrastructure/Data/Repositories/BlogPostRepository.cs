@@ -1,5 +1,6 @@
 ﻿using BlogSite.Application.Contracts.Repositories;
 using BlogSite.Application.Features.BlogPosts.Queries;
+using BlogSite.Domain.Dtos;
 using BlogSite.Domain.Entities;
 using BlogSite.Domain.Enums;
 using Microsoft.Data.SqlClient;
@@ -51,6 +52,40 @@ namespace BlogSite.Infrastructure.Data.Repositories
                  true,
                  cancellationToken);
 
+        }
+
+        public async Task<PublicBlogPostDto> GetPublicBlogPostWithTagAsync(Guid blogPostId)
+        {
+            return await _applicationDbContext.BlogPosts
+                .AsNoTracking()
+                .Where(x =>
+                    x.Id == blogPostId &&
+                    x.Status == Status.Active &&
+                    x.PostStatus == BlogStatus.Publish)
+                .Select(x => new PublicBlogPostDto
+                {
+                    Id = x.Id,
+                    Author = x.Blogsite.Name,
+                    AuthorSlag = x.Blogsite.Slug,
+                    Title = x.Title,
+                    Body = x.Body,
+                    ThumbnailPath = x.ThumbnailPath,
+                    CreatedAt = x.CreatedAt,
+
+                    Tags = x.BlogPostTags
+                        .Where(pt =>
+                            pt.Status == Status.Active &&
+                            pt.Tag.Status == Status.Active)
+                        .Select(pt => pt.Tag)
+                        .ToList()
+
+                    //Comments = x.Comments
+                    //    .Where(c => c.Status == Status.Active)
+                    //    .OrderByDescending(c => c.CreateAt)
+                    //    .ToList()
+                })
+                .FirstOrDefaultAsync();
+                        
         }
     }
 }
