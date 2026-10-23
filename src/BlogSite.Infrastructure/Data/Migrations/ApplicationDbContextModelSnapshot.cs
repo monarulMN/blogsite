@@ -190,6 +190,34 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("BlogSite.Domain.Entities.Library", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BlogPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogPostId");
+
+                    b.HasIndex("ApplicationUserId", "BlogPostId")
+                        .IsUnique();
+
+                    b.ToTable("Libraries");
+                });
+
             modelBuilder.Entity("BlogSite.Domain.Entities.Message", b =>
                 {
                     b.Property<Guid>("Id")
@@ -655,6 +683,17 @@ namespace BlogSite.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Blogsite");
+                });
+
+            modelBuilder.Entity("BlogSite.Domain.Entities.Library", b =>
+                {
+                    b.HasOne("BlogSite.Domain.Entities.BlogPost", "BlogPost")
+                        .WithMany()
+                        .HasForeignKey("BlogPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlogPost");
                 });
 
             modelBuilder.Entity("BlogSite.Domain.Entities.Message", b =>

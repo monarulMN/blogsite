@@ -24,6 +24,7 @@ namespace BlogSite.Infrastructure.Data
         public DbSet<BlogPostTag> BlogPostTags { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Report> Reports { get; set; }
+        public DbSet<Library> Libraries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -209,6 +210,31 @@ namespace BlogSite.Infrastructure.Data
                     .WithMany(x => x.Reports)
                     .HasForeignKey(x => x.BlogPostId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Library>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ApplicationUserId)
+                    .IsRequired();
+
+                entity.Property(x => x.BlogPostId)
+                    .IsRequired();
+
+                entity.Property(x => x.Status)
+                    .IsRequired();
+
+                entity.Property(x => x.CreatedAt)
+                    .IsRequired();
+
+                entity.HasOne(x => x.BlogPost)
+                    .WithMany()
+                    .HasForeignKey(x => x.BlogPostId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(x => new { x.ApplicationUserId, x.BlogPostId })
+                    .IsUnique();
             });
 
             base.OnModelCreating(builder);
