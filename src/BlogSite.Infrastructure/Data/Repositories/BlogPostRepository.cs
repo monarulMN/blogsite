@@ -77,12 +77,12 @@ namespace BlogSite.Infrastructure.Data.Repositories
                             pt.Status == Status.Active &&
                             pt.Tag.Status == Status.Active)
                         .Select(pt => pt.Tag)
-                        .ToList()
+                        .ToList(),
 
-                    //Comments = x.Comments
-                    //    .Where(c => c.Status == Status.Active)
-                    //    .OrderByDescending(c => c.CreateAt)
-                    //    .ToList()
+                    Comments = x.Comments
+                        .Where(c => c.Status == Status.Active)
+                        .OrderByDescending(c => c.CreateAt)
+                        .ToList()
                 })
                 .FirstOrDefaultAsync();
                         

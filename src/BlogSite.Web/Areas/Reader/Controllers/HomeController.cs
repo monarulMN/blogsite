@@ -7,6 +7,8 @@ using BlogSite.Domain.Dtos;
 using BlogSite.Domain.Entities;
 using BlogSite.Domain.Enums;
 using BlogSite.Web.Areas.Reader.Models;
+using BlogSite.Web.Areas.Reader.Models.Blog;
+using BlogSite.Web.Areas.Reader.Models.Comment;
 using Cortex.Mediator;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -82,16 +84,16 @@ namespace BlogSite.Web.Areas.Reader.Controllers
                         })
                         .ToList();
 
-            //model.Comments = blogPost.Comments
-            //            .Select(x => new CommentViewModel
-            //            {
-            //                Id = x.Id,
-            //                Name = x.Name,
-            //                Email = x.Email,
-            //                Text = x.Text,
-            //                CreateAt = x.CreateAt
-            //            })
-            //            .ToList();
+            model.Comments = blogPost.Comments
+                        .Select(x => new CommentViewModel
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Email = x.Email,
+                            Text = x.Text,
+                            CreateAt = x.CreateAt
+                        })
+                        .ToList();
 
             return View(model);
         }

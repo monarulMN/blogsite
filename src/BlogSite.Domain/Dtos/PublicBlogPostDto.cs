@@ -16,6 +16,6 @@ namespace BlogSite.Domain.Dtos
         public string ThumbnailPath { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public List<Tag> Tags { get; set; } = new();
-        //public List<Comment> Comments { get; set; } = new();
+        public List<Comment> Comments { get; set; } = new();
     }
 }

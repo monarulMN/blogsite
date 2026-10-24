@@ -1,4 +1,6 @@
-﻿namespace BlogSite.Web.Areas.Reader.Models
+﻿using BlogSite.Web.Areas.Reader.Models.Comment;
+
+namespace BlogSite.Web.Areas.Reader.Models.Blog
 {
     public class BlogSitePostViewModel
     {

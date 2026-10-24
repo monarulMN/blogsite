@@ -1,4 +1,4 @@
-﻿namespace BlogSite.Web.Areas.Reader.Models
+﻿namespace BlogSite.Web.Areas.Reader.Models.Blog
 {
     public class PublicPagesBlogSiteModel
     {

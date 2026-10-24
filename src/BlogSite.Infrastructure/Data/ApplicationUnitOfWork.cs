@@ -19,6 +19,8 @@ namespace BlogSite.Infrastructure.Data
 
         public IMessageRepository MessageRepository { get; set; }
         public IReportRepository ReportRepository { get; set; }
+        public ILibraryRepository LibraryRepository { get; set; }
+        public ICommentRepository CommentRepository { get; set; }
 
         public ApplicationUnitOfWork(ApplicationDbContext dbContext,
             IUserRepository userRepository,
@@ -27,7 +29,9 @@ namespace BlogSite.Infrastructure.Data
             ITagRepository tagRepository,
             IBlogPostRepository blogPostRepository,
             IMessageRepository messageRepository,
-            IReportRepository reportRepository) : base(dbContext)
+            IReportRepository reportRepository,
+            ILibraryRepository libraryRepository,
+            ICommentRepository commentRepository) : base(dbContext)
         {
             SqlUtility = new SqlUtility(dbContext.Database.GetDbConnection());
             UserRepository = userRepository;
@@ -37,6 +41,8 @@ namespace BlogSite.Infrastructure.Data
             BlogPostRepository = blogPostRepository;
             MessageRepository = messageRepository;
             ReportRepository = reportRepository;
+            LibraryRepository = libraryRepository;
+            CommentRepository = commentRepository;
         }
     }
 }

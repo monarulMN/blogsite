@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BlogSite.Web.Areas.Reader.Models
+namespace BlogSite.Web.Areas.Reader.Models.Comment
 {
     public class AddCommentModel
     {
