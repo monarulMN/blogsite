@@ -1,0 +1,88 @@
+﻿<header class="main-header">
+    <div class="container-fluid px-4">
+        <div class="row align-items-center">
+            <!-- Logo / Site Name -->
+            <div class="col-md-3">
+                <div class="site-name fw-semibold" onclick="window.location.href='/blog-list'" style="cursor:pointer;">
+                    <i class="bi bi-share me-1"></i>ShareThought
+                </div>
+            </div>
+
+            <!-- Center Space (optional search/menu) -->
+            <div class="col-md-6">
+                <!-- Empty for now -->
+            </div>
+
+            <!-- User Menu -->
+            <div class="col-md-3 text-end position-relative">
+                <div class="header-menu d-inline-flex align-items-center gap-2">
+                    <!-- Avatar -->
+                    <img src="~/Reader/images/user.jpg"
+                         alt="User"
+                         class="user-avatar rounded-circle"
+                         id="userAvatar"
+                         style="cursor:pointer; width:40px; height:40px; object-fit:cover;">
+
+                    <!-- Dropdown -->
+                    <div class="user-dropdown shadow-sm rounded" id="userDropdown">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            var user = await UserManager.GetUserAsync(User);
+
+                            <div class="dropdown-header px-3 py-2">
+                                <div class="fw-semibold">@($"{user?.FirstName} {user?.LastName}".Trim())</div>
+                                <small class="text-muted">@user?.Email</small>
+                            </div>
+
+                            <hr class="my-1">
+
+                            <a asp-action="Index"
+                               asp-controller="Library"
+                               asp-area="Reader"
+                               class="dropdown-item d-flex align-items-center gap-2">
+                                <i class="bi bi-bookmark-fill"></i> Library
+                            </a>
+
+                            <a href="/Account/Manage" class="dropdown-item d-flex align-items-center gap-2">
+                                <i class="bi bi-person-fill-gear"></i> Profile Settings
+                            </a>
+
+                            @if (user.HasBlog)
+                            {
+                                <hr class="my-1">
+                                <a asp-action="Index" asp-area="Blogger" asp-controller="Blog" class="dropdown-item d-flex align-items-center gap-2">
+                                    <i class="bi bi-file-text"></i> Blog Management
+                                </a>
+                            }
+
+                            <hr class="my-1">
+
+                            <form asp-controller="Account"
+                                  asp-action="Logout"
+                                  asp-area=""
+                                  method="post">
+                                <button class="dropdown-item text-danger d-flex align-items-center gap-2">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <hr class="my-1">
+                            <a asp-controller="Account" asp-area="" asp-action="Login" class="dropdown-item d-flex align-items-center gap-2">
+                                <i class="bi bi-box-arrow-in-right"></i> Sign in
+                            </a>
+                            <a class="btn btn-dark btn-sm dropdown-item d-flex align-items-center gap-2"
+                               asp-controller="Account"
+                               asp-area=""
+                               asp-action="Register">
+                                <i class="bi bi-rocket-takeoff"></i> Get started
+                            </a>
+                            <hr class="my-1">
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

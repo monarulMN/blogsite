@@ -1,0 +1,390 @@
+﻿@model BlogSiteViewModel
+@{
+    Layout = "";
+
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    ApplicationUser? user = null;
+    ApplicationUser? author = UserManager.Users.FirstOrDefault(x => x.Id == Model.AuthorId);
+
+    if (isSignedIn)
+    {
+        user = await UserManager.GetUserAsync(User);
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Model.Name - About</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --border: #e5e7eb;
+            --text-dark: #111827;
+            --text-light: #6b7280;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f9fafb;
+            overflow-x: hidden;
+        }
+
+        /* HEADER (UNCHANGED) */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .site-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+            .site-name i {
+                color: var(--primary);
+                margin-right: 6px;
+            }
+
+        .main-nav {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-item {
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+            .nav-item:hover {
+                color: var(--primary);
+            }
+
+        /* USER DROPDOWN */
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            right: 0;
+            top: 55px;
+            width: 260px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            padding: 12px 0;
+            display: none;
+            z-index: 2000;
+        }
+
+        .dropdown-header {
+            display: flex;
+            gap: 12px;
+            padding: 12px 18px;
+        }
+
+        .dropdown-avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #f1f1f1;
+            margin: 8px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+        }
+
+            .dropdown-item:hover {
+                background: #f9fafb;
+                color: var(--primary);
+            }
+
+        /* ===============================
+                   NEW FULL HERO DESIGN
+                =============================== */
+
+        .hero-section {
+            position: relative;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 120px 20px 100px 20px;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+
+            .hero-section::before {
+                content: "";
+                position: absolute;
+                width: 500px;
+                height: 500px;
+                background: rgba(255,255,255,0.08);
+                border-radius: 50%;
+                top: -150px;
+                right: -150px;
+                animation: float 6s ease-in-out infinite;
+            }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(25px);
+            }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: auto;
+            animation: fadeUp 1s ease forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @@keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: 50px;
+        }
+
+        .author-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255,255,255,0.15);
+            padding: 20px 30px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            transition: 0.3s ease;
+        }
+
+            .author-box:hover {
+                transform: translateY(-5px);
+                background: rgba(255,255,255,0.25);
+            }
+
+        .author-avatar i {
+            font-size: 60px;
+        }
+
+        .author-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .author-email {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* LOWER SECTION */
+        .about-section {
+            padding: 100px 20px;
+            background: white;
+            text-align: center;
+        }
+
+            .about-section h2 {
+                font-weight: 700;
+                margin-bottom: 20px;
+            }
+
+            .about-section p {
+                max-width: 800px;
+                margin: auto;
+                color: var(--text-light);
+                font-size: 1.05rem;
+                line-height: 1.8;
+            }
+
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <div class="col-md-6" onclick="window.location.href='/blog/@Model.Slug'">
+                    <div class="site-name">
+                        <i class="bi bi-share"></i>@Model.Name
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <nav class="main-nav">
+                        <div class="nav-item"
+                             onclick="window.location.href='/blog/@Model.Slug/about'">
+                            About
+                        </div>
+
+                        <div class="header-menu d-inline-flex align-items-center gap-2">
+                            <!-- Avatar -->
+                            <img src="~/Reader/images/user.jpg"
+                                 alt="User"
+                                 class="user-avatar rounded-circle"
+                                 id="userAvatar"
+                                 style="cursor:pointer; width:40px; height:40px; object-fit:cover;">
+
+                            <!-- Dropdown -->
+                            <div class="user-dropdown shadow-sm rounded" id="userDropdown">
+                                @if (isSignedIn &&SignInManager.IsSignedIn(User))
+                                {
+                                    <div class="dropdown-header px-3 py-2">
+                                        <div class="fw-semibold">@($"{user?.FirstName} {user?.LastName}".Trim())</div>
+                                    </div>
+
+                                    <hr class="my-1">
+
+                                    <a asp-action="Index"
+                                       asp-controller="Library"
+                                       asp-area="Reader"
+                                       class="dropdown-item d-flex align-items-center gap-2">
+                                        <i class="bi bi-bookmark-fill"></i> Library
+                                    </a>
+
+                                    <a href="/Account/Manage" class="dropdown-item d-flex align-items-center gap-2">
+                                        <i class="bi bi-person-fill-gear"></i> Profile Settings
+                                    </a>
+
+                                    @if (user.HasBlog)
+                                    {
+                                        <hr class="my-1">
+                                        <a asp-action="Index" asp-area="Blogger" asp-controller="Blog" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-file-text"></i> Blog Management
+                                        </a>
+                                    }
+
+                                    <hr class="my-1">
+
+                                    <form asp-controller="Account"
+                                          asp-action="Logout"
+                                          asp-area=""
+                                          method="post">
+                                        <button class="dropdown-item text-danger d-flex align-items-center gap-2">
+                                            <i class="bi bi-box-arrow-right"></i> Logout
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <hr class="my-1">
+                                    <a asp-controller="Account" asp-area="" asp-action="Login" class="dropdown-item d-flex align-items-center gap-2">
+                                        <i class="bi bi-box-arrow-in-right"></i> Sign in
+                                    </a>
+                                    <a class="btn btn-dark btn-sm dropdown-item d-flex align-items-center gap-2"
+                                       asp-controller="Account"
+                                       asp-area=""
+                                       asp-action="Register">
+                                        <i class="bi bi-rocket-takeoff"></i> Get started
+                                    </a>
+                                    <hr class="my-1">
+                                }
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">@Model.Name</h1>
+            <p class="hero-description">@Model.Description</p>
+
+            <div class="author-box">
+                <div class="author-avatar">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <div>
+                    <div class="author-name">
+                        @author?.FirstName @author?.LastName
+                    </div>
+                    <div class="author-email">
+                        @author?.Email
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @* <!-- ABOUT LOWER SECTION -->
+    <section class="about-section">
+        <h2>About This Blog</h2>
+        <p>
+            Welcome to @Model.Name. This space is dedicated to sharing insights,
+            experiences, and valuable knowledge with readers around the world.
+            Stay connected and explore meaningful content curated with passion.
+        </p>
+    </section> *@
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $("#userAvatar").click(function (e) {
+                e.stopPropagation();
+                $("#userDropdown").fadeToggle(150);
+            });
+
+            $(document).click(function () {
+                $("#userDropdown").fadeOut(150);
+            });
+
+            $("#userDropdown").click(function (e) {
+                e.stopPropagation();
+            });
+
+        });
+    </script>
+
+</body>
+</html>

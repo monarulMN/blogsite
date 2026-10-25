@@ -1,0 +1,27 @@
+﻿using BlogSite.Application.Contracts;
+using BlogSite.Domain.Dtos;
+using Cortex.Mediator.Queries;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BlogSite.Application.Features.BlogPosts.Queries
+{
+    public class GetPublicBlogPostsByBlogSiteAndCategoryQueryHandler(IApplicationUnitOfWork applicationUnitOfWork) : 
+        IQueryHandler<GetPublicBlogPostsByBlogSiteAndCategoryQuery, 
+            (IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)>
+    {
+        private readonly IApplicationUnitOfWork _applicationUnitOfWork = applicationUnitOfWork;
+
+        public async Task<(IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)> Handle(
+            GetPublicBlogPostsByBlogSiteAndCategoryQuery query, 
+            CancellationToken cancellationToken)
+        {
+            return await _applicationUnitOfWork.BlogPostRepository
+                .GetPublicBlogPostsByBlogSiteAndCategoryAsync(query.PageIndex, 
+                    query.PageSize, 
+                    query.BlogSiteId, 
+                    query.CategoryId, cancellationToken);
+        }
+    }
+}

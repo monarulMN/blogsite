@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BlogSite.Application.Features.BlogPosts.Queries
 {
-    public class GetPublicBlogPostGetWithTagQuery : IQuery<PublicBlogPostDto>
+    public class GetPublicBlogPostGetWithTagQuery : IQuery<PublicBlogPostDto?>
     {
         public Guid BlogPostId { get; set; }
     }

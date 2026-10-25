@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BlogSite.Application.Features.BlogPosts.Queries
 {
-    public class GetBlogPostQuery : IQuery<BlogPost?>
+    public class GetBlogPostQuery : IQuery<BlogPost>
     {
         public Guid Id { get; set; }
     }

@@ -1,6 +1,7 @@
 ﻿using BlogSite.Application.Features.BlogPosts.Queries;
 using BlogSite.Application.Features.BlogSites.Queries;
 using BlogSite.Application.Features.Categories.Queries;
+using BlogSite.Application.Features.Comments.Queries;
 using BlogSite.Application.Features.Tags.Queries;
 using BlogSite.Application.Features.Users.Queries;
 using BlogSite.Domain.Enums;
@@ -24,6 +25,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
             var categoryQuery = new GetTotalCategoriesAdminQuery { Status = Status.Active };
             var tagQuery = new GetTotalTagsAdminQuery { Status = Status.Active };
             var blogSiteQuery = new GetTotalBlogSiteAdminQuery { Status = Status.Active };
+            var commentQuery = new GetTotalCommentsAdminQuery { Status = Status.Active };
             var userQuery = new GetTotalUserAdminQuery { IsBlocked = false };
             var model = new DashboardModel();
 
@@ -32,6 +34,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                 model.TotalPosts = await _mediator.SendQueryAsync<GetTotalBlogPostAdminQuery, int>(blogPostQuery);
                 model.TotalCategories = await _mediator.SendQueryAsync<GetTotalCategoriesAdminQuery, int>(categoryQuery);
                 model.TotalTags = await _mediator.SendQueryAsync<GetTotalTagsAdminQuery, int>(tagQuery);
+                model.TotalComments = await _mediator.SendQueryAsync<GetTotalCommentsAdminQuery, int>(commentQuery);
                 model.TotalBlogSites = await _mediator.SendQueryAsync<GetTotalBlogSiteAdminQuery, int>(blogSiteQuery);
                 model.TotalUsers = await _mediator.SendQueryAsync<GetTotalUserAdminQuery, int>(userQuery);
                 return View(model);

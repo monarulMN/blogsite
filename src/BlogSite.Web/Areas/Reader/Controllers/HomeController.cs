@@ -45,6 +45,7 @@ namespace BlogSite.Web.Areas.Reader.Controllers
             return View(model);
         }
 
+
         [Route("blog/{slug}"), HttpGet]
         public async Task<IActionResult> BlogSite(string slug)
         {
@@ -96,6 +97,191 @@ namespace BlogSite.Web.Areas.Reader.Controllers
                         .ToList();
 
             return View(model);
+        }
+
+        [Route("blog/{slug}/about"), HttpGet]
+        public async Task<IActionResult> BlogSiteAbout(string slug)
+        {
+            var query = new GetBlogSiteBySlugQuery { Slug = slug };
+            var blogSite = await _mediator.SendQueryAsync<GetBlogSiteBySlugQuery, Blogsite>(query);
+
+            var model = _mapper.Map<BlogSiteViewModel>(blogSite);
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> LoadMore(int page)
+        {
+            try
+            {
+                var query = new GetPublicBlogPostsQuery
+                {
+                    PageIndex = page,
+                    PageSize = 5
+                };
+
+                var (result, hasMore) = await _mediator
+                    .SendQueryAsync<GetPublicBlogPostsQuery,
+                    (IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)>(query);
+
+                return Json(new { data = result, hasMore });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error fetching blog post data.");
+                return Json(new { data = new List<object>(), hasMore = false });
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> BlogLoadMore(int page, Guid Id)
+        {
+            try
+            {
+                var query = new GetPublicBlogPostsByBlogSiteQuery
+                {
+                    BlogSiteId = Id,
+                    PageIndex = page,
+                    PageSize = 5
+                };
+
+                var (result, hasMore) = await _mediator
+                    .SendQueryAsync<GetPublicBlogPostsByBlogSiteQuery,
+                    (IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)>(query);
+
+                return Json(new { data = result, hasMore });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error fetching blog post data.");
+                return Json(new { data = new List<object>(), hasMore = false });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BlogSitePostByTag(int page, Guid blogSiteId, Guid tagId)
+        {
+            try
+            {
+                var query = new GetPublicBlogPostsByBlogSiteAndTagQuery
+                {
+                    BlogSiteId = blogSiteId,
+                    TagId = tagId,
+                    PageIndex = page,
+                    PageSize = 5
+                };
+
+                var (result, hasMore) = await _mediator
+                    .SendQueryAsync<GetPublicBlogPostsByBlogSiteAndTagQuery,
+                    (IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)>(query);
+
+                return Json(new { data = result, hasMore });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error fetching blog post data.");
+                return Json(new { data = new List<object>(), hasMore = false });
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> BlogSitePostByCategory(int page, Guid blogSiteId, Guid categoryId)
+        {
+            try
+            {
+                var query = new GetPublicBlogPostsByBlogSiteAndCategoryQuery
+                {
+                    BlogSiteId = blogSiteId,
+                    CategoryId = categoryId,
+                    PageIndex = page,
+                    PageSize = 5
+                };
+
+                var (result, hasMore) = await _mediator
+                    .SendQueryAsync<GetPublicBlogPostsByBlogSiteAndCategoryQuery,
+                    (IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)>(query);
+
+                return Json(new { data = result, hasMore });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error fetching blog post data.");
+                return Json(new { data = new List<object>(), hasMore = false });
+            }
+        }
+
+
+        [Route("blog/post/{postId}"), HttpGet]
+        public async Task<IActionResult> PostView(Guid postId)
+        {
+            var blogPostQuery = new GetPublicBlogPostGetWithTagQuery { BlogPostId = postId };
+            var blogPost = await _mediator.SendQueryAsync<GetPublicBlogPostGetWithTagQuery, 
+                PublicBlogPostDto?>(blogPostQuery);
+
+            var model = _mapper.Map<BlogSitePostViewModel>(blogPost);
+            model.Slug = blogPost.AuthorSlag;
+            model.Name = blogPost.Author;
+
+
+
+            var blogSiteQuery = new GetBlogSiteBySlugQuery { Slug = blogPost.AuthorSlag };
+            var blogSite = await _mediator.SendQueryAsync<GetBlogSiteBySlugQuery, 
+                Blogsite>(blogSiteQuery);
+
+            model.AuthorId = blogSite.AuthorId;
+            model.Id = blogSite.Id;
+
+            model.Post = _mapper.Map<PostViewModel>(blogPost);
+            model.Post.Tags = blogPost.Tags
+                        .Select(x => new TagViewModel
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            PostCount = x.BlogPostTags.Count
+                        })
+                        .ToList();
+
+            model.Comments = blogPost.Comments
+                        .Select(x => new CommentViewModel
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Email = x.Email,
+                            Text = x.Text,
+                            CreateAt = x.CreateAt
+                        })
+                        .ToList();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPostByTag(int page, Guid tagId)
+        {
+            try
+            {
+                var query = new GetPublicBlogPostsByTagQuery
+                {
+                    TagId = tagId,
+                    PageIndex = page,
+                    PageSize = 5
+                };
+
+                var (result, hasMore) = await _mediator
+                    .SendQueryAsync<GetPublicBlogPostsByTagQuery,
+                    (IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)>(query);
+
+                return Json(new { data = result, hasMore });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error fetching blog post data.");
+                return Json(new { data = new List<object>(), hasMore = false });
+            }
         }
     }
 }

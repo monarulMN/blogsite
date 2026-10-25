@@ -1,0 +1,45 @@
+﻿<!-- FLOATING BUTTON -->
+<button class="chat-toggle-btn" id="chatToggle">
+    <i class="bi bi-headset"></i>
+</button>
+
+<!-- CHAT WIDGET -->
+<div class="chat-widget" id="chatWidget">
+
+    <!-- Header -->
+    <div class="chat-header">
+        <div>
+            <div class="chat-title">
+                <i class="bi bi-headset"></i> Support
+            </div>
+            <small>Online</small>
+        </div>
+        <button class="chat-close" id="chatClose">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <!-- Body -->
+    <div class="chat-body" id="chatBody">
+
+        <div class="message incoming">
+            <div class="message-bubble">
+                Hello 👋 How can I help you?
+                <div class="message-time">Just Now</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="chat-footer">
+        <form id="message-box" asp-action="Create" asp-controller="Support" asp-area="Reader" asp-antiforgery="true">
+            <input type="text" name="Text" class="chat-input" id="MessageText" placeholder="Type a message..." required>
+            <input type="hidden" id="RecipientId" name="RecipientId" value="DD19F57F-C1AF-480C-B2F3-D39F34E308A2">
+            <button type="submit" class="send-btn">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </form>
+    </div>
+
+</div>

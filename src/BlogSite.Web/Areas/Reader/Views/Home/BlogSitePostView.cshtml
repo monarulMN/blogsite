@@ -1,0 +1,1481 @@
+﻿@model BlogSitePostViewModel
+@using Humanizer
+
+@{
+    Layout = "";
+}
+
+@{
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    ApplicationUser? user = null;
+    var author = UserManager.Users.FirstOrDefault(x => x.Id == Model.AuthorId);
+    if (isSignedIn)
+    {
+        user = await UserManager.GetUserAsync(User);
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Model.Post.Title - @Model.Name</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="~/css/chat-style.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
+            --dark-text: #242424;
+            --light-text: #6B6B6B;
+            --border-color: #e5e7eb;
+            --sidebar-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f9fafb;
+            color: var(--dark-text);
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .site-name {
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: var(--dark-text);
+            cursor: pointer !important;
+        }
+
+            .site-name i {
+                color: var(--primary-color);
+                margin-right: 8px;
+            }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+            .search-input:focus {
+                outline: none;
+                border-color: var(--primary-color);
+            }
+
+        .header-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--dark-text);
+            transition: all 0.3s;
+        }
+
+            .menu-toggle:hover {
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+            }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .content-grid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 100%; /* control content width here */
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            min-height: 500px;
+        }
+
+        /* Left Sidebar - Your Interests */
+        .left-sidebar {
+            background: var(--sidebar-bg);
+            padding: 30px 24px;
+            border-radius: 12px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-title {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .tag-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+            .tag-button:hover {
+                background: rgba(255, 255, 255, 0.3);
+                border-color: rgba(255, 255, 255, 0.5);
+                transform: translateY(-2px);
+            }
+
+            .tag-button.active {
+                background: white;
+                color: var(--primary-color);
+                border-color: white;
+                font-weight: 600;
+            }
+
+            .tag-button.full-width {
+                grid-column: span 2;
+            }
+
+        /* Main Content - Blog Post */
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            min-height: 500px;
+        }
+
+        .blog-header {
+            padding: 40px 48px 32px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .blog-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .author-avatar-large {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .author-info-main {
+            flex: 1;
+        }
+
+        .author-name-large {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .blog-channel {
+            font-size: 0.875rem;
+            color: var(--light-text);
+            display: block;
+        }
+
+        .post-date-main {
+            font-size: 0.875rem;
+            color: var(--light-text);
+        }
+
+        .blog-menu-container {
+            position: relative;
+            margin-left: 12px;
+        }
+
+        .btn-blog-menu {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--light-text);
+            font-size: 1.2rem;
+        }
+
+            .btn-blog-menu:hover {
+                background: #f3f4f6;
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+            }
+
+        .blog-menu-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+            .blog-menu-dropdown.active {
+                display: block;
+            }
+
+        .menu-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: var(--dark-text);
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+            .menu-item:hover {
+                background: #f3f4f6;
+            }
+
+            .menu-item i {
+                font-size: 1.1rem;
+                color: var(--light-text);
+            }
+
+            .menu-item:hover i {
+                color: var(--primary-color);
+            }
+
+        .blog-title-main {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .blog-stats-main {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .stat-item i {
+                font-size: 1.1rem;
+            }
+
+        .blog-featured-image {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+        }
+
+        .blog-content {
+            padding: 48px;
+        }
+
+            .blog-content p {
+                font-size: 1.125rem;
+                line-height: 1.8;
+                color: var(--dark-text);
+                margin-bottom: 24px;
+            }
+
+            .blog-content h2 {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: var(--dark-text);
+                margin-top: 40px;
+                margin-bottom: 16px;
+            }
+
+            .blog-content h3 {
+                font-size: 1.4rem;
+                font-weight: 600;
+                color: var(--dark-text);
+                margin-top: 32px;
+                margin-bottom: 12px;
+            }
+
+        .blog-tags-section {
+            padding: 32px 48px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tags-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--light-text);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .blog-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .blog-tag {
+            background: #f3f4f6;
+            color: var(--dark-text);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+            .blog-tag:hover {
+                background: var(--primary-color);
+                color: white;
+                border-color: var(--primary-color);
+            }
+
+        /* Comments Section */
+        .comments-section {
+            padding: 48px;
+        }
+
+        .comments-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comment-form {
+            margin-bottom: 40px;
+            padding: 24px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+            .form-input:focus {
+                outline: none;
+                border-color: var(--primary-color);
+            }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            min-height: 120px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+            .form-textarea:focus {
+                outline: none;
+                border-color: var(--primary-color);
+            }
+
+        .btn-submit-comment {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .btn-submit-comment:hover {
+                background: var(--secondary-color);
+                transform: translateY(-2px);
+            }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .comment {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            background: white;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .comment-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--sidebar-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .comment-info {
+            flex: 1;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+
+        .comment-date {
+            font-size: 0.8125rem;
+            color: var(--light-text);
+        }
+
+        .comment-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--dark-text);
+            margin-bottom: 12px;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-reply {
+            background: transparent;
+            border: none;
+            color: var(--primary-color);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+            .btn-reply:hover {
+                color: var(--secondary-color);
+            }
+
+        .reply-form {
+            margin-top: 16px;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            display: none;
+        }
+
+            .reply-form.active {
+                display: block;
+            }
+
+        .replies {
+            margin-top: 16px;
+            padding-left: 54px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .reply {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            background: #fafbfc;
+        }
+
+            .reply .comment-avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 0.875rem;
+            }
+
+        /* Right Sidebar - Blogs to Follow */
+        .right-sidebar {
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+            .right-sidebar::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .right-sidebar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .right-sidebar::-webkit-scrollbar-thumb {
+                background: #ddd;
+                border-radius: 3px;
+            }
+
+        .sidebar-section {
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            margin-bottom: 0;
+            border: none;
+        }
+
+        .blog-item {
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+            .blog-item:hover {
+                border-color: var(--primary-color);
+                background: #f9fafb;
+            }
+
+            .blog-item:last-child {
+                margin-bottom: 0;
+            }
+
+        .blog-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .btn-follow-small {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1.5px solid var(--primary-color);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+            .btn-follow-small:hover {
+                background: var(--primary-color);
+                color: white;
+            }
+
+            .btn-follow-small.following {
+                background: var(--primary-color);
+                color: white;
+            }
+
+        /* Floating Action Button */
+        .fab-write {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 60px;
+            height: 60px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+            .fab-write:hover {
+                background: #db2777;
+                transform: scale(1.1);
+                box-shadow: 0 8px 25px rgba(236, 72, 153, 0.5);
+            }
+
+
+        /* User Dropdown */
+        .user-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            width: 280px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            display: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+            .user-dropdown.active {
+                display: block;
+            }
+
+        /* Header */
+        .dropdown-header {
+            padding: 18px;
+            background: #f8f9fa;
+        }
+
+        /* Divider */
+        .dropdown-divider {
+            height: 1px;
+            background: #eee;
+            margin: 0;
+        }
+
+        /* Items */
+        .user-dropdown .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+            .user-dropdown .dropdown-item i {
+                width: 18px;
+                text-align: center;
+                opacity: 0.7;
+            }
+
+            .user-dropdown .dropdown-item:hover {
+                background: #f5f7fa;
+            }
+
+            .user-dropdown .dropdown-item.text-danger {
+                color: #dc3545;
+            }
+
+                .user-dropdown .dropdown-item.text-danger:hover {
+                    background: #fff5f5;
+                }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @@media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 250px 1fr 180px;
+                gap: 10px;
+            }
+
+            .tag-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .left-sidebar,
+            .right-sidebar {
+                display: none;
+            }
+
+            .blog-content {
+                padding: 32px 24px;
+            }
+
+            .blog-header {
+                padding: 32px 24px 24px;
+            }
+
+            .blog-tags-section {
+                padding: 24px;
+            }
+
+            .comments-section {
+                padding: 32px 24px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .search-input {
+                max-width: 300px;
+            }
+
+            .blog-title-main {
+                font-size: 2rem;
+            }
+
+            .blog-featured-image {
+                height: 300px;
+            }
+
+            .blog-content p {
+                font-size: 1rem;
+            }
+
+            .replies {
+                padding-left: 24px;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .header-menu {
+                gap: 8px;
+            }
+
+            .search-input {
+                display: none;
+            }
+
+            .site-name {
+                font-size: 1.25rem;
+            }
+
+            .blog-title-main {
+                font-size: 1.5rem;
+            }
+
+            .blog-content {
+                padding: 24px 16px;
+            }
+
+            .blog-header {
+                padding: 24px 16px 16px;
+            }
+
+            .comments-section {
+                padding: 24px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <div class="col-md-3" onclick="window.location.href='/blog/@Model.Slug'" style="cursor:pointer">
+                    <div class="site-name">
+                        <i class="bi bi-share"></i>@Model.Name
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    @* <input type="text" class="search-input" placeholder="Search by post title"> *@
+                </div>
+                <div class="col-md-3 text-end position-relative">
+                    <div class="header-menu d-inline-flex align-items-center gap-2">
+                        <img src="~/Reader/images/user.jpg" alt="User" class="user-avatar" id="userAvatar" style="cursor:pointer;">
+                        <div class="user-dropdown shadow-sm" id="userDropdown">
+                            @if (isSignedIn && SignInManager.IsSignedIn(User))
+                            {
+                                <div class="dropdown-header px-3 py-2 align-items-center">
+                                    <div class="fw-medium">@($"{user?.FirstName} {user?.LastName}".Trim())</div>
+                                </div>
+
+                                <hr class="my-1">
+
+                                <a asp-action="Index"
+                                   asp-controller="Library"
+                                   asp-area="Reader"
+                                   class="dropdown-item">
+                                    <i class="bi bi-bookmark-fill"></i> Library
+                                </a>
+
+                                <a href="/Account/Manage" class="dropdown-item">
+                                    <i class="bi bi-person-fill-gear me-2"></i> Profile Settings
+                                </a>
+
+                                
+
+                                <hr class="my-1">
+                                @if (user.HasBlog)
+                                {
+                                    <a asp-action="Index" asp-area="Blogger" asp-controller="Blog" class="dropdown-item">
+                                        <i class="bi bi-file-text"></i> Blog Management
+                                    </a>
+
+                                    <hr class="my-1">
+                                }
+
+                                <form asp-controller="Account"
+                                      asp-action="Logout"
+                                      asp-area=""
+                                      method="post">
+                                    <button class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <hr class="my-1">
+
+                                <a asp-controller="Account" asp-area="" asp-action="Login" class="dropdown-item">
+                                    <i class="bi bi-box-arrow-in-right"></i> Sign in
+                                </a>
+
+                                <a class="btn btn-dark btn-sm dropdown-item"
+                                   asp-controller="Account"
+                                   asp-area=""
+                                   asp-action="Register">
+                                    <i class="bi bi-rocket-takeoff me-2"></i>  Get started
+                                </a>
+
+                                <hr class="my-1">
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Main Content - Blog Post Detail -->
+            <main class="main-content">
+                <!-- Blog Header -->
+                <div class="blog-header">
+                    <div class="blog-meta">
+                        <img src="~/img/c.jpg" alt="Author" class="author-avatar-large">
+                        <div class="author-info-main" onclick="window.location.href='/blog/@Model.Slug'" style="cursor:pointer">
+                            <span class="author-name-large">@Model.Name</span>
+                            <span class="blog-channel"> @{@author.FirstName} @{@author.LastName}</span>
+                        </div>
+                        <div class="post-date-main">
+                            <i class="bi bi-clock me-1"></i>2 hours ago
+                        </div>
+                        <div class="blog-menu-container">
+                            <button class="btn-blog-menu" onclick="toggleBlogMenu(event, this)">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <div class="blog-menu-dropdown">
+                                <button class="menu-item" onclick="reportPost(event)">
+                                    <i class="bi bi-flag"></i>
+                                    <span>Report</span>
+                                </button>
+                                @if (isSignedIn && SignInManager.IsSignedIn(User))
+                             {
+                                <button class="menu-item" onclick="addToLibrary(event)">
+                                    <i class="bi bi-bookmark"></i>
+                                    <span>Add to Library</span>
+                                </button>
+                             }
+                                <button class="menu-item" onclick="sharePost(event)">
+                                    <i class="bi bi-share"></i>
+                                    <span>Share</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <h1 class="blog-title-main">@Model.Post.Title</h1>
+                    <div class="blog-stats-main">
+                        <span class="stat-item">
+                            <i class="bi bi-chat-dots"></i>
+                            <span>@Model.Comments.Count() comments</span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="bi bi-heart"></i>
+                            <span>892 likes</span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="bi bi-book"></i>
+                            <span>7 min read</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Featured Image -->
+                <img src="/uploads/blogPost/@Model.Post.ThumbnailPath" alt="Blog Featured" class="blog-featured-image">
+
+                <!-- Blog Content -->
+                <div class="blog-content" id="blog-content"></div>
+
+                <!-- Tags Section -->
+                <div class="blog-tags-section">
+                    <div class="tags-title">Tagged with</div>
+                    <div class="blog-tags">
+                        @foreach(var tag in Model.Post.Tags){
+                            <a href="#" class="blog-tag">@tag.Name</a>
+                        }
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="comments-section">
+                    <h2 class="comments-header">
+                        <i class="bi bi-chat-left-text me-2"></i>
+                        Comments (@Model.Comments.Count())
+                    </h2>
+
+                    <!-- Comment Form -->
+                    <div class="comment-form">
+                        <form id="commentForm" asp-action="Create" asp-area="Reader" asp-controller="Comment" asp-antiforgery="true">
+                            <div class="form-group">
+                                <label class="form-label" asp-for="Comment.Name">Name</label>
+                                <input type="hidden" asp-for="Comment.BlogPostId" name="BlogPostId" value="@Model.Post.Id">
+                                <input type="hidden" asp-for="Comment.BlogSiteId" name="BlogSiteId" value="@Model.Id">
+                                <input type="text" asp-for="@Model.Comment.Name" name="Name" class="form-input" placeholder="Mr.Name">
+                                <span asp-validation-for="Comment.Name" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" asp-for="@Model.Comment.Email">Email Address</label>
+                                <input type="email" class="form-input" name="Email" placeholder="your@email.com" asp-for="@Model.Comment.Email">
+                                <span asp-validation-for="Comment.Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Your Comment</label>
+                                <textarea class="form-textarea" placeholder="Share your thoughts..." name="Text" asp-for="@Model.Comment.Text"></textarea>
+                                <span asp-validation-for="Comment.Text" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="btn-submit-comment">
+                                <i class="bi bi-send me-2"></i>Post Comment
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Comments List -->
+                    <!-- Comments List -->
+                    <div class="comments-list">
+                        @foreach (var comment in Model.Comments)
+                        {
+                            <div class="comment">
+                                <div class="comment-header">
+                                    <div class="comment-avatar">@comment.Name?.Substring(0, Math.Min(2, comment.Name.Length)).ToUpper()</div>
+                                    <div class="comment-info">
+                                        <div class="comment-author">@comment.Name</div>
+                                        <div class="comment-date">@comment.CreateAt.Humanize()</div>
+                                    </div>
+                                </div>
+                                <div class="comment-text" style="margin-left:50px">
+                                    @comment.Text
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <textarea id="editor-data" style="display:none;">
+        @Model.Post.Body
+    </textarea>
+
+ 
+    @if (isSignedIn && SignInManager.IsSignedIn(User))
+    {
+        <input type="hidden" id="userId" value="@UserManager.GetUserId(User)" />
+        <partial name="_ChatViewPartial" />
+    }
+ 
+    <!-- Report Blog Post Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-sm rounded-3">
+
+                <!-- Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold" id="reportModalLabel">
+                        Report this post
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Form -->
+                <form id="reportForm" method="post" asp-area="Reader" asp-controller="Report" asp-action="Create">
+                    <div class="modal-body">
+
+                        <!-- Hidden BlogPostId -->
+                        <input type="hidden" name="BlogPostId" value="@Model.Post.Id" />
+
+                        <!-- Report Text -->
+                        <div class="mb-3">
+                            <label for="ReportText" class="form-label">
+                                Why are you reporting this post?
+                            </label>
+
+                            <textarea class="form-control" id="ReportText" name="ReportText" rows="4"maxlength="1000" placeholder="Describe the issue (e.g., spam, inappropriate content, misinformation...)" required></textarea>
+
+                            <div class="form-text">
+                                Maximum 1000 characters.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="btn btn-danger">
+                            Submit Report
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+        <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/chat.js"></script>
+    @* <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script> *@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-html@3.4.0/build/edjsHTML.browser.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Tag button functionality
+        document.querySelectorAll('.tag-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.tag-button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Follow button functionality
+        document.querySelectorAll('.btn-follow-small').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (this.classList.contains('following')) {
+                    this.classList.remove('following');
+                    this.textContent = 'Follow';
+                } else {
+                    this.classList.add('following');
+                    this.textContent = 'Following';
+                }
+            });
+        });
+
+        // FAB button functionality
+        document.querySelector('.fab-write').addEventListener('click', function() {
+            alert('Opening blog editor...');
+        });
+
+        // Menu toggle
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            alert('Menu functionality would open here');
+        });
+
+        // Three-dot menu toggle
+        function toggleBlogMenu(event, button) {
+            event.stopPropagation();
+
+            const dropdown = button.nextElementSibling;
+
+            document.querySelectorAll('.blog-menu-dropdown').forEach(d => {
+                if (d !== dropdown) d.classList.remove('active');
+            });
+
+            dropdown.classList.toggle('active');
+        }
+
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.blog-menu-container')) {
+                document.querySelectorAll('.blog-menu-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+
+        // Report post
+        function reportPost(event) {
+            event.stopPropagation();
+            document.querySelectorAll('.blog-menu-dropdown').forEach(d => d.classList.remove('active'));
+            $("#reportModal").modal("show");
+        }
+
+        // Add to library
+        function addToLibrary(event) {
+            event.stopPropagation();
+            document.querySelectorAll('.blog-menu-dropdown').forEach(d => d.classList.remove('active'));
+                event.preventDefault();
+                const userId = $("#userId").val();
+                $.ajax({
+                    type:'POST',
+                    url: '/reader/library/create',
+                    data:{applicationUserId:userId,BlogPostId:'@Model.Post.Id'} ,
+                    success: function () {
+                        showToast("Post added successfully", "success");
+                    },
+
+                    error: function () {
+                        showToast("Something went wrong", "danger");
+                    }
+                });
+        }
+
+        // Share post
+        function sharePost() {
+            event.stopPropagation();
+            document.querySelectorAll('.blog-menu-dropdown').forEach(d => d.classList.remove('active'));
+
+            if (navigator.share) {
+                navigator.share({
+                    title: document.querySelector('.blog-title-main').textContent,
+                    text: 'Check out this article on ShareThought',
+                    url: window.location.href
+                }).catch((error) => console.log('Error sharing:', error));
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Link copied to clipboard!');
+                }).catch(() => {
+                    alert('Share link: ' + url);
+                });
+            }
+        }
+
+        // Comment form submission
+        document.getElementById('commentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            const comment = this.querySelector('textarea').value;
+
+            // Get initials from email
+            const initials = email.substring(0, 2).toUpperCase();
+
+            // Create new comment element
+            const newComment = document.createElement('div');
+            newComment.className = 'comment';
+            newComment.innerHTML = `
+                <div class="comment-header">
+                    <div class="comment-avatar">${initials}</div>
+                    <div class="comment-info">
+                        <div class="comment-author">${email}</div>
+                        <div class="comment-date">Just now</div>
+                    </div>
+                </div>
+                <div class="comment-text">${comment}</div>
+                <div class="comment-actions">
+                    <button class="btn-reply" onclick="toggleReplyForm(this)">
+                        <i class="bi bi-reply me-1"></i>Reply
+                    </button>
+                </div>
+                <div class="reply-form">
+                    <form onsubmit="submitReply(event, this)">
+                        <div class="form-group">
+                            <input type="email" class="form-input" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-textarea" style="min-height: 80px;" placeholder="Write a reply..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit-comment">Post Reply</button>
+                    </form>
+                </div>
+                <div class="replies"></div>
+            `;
+
+            // Add to comments list
+            document.querySelector('.comments-list').insertBefore(newComment, document.querySelector('.comments-list').firstChild);
+
+            // Update comment count
+            const commentCount = document.querySelectorAll('.comment').length;
+            document.querySelector('.comments-header').innerHTML = `
+                <i class="bi bi-chat-left-text me-2"></i>
+                Comments (${commentCount})
+            `;
+
+            // Clear form
+            this.reset();
+
+            // Show success message
+            alert('Comment posted successfully!');
+        });
+
+        // Toggle reply form
+        function toggleReplyForm(button) {
+            const comment = button.closest('.comment, .reply');
+            const replyForm = comment.querySelector('.reply-form');
+            replyForm.classList.toggle('active');
+        }
+
+
+        function submitReply(event, form) {
+            event.preventDefault();
+
+            const email = form.querySelector('input[type="email"]').value;
+            const replyText = form.querySelector('textarea').value;
+            const initials = email.substring(0, 2).toUpperCase();
+
+            const comment = form.closest('.comment, .reply');
+            const repliesContainer = comment.querySelector('.replies');
+
+            // Create new reply element
+            const newReply = document.createElement('div');
+            newReply.className = 'reply';
+            newReply.innerHTML = `
+                <div class="comment-header">
+                    <div class="comment-avatar">${initials}</div>
+                    <div class="comment-info">
+                        <div class="comment-author">${email}</div>
+                        <div class="comment-date">Just now</div>
+                    </div>
+                </div>
+                <div class="comment-text">${replyText}</div>
+            `;
+
+            // Add to replies
+            repliesContainer.appendChild(newReply);
+
+            // Clear and hide form
+            form.reset();
+            form.parentElement.classList.remove('active');
+
+            // Show success message
+            alert('Reply posted successfully!');
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            const raw = document.getElementById("editor-data").value;
+            if (!raw) return;
+            const bodyObj = JSON.parse(raw);
+            const content = edjsHTML().parse(bodyObj).join('');
+            $('#blog-content').html(content);
+
+            $("#reportForm").on("submit", function (e) {
+
+                e.preventDefault();
+
+                var form = $(this);
+                var url = form.attr("action");
+
+                $.ajax({
+                    type: form.attr("method"),
+                    url: url,
+                    data: form.serialize(),
+
+                    beforeSend: function () {
+                        form.find("button[type='submit']")
+                            .prop("disabled", true)
+                            .html('<span class="spinner-border spinner-border-sm"></span> Submitting...');
+                    },
+
+                    success: function () {
+                        form[0].reset();
+                        var modalEl = document.getElementById('reportModal');
+                        var modal = bootstrap.Modal.getInstance(modalEl);
+                        modal.hide();
+                        showToast("Report submitted successfully", "success");
+                    },
+
+                    error: function () {
+                        showToast("Something went wrong", "danger");
+                    },
+
+                    complete: function () {
+                        form.find("button[type='submit']")
+                            .prop("disabled", false)
+                            .text("Submit Report");
+                    }
+                });
+
+            });
+
+            $("#commentForm").on("submit", function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var formData = form.serialize(); 
+                console.log(formData);
+                $.ajax({
+                    url: form.attr("action"),
+                    type: "POST",
+                    data: formData,
+                    success: function (response) {
+                        showToast("Thanks for commenting,your comment will be approved after some moment!", "success");
+                        form.trigger("reset");
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 400 && xhr.responseJSON) {
+
+                            var errors = xhr.responseJSON;
+
+                            $(".text-danger").text("");
+
+                            $.each(errors, function (key, value) {
+                                var validationSpan = $("[data-valmsg-for='" + key + "']");
+                                validationSpan.text(value[0]);
+                            });
+
+                            showToast("Please fix the validation errors.", "danger");
+                        }
+                        else {
+                            showToast("An unexpected error occurred!", "danger");
+                        }
+                    }
+                });
+
+            });
+
+            $("#userAvatar").on("click", function (e) {
+                e.stopPropagation();
+                $("#userDropdown").toggleClass("active");
+            });
+
+            $(document).on("click", function (e) {
+                if (!$(e.target).closest("#userDropdown, #userAvatar").length) {
+                    $("#userDropdown").removeClass("active");
+                }
+            });
+        });
+
+        function showToast(message, type) {
+                var toastEl = document.getElementById('liveToast');
+                var toastBody = toastEl.querySelector('.toast-body');
+                toastBody.innerText = message;
+                toastEl.classList.remove("text-bg-success", "text-bg-danger");
+                toastEl.classList.add("text-bg-" + type);
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+        }
+    </script>
+</body>
+</html>
