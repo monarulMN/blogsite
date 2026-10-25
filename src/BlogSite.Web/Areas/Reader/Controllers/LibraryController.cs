@@ -89,6 +89,9 @@ namespace BlogSite.Web.Areas.Reader.Controllers
             {
                 var user = await _userManager.GetUserAsync(User);
                 var command = _mapper.Map<DeleteLibraryCommand>(user);
+
+                await _mediator.SendCommandAsync<DeleteLibraryCommand, Guid>(command);
+                return Ok();
             }
             catch(Exception ex)
             {
