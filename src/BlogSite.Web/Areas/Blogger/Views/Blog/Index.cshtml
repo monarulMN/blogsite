@@ -1,0 +1,543 @@
+﻿@model StartOwnBlogModel
+
+
+@{
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    ApplicationUser? user = null;
+    if (isSignedIn)
+    {
+        user = await UserManager.GetUserAsync(User);
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareThought - Create Your Blog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
+            --dark-text: #242424;
+            --light-text: #6B6B6B;
+            --border-color: #e5e7eb;
+            --sidebar-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f9fafb;
+            color: var(--dark-text);
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .site-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+            .site-name i {
+                color: var(--primary-color);
+                margin-right: 8px;
+            }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+            .search-input:focus {
+                outline: none;
+                border-color: var(--primary-color);
+            }
+
+        .header-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--dark-text);
+            transition: all 0.3s;
+        }
+
+            .menu-toggle:hover {
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+            }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr 200px;
+            gap: 30px;
+        }
+
+        /* Left Sidebar - Your Interests */
+        .left-sidebar {
+            background: var(--sidebar-bg);
+            padding: 30px 24px;
+            border-radius: 12px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-title {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .tag-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+            .tag-button:hover {
+                background: rgba(255, 255, 255, 0.3);
+                border-color: rgba(255, 255, 255, 0.5);
+                transform: translateY(-2px);
+            }
+
+            .tag-button.active {
+                background: white;
+                color: var(--primary-color);
+                border-color: white;
+                font-weight: 600;
+            }
+
+            .tag-button.full-width {
+                grid-column: span 2;
+            }
+
+        /* Main Content - Blog Creation Form */
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+            .form-header h2 {
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--dark-text);
+                margin-bottom: 10px;
+            }
+
+            .form-header p {
+                font-size: 1rem;
+                color: var(--light-text);
+            }
+
+        .blog-creation-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control-sm {
+            padding: 10px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+            .form-control-sm:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            }
+
+        textarea.form-control-sm {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .btn-create-blog {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+            .btn-create-blog:hover {
+                background: #db2777;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
+            }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        /* Right Sidebar - Blogs to Follow */
+        .right-sidebar {
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+            .right-sidebar::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .right-sidebar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .right-sidebar::-webkit-scrollbar-thumb {
+                background: #ddd;
+                border-radius: 3px;
+            }
+
+        .sidebar-section {
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            margin-bottom: 0;
+            border: none;
+        }
+
+        .blog-item {
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+            .blog-item:hover {
+                border-color: var(--primary-color);
+                background: #f9fafb;
+            }
+
+            .blog-item:last-child {
+                margin-bottom: 0;
+            }
+
+        .blog-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .btn-follow-small {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1.5px solid var(--primary-color);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+            .btn-follow-small:hover {
+                background: var(--primary-color);
+                color: white;
+            }
+
+            .btn-follow-small.following {
+                background: var(--primary-color);
+                color: white;
+            }
+
+        /* Responsive */
+        @@media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 250px 1fr 180px;
+                gap: 20px;
+            }
+
+            .tag-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .left-sidebar,
+            .right-sidebar {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .search-input {
+                max-width: 300px;
+            }
+
+            .main-content {
+                padding: 24px 16px;
+            }
+
+            .form-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .header-menu {
+                gap: 8px;
+            }
+
+            .search-input {
+                display: none;
+            }
+
+            .site-name {
+                font-size: 1.25rem;
+            }
+
+            .main-content {
+                padding: 20px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <div class="col-md-3" onclick="window.location.href='/blog/blog-management'" style="cursor:pointer">
+                    <div class="site-name">
+                        <i class="bi bi-share"></i>ShareThought
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="search-input" placeholder="Search by post title">
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="header-menu justify-content-end">
+                        <!-- User Avatar Dropdown -->
+                        <div class="dropdown">
+                            <img src="~/Reader/images/user.jpg"
+                                 alt="User"
+                                 class="user-avatar rounded-circle"
+                                 id="userAvatar"
+                                 data-bs-toggle="dropdown"
+                                 aria-expanded="false"
+                                 style="cursor:pointer; width:40px; height:40px; object-fit:cover;">
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                @if (SignInManager.IsSignedIn(User))
+                                {
+                                    <li class="dropdown-header">
+                                        <div class="fw-semibold">@($"{user?.FirstName} {user?.LastName}".Trim())</div>
+                                        <small class="text-muted">@user?.Email</small>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a asp-action="Index" asp-controller="Library" asp-area="Reader" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-bookmark-fill"></i> Library
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/Account/Manage" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-person-fill-gear"></i> Profile Settings
+                                        </a>
+                                    </li>
+                                    @if (user.HasBlog)
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a asp-action="Index" asp-area="Blogger" asp-controller="Blog" class="dropdown-item d-flex align-items-center gap-2">
+                                                <i class="bi bi-file-text"></i> Blog Management
+                                            </a>
+                                        </li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" asp-area="" method="post">
+                                            <button class="dropdown-item text-danger d-flex align-items-center gap-2">
+                                                <i class="bi bi-box-arrow-right"></i> Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a asp-controller="Account" asp-area="" asp-action="Login" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-box-arrow-in-right"></i> Sign in
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="btn btn-dark btn-sm dropdown-item d-flex align-items-center gap-2" asp-controller="Account" asp-area="" asp-action="Register">
+                                            <i class="bi bi-rocket-takeoff"></i> Get started
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Left Sidebar - Your Interests -->
+            <aside>
+            </aside>
+
+            <!-- Main Content - Blog Creation Form -->
+            <main class="main-content">
+                <div class="form-header">
+                    <h2><i class="bi bi-pencil-square text-primary me-2"></i>Launch Your Blog</h2>
+                    <p>Share your unique perspective with the world</p>
+                </div>
+                
+                <form asp-action="Create" asp-controller="Blog" asp-area="Blogger" asp-antiforgery="true" class="blog-creation-form">
+                    <partial name="_ResponsePartial" />
+                    <div class="form-group">
+                        <label for="blogName" class="form-label">
+                            <i class="bi bi-journal-text me-1"></i>Blog Name
+                        </label>
+
+                        <input asp-for="Name" type="text"
+                               class="form-control-sm"
+                               id="blogName"
+                               placeholder="Enter your blog name"
+                               required>
+                        <div asp-for="Name" class="form-text">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="blogDescription" class="form-label">
+                            <i class="bi bi-chat-quote me-1"></i>Blog Description
+                        </label>
+
+                        <textarea 
+                        asp-for="Description" 
+                        class="form-control-sm"
+                        id="blogDescription"
+                        placeholder="What kind of thoughts and ideas will you share? Describe your blog's focus and the topics you're passionate about..."
+                        required>
+                        </textarea>
+                        <div asp-for="Description" class="form-text">
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-create-blog">
+                        <i class="bi bi-rocket-takeoff me-2"></i>START
+                    </button>
+                </form>
+            </main>
+
+            <!-- Right Sidebar - Blogs to Follow -->
+            <aside></aside>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html>

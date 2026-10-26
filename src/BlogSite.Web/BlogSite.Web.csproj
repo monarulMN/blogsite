@@ -29,10 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Blogger\Controllers\" />
     <Folder Include="Areas\Blogger\Data\" />
-    <Folder Include="Areas\Blogger\Models\" />
-    <Folder Include="Areas\Blogger\Views\" />
     <Folder Include="Logs\" />
   </ItemGroup>
 

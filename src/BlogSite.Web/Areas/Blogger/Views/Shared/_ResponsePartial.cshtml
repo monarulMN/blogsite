@@ -1,0 +1,14 @@
+﻿@using BlogSite.Infrastructure.Extensions;
+@using BlogSite.Web.Areas.Blogger.Models
+
+@if(TempData.Peek<ResponseModel>("ResponseMessage") != null)
+{
+    var response = TempData.Get<ResponseModel>("ResponseMessage");
+
+    <div class="alert alert-@response.Type.ToString().ToLower() alert-dismissible fade show" role="alert">
+        @response.Message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div asp-validation-summary="All" class="text-danger mb-3"> </div>
