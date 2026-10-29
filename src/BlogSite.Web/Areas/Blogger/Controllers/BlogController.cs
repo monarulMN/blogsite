@@ -1,5 +1,11 @@
 ﻿using BlogSite.Application.Contracts;
+using BlogSite.Application.Features.BlogSites.Commands;
+using BlogSite.Domain.Entities;
+using BlogSite.Infrastructure.Extensions;
 using BlogSite.Infrastructure.Identity;
+using BlogSite.Web.Areas.Admin.Models;
+using BlogSite.Web.Areas.Blogger.Models.Blog;
+using BlogSite.Web.Codes;
 using Cortex.Mediator;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -47,6 +53,57 @@ namespace BlogSite.Web.Areas.Blogger.Controllers
             }
             else
                 return View();
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Reader")]
+        public async Task<IActionResult> Create(StartOwnBlogModel model)
+        {
+            try
+            {
+                ApplicationUser? user = await _userManager.GetUserAsync(User);
+
+                model.AuthorId = user.Id;
+
+                if(ModelState.IsValid && !user.HasBlog)
+                {
+                    var command = _mapper.Map<BlogSiteAddCommand>(model);
+                    command.CreatedAt = _serverTime.DateTime;
+                    command.UpdatedAt = _serverTime.DateTime;
+
+                    await _mediator.SendCommandAsync<BlogSiteAddCommand, Blogsite>(command);
+
+                    user.HasBlog = true;
+                    await _userManager.AddToRoleAsync(user, "Blogger");
+                    await _userManager.UpdateAsync(user);
+                    await _signInManager.RefreshSignInAsync(user);
+
+                    TempData.Put(Constants.ResponseTemkey,
+                        new ResponseModel
+                        {
+                            Message = " Blog site created successfully",
+                            Type = ResponseType.Success
+                        });
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return View("Index", model);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating blog site for user {UserId}", User.Identity.Name);
+
+                ModelState.AddModelError(string.Empty, "An error occurred while creating your blog. Please try again later.");
+
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Blog site don't create",
+                        Type = ResponseType.Danger
+                    });
+
+                return View("Index", model);
+            }
         }
     }
 }
