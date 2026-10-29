@@ -1,5 +1,6 @@
 ﻿using BlogSite.Application.Contracts;
 using BlogSite.Application.Features.BlogSites.Commands;
+using BlogSite.Application.Features.BlogSites.Queries;
 using BlogSite.Domain.Entities;
 using BlogSite.Infrastructure.Extensions;
 using BlogSite.Infrastructure.Identity;
@@ -104,6 +105,86 @@ namespace BlogSite.Web.Areas.Blogger.Controllers
 
                 return View("Index", model);
             }
+        }
+
+        [Authorize(Roles = "Blogger")]
+        public async Task<IActionResult> Update()
+        {
+            try
+            {
+                ApplicationUser? user = await _userManager.GetUserAsync(User);
+
+                var query = new GetBlogSiteByUserQuery { AuthorId = user.Id };
+                var blogSite = await _mediator.SendQueryAsync<GetBlogSiteByUserQuery, Blogsite>(query);
+
+                var model = _mapper.Map<UpdateBlogSiteModel>(blogSite);
+
+                return View(model);
+
+            }
+            catch(Exception ex)
+            {
+                TempData.Put(Constants.ResponseTemkey,
+                    new ResponseModel
+                    {
+                        Message = "Blog site data don't found",
+                        Type = ResponseType.Danger
+                    });
+
+                _logger.LogError(ex, "Error occurred while getting blog site");
+
+                ModelState.AddModelError(string.Empty, 
+                    "An error occurred while getting your blog site. Please try again later.");
+
+                return RedirectToAction("Index", "BlogManagement");
+            }
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Blogger")]
+        public async Task<IActionResult> Update(UpdateBlogSiteModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+
+                    var command = _mapper.Map<BlogSiteUpdateCommand>(model);
+                    command.UpdatedAt = _serverTime.DateTime;
+                    await _mediator.SendCommandAsync<BlogSiteUpdateCommand, Blogsite>(command);
+
+                    TempData.Put(Constants.ResponseTemkey, 
+                        new Models.ResponseModel
+                        {
+                            Message = "Blog site updated successfully.",
+                            Type = Models.ResponseType.Success
+                        });
+
+                    return RedirectToAction("Index", "BlogManagement");
+                }
+
+                return RedirectToAction("Index", "BlogManagement", model);
+            }
+            catch (Exception ex)
+            {
+                TempData.Put(Constants.ResponseTemkey, 
+                    new Models.ResponseModel
+                    {
+                        Message = "Blog site not updated.",
+                        Type = Models.ResponseType.Danger
+                    });
+
+                _logger.LogError(ex, "Error occurred while updateing blog site");
+
+                ModelState.AddModelError(string.Empty, 
+                    "An error occurred while updateing your blog. Please try again later.");
+
+                return RedirectToAction("Index", "BlogManagement", model);
+            }
+        }
+
+        public IActionResult Restricted()
+        {
+            return View();
         }
     }
 }
