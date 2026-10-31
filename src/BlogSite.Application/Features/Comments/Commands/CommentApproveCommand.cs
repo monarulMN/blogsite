@@ -6,7 +6,8 @@ using System.Text;
 
 namespace BlogSite.Application.Features.Comments.Commands
 {
-    public class CommentApproveCommand : ICommand<Comment>
+    public class CommentApproveCommand : ICommand<Guid>
     {
+        public Guid CommentId { get; set; }
     }
 }

@@ -1,0 +1,667 @@
+﻿
+@{
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    ApplicationUser? user = null;
+    if (isSignedIn)
+    {
+        user = await UserManager.GetUserAsync(User);
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.T - Posts Management</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
+            --dark-text: #242424;
+            --light-text: #6B6B6B;
+            --border-color: #e5e7eb;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f9fafb;
+            color: var(--dark-text);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .site-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+            .site-name i {
+                color: var(--primary-color);
+                margin-right: 8px;
+            }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+            .search-input:focus {
+                outline: none;
+                border-color: var(--primary-color);
+            }
+
+        .header-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--dark-text);
+            transition: all 0.3s;
+        }
+
+            .menu-toggle:hover {
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+            }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+            .page-header h1 {
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--dark-text);
+                margin-bottom: 8px;
+            }
+
+            .page-header p {
+                font-size: 1rem;
+                color: var(--light-text);
+            }
+
+        /* Card */
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            padding: 24px 28px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title-custom {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .card-title-custom i {
+                color: var(--primary-color);
+            }
+
+        .btn-add-new {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .btn-add-new:hover {
+                background: #4f46e5;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            }
+
+        .card-body-custom {
+            padding: 0;
+        }
+
+        /* Table */
+        .table-sm {
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+            .table-sm thead {
+                background: #f9fafb;
+            }
+
+                .table-sm thead th {
+                    font-weight: 600;
+                    color: var(--dark-text);
+                    border-bottom: 2px solid var(--border-color);
+                    padding: 16px 28px;
+                    text-transform: uppercase;
+                    font-size: 0.75rem;
+                    letter-spacing: 0.5px;
+                }
+
+            .table-sm tbody td {
+                padding: 16px 28px;
+                vertical-align: middle;
+                color: var(--dark-text);
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .table-sm tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .table-sm tbody tr {
+                transition: background-color 0.2s;
+            }
+
+                .table-sm tbody tr:hover {
+                    background-color: #f9fafb;
+                }
+
+        .category-name {
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .category-description {
+            color: var(--light-text);
+            font-size: 0.8125rem;
+        }
+
+        .post-count-badge {
+            background: #e0e7ff;
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+            .status-badge.active {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .status-badge.inactive {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            background: transparent;
+            border: 1.5px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--dark-text);
+        }
+
+            .btn-action:hover {
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+                background: #f9fafb;
+            }
+
+            .btn-action.delete:hover {
+                border-color: #ef4444;
+                color: #ef4444;
+            }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .search-input {
+                max-width: 300px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card-header-custom {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .table-sm thead th,
+            .table-sm tbody td {
+                padding: 12px 16px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-action {
+                width: 100%;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .header-menu {
+                gap: 8px;
+            }
+
+            .search-input {
+                display: none;
+            }
+
+            .site-name {
+                font-size: 1.25rem;
+            }
+
+            .main-container {
+                padding: 24px 16px;
+            }
+
+            .card-header-custom,
+            .table-sm thead th,
+            .table-sm tbody td {
+                padding: 12px 16px;
+            }
+            /* Stack table on mobile */
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <div class="col-md-3" onclick="window.location.href='/blog/blog-management'" style="cursor:pointer">
+                    <div class="site-name">
+                        <i class="bi bi-layout-text-sidebar-reverse"></i>S.T-Management
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="search-input" placeholder="Search posts">
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="header-menu justify-content-end">
+                        <!-- User Avatar Dropdown -->
+                        <div class="dropdown">
+                            <img src="~/Reader/images/user.jpg"
+                                 alt="User"
+                                 class="user-avatar rounded-circle"
+                                 id="userAvatar"
+                                 data-bs-toggle="dropdown"
+                                 aria-expanded="false"
+                                 style="cursor:pointer; width:40px; height:40px; object-fit:cover;">
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                @if (SignInManager.IsSignedIn(User))
+                                {
+                                    <li class="dropdown-header">
+                                        <div class="fw-semibold">@($"{user?.FirstName} {user?.LastName}".Trim())</div>
+                                        <small class="text-muted">@user?.Email</small>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a asp-action="Index" asp-controller="Library" asp-area="Reader" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-bookmark-fill"></i> Library
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/Account/Manage" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-person-fill-gear"></i> Profile Settings
+                                        </a>
+                                    </li>
+                                    @if (user.HasBlog)
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a asp-action="Index" asp-area="Blogger" asp-controller="Blog" class="dropdown-item d-flex align-items-center gap-2">
+                                                <i class="bi bi-file-text"></i> Blog Management
+                                            </a>
+                                        </li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" asp-area="" method="post">
+                                            <button class="dropdown-item text-danger d-flex align-items-center gap-2">
+                                                <i class="bi bi-box-arrow-right"></i> Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a asp-controller="Account" asp-area="" asp-action="Login" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-box-arrow-in-right"></i> Sign in
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="btn btn-dark btn-sm dropdown-item d-flex align-items-center gap-2" asp-controller="Account" asp-area="" asp-action="Register">
+                                            <i class="bi bi-rocket-takeoff"></i> Get started
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1><i class="bi bi-file-text me-2"></i>Posts</h1>
+            <p>Manage all blog posts from one place</p>
+        </div>
+
+        <!-- Content Card -->
+        <div class="content-card">
+
+            <!-- Card Header -->
+            <div class="card-header-custom">
+                <h2 class="card-title-custom">
+                    <i class="bi bi-list-ul"></i>
+                    All Posts
+                </h2>
+                <a asp-action="Create" asp-area="Blogger" asp-controller="Post" class="btn-add-new">
+                    <i class="bi bi-plus-circle"></i>
+                    Add New Post
+                </a>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body-custom">
+                <div class="table-responsive">
+                    <partial name="_ResponsePartial" />
+                    <table class="table table-sm" id="posts">
+                        <thead>
+                            <tr>
+                                <th>Post Thumbnail</th>
+                                <th>Post Title</th>
+                                <th>Post Status</th>
+                                <th>Post Body</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="modal-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this post?</p>
+                    <form id="delete-form" method="post">
+                        <input type="hidden" id="delete-id" name="id" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger" id="delete-button">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="modal-view">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Post Thumbnail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="" class="rounded" height="250" width="350" id="post-view-img"/>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-dialog-scrollable" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="post-body-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Post Body view</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="post-body-view">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-html@3.4.0/build/edjsHTML.browser.min.js"></script>
+    <script>
+         $(function(){
+             $("#posts").DataTable({
+                 processing: true,
+                 serverSide: true,
+                 responsive: true,
+                 lengthChange: true,
+                 autoWidth: false,
+                 ajax:{
+                     url:'/Blogger/Post/GetPostData',
+                     type:'post',
+                     contentType:'application/json',
+                     dataType:'json',
+                     data: function(d){
+                         d.searchItem = {
+
+                         };
+
+                         return JSON.stringify(d);
+                     }
+                 },
+                 columnDefs: [
+                     {
+                         targets: 5, orderable: false,render:function(d)
+                         {
+                                     return `
+                                         <button
+                                             onclick="window.location.href='/Blogger/Post/Update/${d}'"
+                                             type="button"
+                                             class="btn btn-info btn-sm"
+                                             title="Edit data">
+                                             <i class="bi bi-pencil-square me-2"></i>
+                                         </button>
+
+                                         <button
+                                             onclick="deletePost('${d}')"
+                                             type="button"
+                                             class="btn btn-danger btn-sm"
+                                             title="Delete data">
+                                             <i class="bi bi-trash me-2"></i>
+                                         </button>
+                                         `;
+                         },
+                     },
+                     {
+                         targets: 3, orderable: false,render:function(d)
+                         {
+                                     return `
+                                         <button
+                                             onclick='postBodyView(${d})'
+                                             type="button"
+                                             class="btn btn-info btn-sm"
+                                             title="view post body">
+                                             <i class="bi bi-eye me-2"></i>
+                                         </button>`;
+                          }    
+                    },
+                    {targets: 4, orderable: false},
+                    {   
+                        targets: 0, orderable: false,render:function(d)
+                        {
+                          return `<img src="/uploads/blogPost/${d}" class="rounded" width="50" height="50" onclick="view('${d}')" style="cursor: pointer;" title="click to large view">`;
+                        }
+                    },
+
+                    {
+                        targets: 1, orderable: true,render:function(d)
+                        {
+                            var maxLength = 50;
+                            if (d.length > maxLength) {
+                                return d.substring(0, maxLength) + '...';
+                            }
+
+                            return d;
+                        }
+                    },
+
+                    {
+                        targets: 2, orderable: true,render:function(d)
+                        {
+                            
+                            if (d == "Draft") {
+                                return `<span class="badge bg-danger">${d}</span>`;
+                            }
+
+                            return `<span class="badge bg-success">${d}</span>`;
+                        }
+                    },
+                 ]
+             });
+         });
+
+
+         function deletePost(d){
+             let deleteModal = $("#modal-delete");
+             $("#modalTitle").html("Delete Post");
+             deleteModal.find('.modal-body p').text(`Do you really want to delete this post?`);
+             $("#delete-id").val(d);
+             $('#delete-form').attr('action', '/Blogger/Post/delete');
+             deleteModal.modal('show');
+         }
+
+        $('#delete-button').click(function(){
+             $("#modalTitle").html("Delete Post");
+             $("#modal-view").modal("show");
+            $('#delete-form').submit();
+        });
+
+        function view(d){
+             $("#post-view-img").attr('src',`/uploads/blogPost/${d}`);
+             $("#modal-view").modal("show");
+        }
+
+        function postBodyView(d) {
+            const parsed = edjsHTML().parse(d);
+            $('#post-body-view').html(parsed);
+            $("#post-body-modal").modal("show");
+        }
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,744 @@
+﻿@model AddBlogPostModel
+
+@{
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    ApplicationUser? user = null;
+    if (isSignedIn)
+    {
+        user = await UserManager.GetUserAsync(User);
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.T - Add Post</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@editorjs/editorjs@latest/dist/editor.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
+            --dark-text: #242424;
+            --light-text: #6B6B6B;
+            --border-color: #e5e7eb;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f9fafb;
+            color: var(--dark-text);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .site-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+            .site-name i {
+                color: var(--primary-color);
+                margin-right: 8px;
+            }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+            .search-input:focus {
+                outline: none;
+                border-color: var(--primary-color);
+            }
+
+        .header-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--dark-text);
+            transition: all 0.3s;
+        }
+
+            .menu-toggle:hover {
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+            }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+            .page-header h1 {
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--dark-text);
+                margin-bottom: 8px;
+            }
+
+            .page-header p {
+                font-size: 1rem;
+                color: var(--light-text);
+            }
+
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card-header-custom {
+            padding: 24px 28px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .card-title-custom {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .card-title-custom i {
+                color: var(--primary-color);
+            }
+
+        .card-body-custom {
+            padding: 32px 28px;
+        }
+
+        /* Form Styles */
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .form-label i {
+                color: var(--primary-color);
+            }
+
+        .form-control-sm {
+            padding: 10px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+            .form-control-sm:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            }
+
+        .form-text {
+            font-size: 0.8125rem;
+            color: var(--light-text);
+            margin-top: 6px;
+        }
+
+        .text-danger {
+            color: #dc2626;
+            font-size: 0.8125rem;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-submit {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .btn-submit:hover {
+                background: #4f46e5;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--dark-text);
+            border: 2px solid var(--border-color);
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .btn-cancel:hover {
+                border-color: var(--dark-text);
+                background: #f9fafb;
+            }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .search-input {
+                max-width: 300px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card-header-custom,
+            .card-body-custom {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-submit,
+            .btn-cancel {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .header-menu {
+                gap: 8px;
+            }
+
+            .search-input {
+                display: none;
+            }
+
+            .site-name {
+                font-size: 1.25rem;
+            }
+
+            .main-container {
+                padding: 24px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <div class="col-md-3" onclick="window.location.href='/blog/blog-management'" style="cursor:pointer">
+                    <div class="site-name">
+                        <i class="bi bi-layout-text-sidebar-reverse"></i>S.T-Management
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="search-input" placeholder="Search by post title">
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="header-menu justify-content-end">
+                        <!-- User Avatar Dropdown -->
+                        <div class="dropdown">
+                            <img src="~/Reader/images/user.jpg"
+                                 alt="User"
+                                 class="user-avatar rounded-circle"
+                                 id="userAvatar"
+                                 data-bs-toggle="dropdown"
+                                 aria-expanded="false"
+                                 style="cursor:pointer; width:40px; height:40px; object-fit:cover;">
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                @if (SignInManager.IsSignedIn(User))
+                                {
+                                    <li class="dropdown-header">
+                                        <div class="fw-semibold">@($"{user?.FirstName} {user?.LastName}".Trim())</div>
+                                        <small class="text-muted">@user?.Email</small>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a asp-action="Index" asp-controller="Library" asp-area="Reader" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-bookmark-fill"></i> Library
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/Account/Manage" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-person-fill-gear"></i> Profile Settings
+                                        </a>
+                                    </li>
+                                    @if (user.HasBlog)
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a asp-action="Index" asp-area="Blogger" asp-controller="Blog" class="dropdown-item d-flex align-items-center gap-2">
+                                                <i class="bi bi-file-text"></i> Blog Management
+                                            </a>
+                                        </li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" asp-area="" method="post">
+                                            <button class="dropdown-item text-danger d-flex align-items-center gap-2">
+                                                <i class="bi bi-box-arrow-right"></i> Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a asp-controller="Account" asp-area="" asp-action="Login" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="bi bi-box-arrow-in-right"></i> Sign in
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="btn btn-dark btn-sm dropdown-item d-flex align-items-center gap-2" asp-controller="Account" asp-area="" asp-action="Register">
+                                            <i class="bi bi-rocket-takeoff"></i> Get started
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1><i class="bi bi-bookmarks me-2"></i>Add New Post</h1>
+            <p>Create a new post to organize your blog posts</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <!-- Card Header -->
+            <div class="card-header-custom">
+                <h2 class="card-title-custom">
+                    <i class="bi bi-pencil-square"></i>
+                    Post Information
+                </h2>
+            </div>
+
+            <!-- Card Body with Form -->
+            <div class="card-body-custom">
+                <form asp-action="Create"
+                      asp-area="Blogger"
+                      asp-controller="Post"
+                      method="post"
+                      enctype="multipart/form-data"
+                      asp-antiforgery="true">
+
+                    <partial name="_ResponsePartial" />
+
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-type"></i> Post Title
+                        </label>
+                        <input asp-for="Title"
+                               class="form-control form-control-sm"
+                               placeholder="Enter post title" required>
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-folder2-open"></i> Categories
+                        </label>
+                        <select asp-for="Categories"
+                                class="form-control form-control-sm select2"
+                                multiple required>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Categories" class="text-danger"></span>
+                    <!-- Tags -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-tags"></i> Tags
+                        </label>
+                        <select asp-for="Tags"
+                                class="form-control form-control-sm select2-tags"
+                                multiple required>
+                        </select>
+                        <span asp-validation-for="Tags" class="text-danger"></span>
+                    </div>
+
+                    <!-- Thumbnail -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-image"></i> Thumbnail
+                        </label>
+                        <input asp-for="Thumbnail"
+                               type="file"
+                               accept="image/*"
+                               class="form-control form-control-sm" required>
+                        <span asp-validation-for="Thumbnail" class="text-danger"></span>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-pencil-square"></i> Post Content
+                        </label>
+
+                        <div id="editorjs"
+                             class="border rounded p-2"
+                             style="min-height:300px;background:#fff">
+                        </div>
+
+                        <input type="hidden" asp-for="Body"/>
+                        <span asp-validation-for="Body" class="text-danger"></span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-toggle-on"></i> Status
+                        </label>
+                        <select 
+                                asp-for="PostStatus"
+                                class="form-control form-control-sm" required>
+                            <option selected disabled>choose post publishing status</option>
+                            <option value="0">Draft</option>
+                            <option value="1">Publish</option>
+                        </select>
+                        <span asp-validation-for="PostStatus" class="text-danger"></span>
+                    </div>
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="enableBtn"></div>
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit" id="submitBtn" disabled>
+                            <i class="bi bi-check-circle"></i> Create Post
+                        </button>
+                        <a onclick="history.back()" class="btn-cancel">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+   
+    <script>
+        $(document).ready(function () {
+            $("#Categories").select2({
+                placeholder: "search categories here..",
+                tags: true,
+                minimumInputLength: 2,
+                ajax: {
+                    url: "/Blogger/Category/GetCategorySearchData",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    delay: 300,
+
+                    data: function (params) {
+                        console.log(params);
+                        const payload = {
+                            SearchText: params.term,
+                        };
+
+                        return JSON.stringify(payload);
+                    },
+
+                    processResults: function (data) {
+                        console.log(data);
+                        return {
+                            results: data
+                        };
+                    }
+                },
+                createTag: function (params) {
+                    return {
+                        id: params.term,
+                        text: params.term,
+                        isNew: true
+                    };
+                }
+            });
+
+            $('#Categories').on('select2:select', function (e) {
+                const data = e.params.data;
+                if (data.isNew) {
+                    const select = $(this);
+                    $.post('/Blogger/Category/Select2Create', { name: data.text }, function (response) {
+                        const newOption = new Option(response.text, response.id, true, true);
+                        select.find("option[value='" + data.id + "']").remove();
+                        $('#Categories').append(newOption).trigger('change');
+                   });
+                }
+            });
+
+            $("#Tags").select2({
+                placeholder: "search tags here..",
+                tags: true,              
+                minimumInputLength: 2,
+                ajax: {
+                    url: "/Blogger/Tag/GetTagSearchData",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    delay: 300,
+                    data: function (params) {
+                        const payload = {
+                            SearchText: params.term,
+                        };
+                        return JSON.stringify(payload);
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                },
+                createTag: function (params) {
+                    return {
+                        id: params.term,
+                        text: params.term,
+                        isNew: true
+                    };
+                }
+            });
+
+            $('#Tags').on('select2:select', function (e) {
+                const data = e.params.data;
+                if (data.isNew) {
+                    const select = $(this);
+                    $.post('/Blogger/Tag/Create', { name: data.text }, function (response) {
+                        const newOption = new Option(response.text, response.id, true, true);
+                        select.find("option[value='" + data.id + "']").remove();
+                        $('#Tags').append(newOption).trigger('change');
+                   });
+                }
+            });
+        });
+    </script>
+
+   
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/editorjs@latest/dist/editor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/list@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/paragraph@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/checklist@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/code@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/inline-code@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/marker@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/underline@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/table@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/delimiter@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/warning@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-text-alignment-blocktune@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-text-color-plugin@2.0.3/dist/bundle.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    
+    <script>
+        function enableBtn() {
+          document.getElementById("submitBtn").disabled = false;
+        }
+    </script>
+
+    <script>
+     const editor = new EditorJS({
+            holder : 'editorjs',
+            autofocus: true,
+            placeholder: 'Start typing your post...',
+            tools: {
+                alignmentTune: {
+                  class: AlignmentBlockTune,
+                  config: {
+                    default: "left",
+                    blocks: {
+                      header: 'center',
+                      list: 'left'
+                    }
+                  },
+                },
+                header: {
+                    class: Header,
+                    
+                    config: {
+                        levels: [2, 3, 4, 5, 6],
+                        defaultLevel: 3,
+                        placeholder: 'Enter a header'
+                    },
+                    inlineToolbar: ['Color','marker','bold','italic'],
+                    tunes: ['alignmentTune']
+                },
+                paragraph: {
+                  class: Paragraph,
+                  inlineToolbar: ['Color','marker','bold','italic'],
+                  tunes: ['alignmentTune']
+                },
+                list: {
+                    class: EditorjsList,
+                    inlineToolbar: true,
+                    config: {
+                        defaultStyle: 'unordered'
+                    }
+                },
+                code: {
+                    class: CodeTool,
+                    inlineToolbar: true
+                },
+                inlineCode: {
+                    class: InlineCode,
+                    inlineToolbar: true
+                },
+                Color: {
+                  class: window.ColorPlugin,
+                  inlineToolbar: true,
+                  config: {
+                     colorCollections: ['#EC7878','#9C27B0','#673AB7','#3F51B5','#0070FF','#03A9F4','#00BCD4','#4CAF50','#8BC34A','#CDDC39', '#FFF'],
+                     defaultColor: '#FF1300',
+                     type: 'text',
+                        icon: `<svg viewBox="0 0 32 32" width="20" height="20"><path d="M17.6,6L6.9,16.7c-0.2,0.2-0.3,0.4-0.3,0.6L6,23.9c0,0.3,0.1,0.6,0.3,0.8C6.5,24.9,6.7,25,7,25c0,0,0.1,0,0.1,0l6.6-0.6 c0.2,0,0.5-0.1,0.6-0.3L25,13.4L17.6,6z"></path><path d="M26.4,12l1.4-1.4c1.2-1.2,1.1-3.1-0.1-4.3l-3-3c-0.6-0.6-1.3-0.9-2.2-0.9c-0.8,0-1.6,0.3-2.2,0.9L19,4.6L26.4,12z"></path><path d="M28,29H4c-0.6,0-1-0.4-1-1s0.4-1,1-1h24c0.6,0,1,0.4,1,1S28.6,29,28,29z"></path></svg>`,
+                     customPicker: true 
+                  }
+                },
+                marker: {
+                    class: window.ColorPlugin,
+                       config: {
+                        defaultColor: '#FFBF00',
+                        type: 'marker',
+                        icon: `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M18.5,2.5c-0.6-0.6-1.5-0.6-2.1,0L11.5,7.4L16.6,12.5l4.9-4.9c0.6-0.6,0.6-1.5,0-2.1L18.5,2.5z M15.2,13.9l-5.1-5.1L4.4,14.5C4.1,14.8,4,15.1,4,15.5V19c0,0.6,0.4,1,1,1h3.5c0.4,0,0.7-0.1,1-0.4L15.2,13.9z"/><rect x="3" y="21" width="18" height="2"/></svg>`,
+                        customPicker: true 
+                       },
+                       inlineToolbar: true
+                },
+                table: {
+                       class: Table,
+                       inlineToolbar: true,
+                       config: {
+                       rows: 2,
+                       cols: 3,
+                       maxRows: 5,
+                       maxCols: 5,
+                    }
+                },
+                warning: {
+                  class: Warning,
+                  inlineToolbar: true,
+                  shortcut: 'CMD+SHIFT+W',
+                  config: {
+                    titlePlaceholder: 'Title',
+                    messagePlaceholder: 'Message',
+                  },
+                },
+                Marker: {
+                  class: Marker,
+                  shortcut: 'CMD+SHIFT+M',
+                  inlineToolbar:true
+                },
+                delimiter: Delimiter
+            },
+            onChange: async () => {
+                try {
+                    const data = await editor.save();
+                    document.getElementById('Body').value = JSON.stringify(data);
+                } catch (err) {
+                    console.error('EditorJS onChange save failed:', err);
+                }
+            }
+        });
+
+        document.querySelector('#editorjs').addEventListener('paste', function(e) {
+            const text = e.clipboardData.getData('text/plain');
+            document.execCommand('insertText', false, text);
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>

@@ -1,7 +1,6 @@
 ﻿using BlogSite.Domain.Utilities;
-using BlogSite.Web.Areas.Blogger.Models.Category;
 
-namespace BlogSite.Web.Areas.Blogger.Models
+namespace BlogSite.Web.Areas.Blogger.Models.Category
 {
     public class CategoryListModel : DataTables
     {
