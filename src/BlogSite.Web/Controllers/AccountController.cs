@@ -78,7 +78,8 @@ namespace BlogSite.Web.Controllers
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Action(
                         "ConfirmEmail", "Account",
-                        values: new { area = "", userId = userId, code = code, returnUrl = model.ReturnUrl },
+                        values: new { area = "", userId = userId, code = code, 
+                            returnUrl = model.ReturnUrl },
                         protocol: Request.Scheme);
 
                     //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
@@ -86,7 +87,12 @@ namespace BlogSite.Web.Controllers
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = model.Email, returnUrl = model.ReturnUrl });
+                        return RedirectToPage("RegisterConfirmation", 
+                            new 
+                            { 
+                                email = model.Email, 
+                                returnUrl = model.ReturnUrl 
+                            });
                     }
                     else
                     {
@@ -118,7 +124,10 @@ namespace BlogSite.Web.Controllers
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-            model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            model.ExternalLogins = (await _signInManager
+                .GetExternalAuthenticationSchemesAsync())
+                .ToList();
+
             model.ReturnUrl = returnUrl;
             return View(model);
         }
@@ -129,7 +138,9 @@ namespace BlogSite.Web.Controllers
         {
             model.ReturnUrl ??= Url.Content("~/");
 
-            model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            model.ExternalLogins = (await _signInManager
+                .GetExternalAuthenticationSchemesAsync())
+                .ToList();
 
             if (ModelState.IsValid)
             {
