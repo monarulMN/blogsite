@@ -3,4 +3,5 @@
   <Project Path="src/BlogSite.Domain/BlogSite.Domain.csproj" Id="13e5f8ed-ce94-4946-9c85-4cef5aa3a161" />
   <Project Path="src/BlogSite.Infrastructure/BlogSite.Infrastructure.csproj" Id="208e8ce4-ffa2-4473-93bb-6f9e86c94955" />
   <Project Path="src/BlogSite.Web/BlogSite.Web.csproj" Id="995dc913-ee71-463d-8662-1081a96c5f57" />
+  <Project Path="Test/Blog.Application.Tests/Blog.Application.Tests.csproj" Id="b719a921-081a-4552-8fb2-023528b59bfd" />
 </Solution>
