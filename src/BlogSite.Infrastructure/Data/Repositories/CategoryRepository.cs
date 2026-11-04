@@ -27,8 +27,8 @@ namespace BlogSite.Infrastructure.Data.Repositories
         {
             return await GetDynamicAsync(pageIndex: pageIndex, pageSize: pageSize,
                 orderBy: sortOrder,
-                filter:
-                    x => x.Name.Contains(searchText) &&
+                filter: x => 
+                    x.Name.Contains(searchText) &&
                     x.Status == Status.Active &&
                     x.BlogSiteId == blogSiteId,
                 include: null);

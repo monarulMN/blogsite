@@ -17,8 +17,8 @@ namespace BlogSite.Application.Features.Categories.Queries
             CancellationToken cancellationToken)
         {
             return await _applicationUnitOfWork.CategoryRepository.GetPagedCategoriesAsync(
-                query.PageSize,
                 query.PageIndex,
+                query.PageSize,
                 query.SortOrder,
                 query.SearchText,
                 query.BlogSiteId, cancellationToken);
