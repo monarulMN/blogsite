@@ -93,11 +93,11 @@ namespace BlogSite.Web.Areas.Admin.Controllers
         {
             try
             {
-                var query = _mapper.Map<GetAllBlogSitesQueries>(model);
+                var query = _mapper.Map<GetAllBlogSitesQuery>(model);
                 query.SearchText = model.Search.Value;
                 query.SortOrder = model.FormatSortExpression("Name");
 
-                var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetAllBlogSitesQueries,
+                var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetAllBlogSitesQuery,
                     (IList<BlogSiteDto>, int, int)>(query);
 
                 var categories = new

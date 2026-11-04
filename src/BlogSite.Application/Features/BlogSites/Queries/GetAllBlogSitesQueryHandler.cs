@@ -8,20 +8,20 @@ using System.Text;
 
 namespace BlogSite.Application.Features.BlogSites.Queries
 {
-    public class GetAllBlogSitesQueriesHandler(IApplicationUnitOfWork applicationUnitOfWork) : 
-        IQueryHandler<GetAllBlogSitesQueries, 
+    public class GetAllBlogSitesQueryHandler(IApplicationUnitOfWork applicationUnitOfWork) : 
+        IQueryHandler<GetAllBlogSitesQuery, 
             (IList<BlogSiteDto>, int, int)>
 
     {
         private readonly IApplicationUnitOfWork _applicationUnitOfWork = applicationUnitOfWork;
 
-        public async Task<(IList<BlogSiteDto>, int, int)> Handle(GetAllBlogSitesQueries query, 
+        public async Task<(IList<BlogSiteDto>, int, int)> Handle(GetAllBlogSitesQuery query, 
             CancellationToken cancellationToken)
         {
-            return await _applicationUnitOfWork.BlogSiteRepository.GetPagedBlogSiteAsync(query.PageIndex, 
-                query.PageSize, 
-                query.SearchText, 
-                query.SortOrder, cancellationToken);
+            return await _applicationUnitOfWork.BlogSiteRepository.GetPagedBlogSiteAsync(query.PageSize, 
+                query.PageIndex,  
+                query.SortOrder,
+                query.SearchText, cancellationToken);
         }
     }
 }

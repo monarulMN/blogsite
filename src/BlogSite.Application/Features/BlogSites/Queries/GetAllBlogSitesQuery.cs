@@ -8,7 +8,7 @@ using System.Text;
 
 namespace BlogSite.Application.Features.BlogSites.Queries
 {
-    public class GetAllBlogSitesQueries : IQuery<(IList<BlogSiteDto>, int, int)>
+    public class GetAllBlogSitesQuery : IQuery<(IList<BlogSiteDto>, int, int)>
     {
         public int PageSize { get; set; }
         public int PageIndex { get; set; }

@@ -74,16 +74,15 @@ namespace Blog.Application.Tests.Features.Users
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
-            result.data.ShouldNotBeNull();
-            result.data.Count.ShouldBe(2);
-            result.total.ShouldBe(total);
-            result.totalDisplay.ShouldBe(totalDisplay);
-
-            result.data[0].FirstName.ShouldBe("Alice");
-            result.data[1].FirstName.ShouldBe("Bob");
-
-            _userRepositoryMock.Verify(r =>
-                r.GetPagedBlockedUsersAsync(10, 1, "asc", null, CancellationToken.None), Times.Once);
+            this.ShouldSatisfyAllConditions(
+                () => result.data.ShouldNotBeNull(),
+                () => result.data.Count.ShouldBe(2),
+                () => result.total.ShouldBe(total),
+                () => result.totalDisplay.ShouldBe(totalDisplay),
+                () => result.data[0].FirstName.ShouldBe("Alice"),
+                () => result.data[1].FirstName.ShouldBe("Bob"),
+                () => _userRepositoryMock.VerifyAll()
+            );
         }
     }
 }
