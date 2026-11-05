@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DevSkill.Application.Tests
+namespace Blog.Application.Tests.Features.Messages.Queries
 {
     public class GetUserMessagesQueryHandlerTest
     {
@@ -61,8 +61,25 @@ namespace DevSkill.Application.Tests
 
             var expectedMessages = new List<Message>
             {
-                new Message { Id = Guid.NewGuid(), SenderId = userId, RecipientId = Guid.NewGuid(), Text = "Hello 1", UserType = UserType.Reader, CreatedAt = DateTime.UtcNow },
-                new Message { Id = Guid.NewGuid(), SenderId = userId, RecipientId = Guid.NewGuid(), Text = "Hello 2", UserType = UserType.Reader, CreatedAt = DateTime.UtcNow }
+                new Message 
+                { 
+                    Id = Guid.NewGuid(), 
+                    SenderId = userId, 
+                    RecipientId = Guid.NewGuid(), 
+                    Text = "Hello 1", 
+                    UserType = UserType.Reader, 
+                    CreatedAt = DateTime.UtcNow 
+                },
+
+                new Message 
+                { 
+                    Id = Guid.NewGuid(), 
+                    SenderId = userId, 
+                    RecipientId = Guid.NewGuid(), 
+                    Text = "Hello 2", 
+                    UserType = UserType.Reader, 
+                    CreatedAt = DateTime.UtcNow 
+                }
             };
 
             _messageRepositoryMock

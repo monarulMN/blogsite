@@ -9,50 +9,51 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace DevSkill.Application.Tests;
-
-public class GetPublicBlogPostsByBlogSiteQueryHandlerTest
+namespace Blog.Application.Tests.Features.BlogPosts.Commands
 {
-    private AutoMock _mock;
-    private GetPublicBlogPostsByBlogSiteQueryHandler _handler;
-    private Mock<IApplicationUnitOfWork> _unitOfWorkMock;
-    private Mock<IBlogPostRepository> _blogPostRepositoryMock;
 
-    [OneTimeSetUp]
-    public void OneTimeSetup()
+    public class GetPublicBlogPostsByBlogSiteQueryHandlerTest
     {
-        _mock = AutoMock.GetLoose();
-    }
+        private AutoMock _mock;
+        private GetPublicBlogPostsByBlogSiteQueryHandler _handler;
+        private Mock<IApplicationUnitOfWork> _unitOfWorkMock;
+        private Mock<IBlogPostRepository> _blogPostRepositoryMock;
 
-    [OneTimeTearDown]
-    public void OneTimeTearDown()
-    {
-        _mock.Dispose();
-    }
+        [OneTimeSetUp]
+        public void OneTimeSetup()
+        {
+            _mock = AutoMock.GetLoose();
+        }
 
-    [SetUp]
-    public void Setup()
-    {
-        _unitOfWorkMock = _mock.Mock<IApplicationUnitOfWork>();
-        _blogPostRepositoryMock = _mock.Mock<IBlogPostRepository>();
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            _mock.Dispose();
+        }
 
-        _handler = _mock.Create<GetPublicBlogPostsByBlogSiteQueryHandler>();
-    }
+        [SetUp]
+        public void Setup()
+        {
+            _unitOfWorkMock = _mock.Mock<IApplicationUnitOfWork>();
+            _blogPostRepositoryMock = _mock.Mock<IBlogPostRepository>();
 
-    [TearDown]
-    public void TearDown()
-    {
-        _unitOfWorkMock.Reset();
-        _blogPostRepositoryMock.Reset();
-    }
+            _handler = _mock.Create<GetPublicBlogPostsByBlogSiteQueryHandler>();
+        }
 
-    [Test]
-    public async Task Handle_ValidQuery_ReturnsPostsAndHasMore()
-    {
-        // Arrange
-        var blogSiteId = Guid.NewGuid();
+        [TearDown]
+        public void TearDown()
+        {
+            _unitOfWorkMock.Reset();
+            _blogPostRepositoryMock.Reset();
+        }
 
-        var posts = new List<PublicBlogPostDto>
+        [Test]
+        public async Task Handle_ValidQuery_ReturnsPostsAndHasMore()
+        {
+            // Arrange
+            var blogSiteId = Guid.NewGuid();
+
+            var posts = new List<PublicBlogPostDto>
         {
             new PublicBlogPostDto
             {
@@ -76,37 +77,41 @@ public class GetPublicBlogPostsByBlogSiteQueryHandlerTest
             }
         };
 
-        bool expectedHasMore = true;
+            bool expectedHasMore = true;
 
-        var query = new GetPublicBlogPostsByBlogSiteQuery
-        {
-            PageIndex = 1,
-            PageSize = 5,
-            BlogSiteId = blogSiteId
-        };
+            var query = new GetPublicBlogPostsByBlogSiteQuery
+            {
+                PageIndex = 1,
+                PageSize = 5,
+                BlogSiteId = blogSiteId
+            };
 
-        _blogPostRepositoryMock
-            .Setup(x => x.GetPublicBlogPostAsync(query.PageIndex, query.PageSize, query.BlogSiteId))
-            .ReturnsAsync((posts.AsReadOnly(), expectedHasMore))
-            .Verifiable();
+            _blogPostRepositoryMock
+                .Setup(x => x.GetPublicPostByBlogSiteAsync(query.PageIndex, 
+                    query.PageSize, 
+                    query.BlogSiteId, 
+                    CancellationToken.None))
+                .ReturnsAsync((posts.AsReadOnly(), expectedHasMore))
+                .Verifiable();
 
-        _unitOfWorkMock
-            .SetupGet(x => x.BlogPostRepository)
-            .Returns(_blogPostRepositoryMock.Object)
-            .Verifiable();
+            _unitOfWorkMock
+                .SetupGet(x => x.BlogPostRepository)
+                .Returns(_blogPostRepositoryMock.Object)
+                .Verifiable();
 
-        // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
 
-        // Assert
-        this.ShouldSatisfyAllConditions(
-            () => result.Posts.ShouldNotBeNull(),
-            () => result.Posts.Count.ShouldBe(posts.Count),
-            () => result.HasMore.ShouldBeTrue(),
-            () => result.Posts[0].Title.ShouldBe("Post 1"),
-            () => result.Posts[1].Title.ShouldBe("Post 2"),
-            () => _unitOfWorkMock.VerifyAll(),
-            () => _blogPostRepositoryMock.VerifyAll()
-        );
+            // Assert
+            this.ShouldSatisfyAllConditions(
+                () => result.Posts.ShouldNotBeNull(),
+                () => result.Posts.Count.ShouldBe(posts.Count),
+                () => result.HasMore.ShouldBeTrue(),
+                () => result.Posts[0].Title.ShouldBe("Post 1"),
+                () => result.Posts[1].Title.ShouldBe("Post 2"),
+                () => _unitOfWorkMock.VerifyAll(),
+                () => _blogPostRepositoryMock.VerifyAll()
+            );
+        }
     }
 }

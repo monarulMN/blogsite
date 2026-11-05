@@ -9,7 +9,7 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace BlogSite.Application.Tests;
+namespace Blog.Application.Tests;
 
 public class BlogPostAddCommandHandlerTest
 {

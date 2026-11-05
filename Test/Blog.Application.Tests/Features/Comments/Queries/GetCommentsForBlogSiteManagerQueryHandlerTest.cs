@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DevSkill.Application.Tests
+namespace Blog.Application.Tests.Features.Comments.Queries
 {
     public class GetCommentsForBlogSiteManagerQueryHandlerTest
     {
@@ -78,8 +78,8 @@ namespace DevSkill.Application.Tests
             // Mock repository method
             _commentRepositoryMock
                 .Setup(r => r.GetCommentsForBlogSiteManagerAsync(
-                    query.PageSize,
                     query.PageIndex,
+                    query.PageSize,
                     query.SortOrder,
                     query.SearchText,
                     query.BlogSiteId, CancellationToken.None))
@@ -92,9 +92,9 @@ namespace DevSkill.Application.Tests
             // Assert
             this.ShouldSatisfyAllConditions(
                 () => result.Item1.ShouldNotBeNull(),
-                () => result.Item2.Count.ShouldBe(expectedComments.Count),
-                () => result.Item3.ShouldBe(total),
-                () => result.Item4.ShouldBe(totalDisplay)
+                () => result.Item2.ShouldBe(expectedComments.Count),
+                () => result.Item2.ShouldBe(total),
+                () => result.Item3.ShouldBe(totalDisplay)
             );
         }
     }

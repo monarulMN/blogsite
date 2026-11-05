@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BlogSite.Application.Features.BlogPosts.Queries
 {
-    public class GetBlogPostTotalByBlogSiteQueryHanlder(IApplicationUnitOfWork applicationUnitOfWork) : 
+    public class GetBlogPostTotalByBlogSiteQueryHandler(IApplicationUnitOfWork applicationUnitOfWork) : 
         IQueryHandler<GetBlogPostTotalByBlogSiteQuery, (int, int)>
     {
         private readonly IApplicationUnitOfWork _applicationUnitOfWork = applicationUnitOfWork;

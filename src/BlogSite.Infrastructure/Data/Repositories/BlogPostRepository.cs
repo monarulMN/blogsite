@@ -58,10 +58,10 @@ namespace BlogSite.Infrastructure.Data.Repositories
         //{
         //    return await GetByIdAsync(id,
         //        x => x
-        //            .Include(b => b.BlogSite) 
+        //            .Include(b => b.BlogSite)
         //            .Include(b => b.BlogPostCategories
         //                .Where(pc => pc.Category.Status == Status.Active))
-        //                .ThenInclude(pc => pc.Category) 
+        //                .ThenInclude(pc => pc.Category)
         //            .Include(b => b.BlogPostTags
         //                .Where(pt => pt.Tag.Status == Status.Active))
         //                .ThenInclude(pt => pt.Tag));
@@ -98,7 +98,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 });
         }
 
-        public async Task<(IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)> GetPublicBlogPostAsync(int pageIndex, 
+        public async Task<(IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)> GetPublicPostByBlogSiteAsync(int pageIndex, 
             int pageSize, 
             Guid blogSiteId, 
             CancellationToken cancellationToken)

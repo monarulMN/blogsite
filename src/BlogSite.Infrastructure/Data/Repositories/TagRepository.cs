@@ -35,6 +35,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 cancellationToken);
         }
 
+
         public async Task<IList<Tag>> GetSearchTagsAsync(string? searchText, 
             CancellationToken cancellationToken)
         {

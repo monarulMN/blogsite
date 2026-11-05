@@ -12,7 +12,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DevSkill.Application.Tests
+namespace Blog.Application.Tests.Features.Reports.Commands
 {
     public class ReportDeleteCommandHandlerTest
     {

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DevSkill.Application.Tests
+namespace Blog.Application.Tests.Features.Tags.Queries
 {
     public class GetTagsQueryHandlerTest
     {
@@ -70,11 +70,7 @@ namespace DevSkill.Application.Tests
                 new Tag { Id = Guid.NewGuid(), Name = "Tag2" }
             };
 
-            _tagRepositoryMock.Setup(r => r.GetPagedTagsAsync(
-                query.PageSize, 
-                query.PageIndex, 
-                query.SortOrder, 
-                query.SearchText,
+            _tagRepositoryMock.Setup(r => r.GetPagedTagsAsync(query,
                 CancellationToken.None))
                 .ReturnsAsync((expectedData, expectedData.Count, expectedData.Count))
                 .Verifiable();

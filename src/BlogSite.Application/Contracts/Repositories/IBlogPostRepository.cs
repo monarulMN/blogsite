@@ -19,13 +19,13 @@ namespace BlogSite.Application.Contracts.Repositories
         Task<(IList<BlogPost>, int, int)> GetPagedBlogPostsAsync(GetAllBlogPostsQuery query, 
             CancellationToken cancellationToken);
 
-        Task<(IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)> GetPublicBlogPostAsync(int pageIndex, 
-            int pageSize, 
+        Task<(IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)> GetPublicBlogPostAsync(int pageIndex,
+            int pageSize,
             CancellationToken cancellationToken);
 
-        Task<(IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)> GetPublicBlogPostAsync(int pageIndex, 
-            int pageSize, 
-            Guid blogSiteId, 
+        Task<(IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)> GetPublicPostByBlogSiteAsync(int pageIndex,
+            int pageSize,
+            Guid blogSiteId,
             CancellationToken cancellationToken);
 
         Task<(IReadOnlyList<PublicBlogPostDto> Posts, bool HasMore)> 

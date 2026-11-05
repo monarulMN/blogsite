@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DevSkill.Application.Tests
+namespace Blog.Application.Tests.Features.Librarys.Queries
 {
     public class GetLibraryQueryHandlerTest
     {
@@ -80,7 +80,7 @@ namespace DevSkill.Application.Tests
             };
 
             _libraryRepositoryMock
-                .Setup(r => r.GetUserLibrarysAsync(userId, CancellationToken.None))
+                .Setup(r => r.GetUserLibraryAsync(userId, CancellationToken.None))
                 .ReturnsAsync(libraries)
                 .Verifiable();
 

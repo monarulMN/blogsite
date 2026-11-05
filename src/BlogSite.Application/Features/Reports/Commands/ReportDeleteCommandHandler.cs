@@ -17,7 +17,7 @@ namespace BlogSite.Application.Features.Reports.Commands
             var report = await _applicationUnitOfWork.ReportRepository.GetByIdAsync(command.Id, cancellationToken);
             report.Status = Status.Inactive;
 
-            await _applicationUnitOfWork.ReportRepository.EditAsync(report, cancellationToken);
+            await _applicationUnitOfWork.ReportRepository.RemoveAsync(report, cancellationToken);
             await _applicationUnitOfWork.SaveAsync(cancellationToken);
 
             return command.Id;

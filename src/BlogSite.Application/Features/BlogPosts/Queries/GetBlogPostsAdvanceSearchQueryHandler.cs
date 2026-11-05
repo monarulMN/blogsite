@@ -36,7 +36,12 @@ namespace BlogSite.Application.Features.BlogPosts.Queries
                     {"Total", typeof(int) },
                     {"TotalDisplay", typeof(int) }
                 });
-            return (output.result, (int)output.outValues["Total"], (int)output.outValues["TotalDisplay"]);
+
+            return (
+                output.result, 
+                (int)output.outValues["Total"], 
+                (int)output.outValues["TotalDisplay"]
+                );
         }
     }
 }

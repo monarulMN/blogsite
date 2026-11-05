@@ -8,12 +8,12 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 
-namespace DevSkill.Application.Tests;
+namespace Blog.Application.Tests;
 
-public class BlogPostGetQueryHandlerTest
+public class GetBlogPostQueryHandlerTest
 {
     private AutoMock _mock;
-    private BlogPostGetQueryHandler _handler;
+    private GetBlogPostQueryHandler _handler;
     private Mock<IApplicationUnitOfWork> _unitOfWorkMock;
     private Mock<IBlogPostRepository> _blogPostRepositoryMock;
 
@@ -35,7 +35,7 @@ public class BlogPostGetQueryHandlerTest
         _unitOfWorkMock = _mock.Mock<IApplicationUnitOfWork>();
         _blogPostRepositoryMock = _mock.Mock<IBlogPostRepository>();
 
-        _handler = _mock.Create<BlogPostGetQueryHandler>();
+        _handler = _mock.Create<GetBlogPostQueryHandler>();
     }
 
     [TearDown]
@@ -68,7 +68,7 @@ public class BlogPostGetQueryHandlerTest
             .Returns(_blogPostRepositoryMock.Object)
             .Verifiable();
 
-        var query = new BlogPostGetQuery
+        var query = new GetBlogPostQuery
         {
             Id = postId
         };

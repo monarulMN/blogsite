@@ -8,7 +8,7 @@ using System.Text;
 
 namespace BlogSite.Application.Features.BlogPosts.Commands
 {
-    internal class BlogPostUpdateCommandHandler(IMapper mapper, 
+    public class BlogPostUpdateCommandHandler(IMapper mapper, 
         IApplicationUnitOfWork applicationUnitOfWork) 
         : ICommandHandler<BlogPostUpdateCommand, BlogPost>
     {

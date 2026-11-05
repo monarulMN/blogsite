@@ -1,8 +1,9 @@
 ﻿using Autofac.Extras.Moq;
+using BlogSite.Application.Contracts;
+using BlogSite.Application.Contracts.Repositories;
 using BlogSite.Application.Features.Tags.Commands;
 using BlogSite.Domain;
 using BlogSite.Domain.Entities;
-using BlogSite.Domain.Repositories;
 using MapsterMapper;
 using Moq;
 using NUnit.Framework;
@@ -11,12 +12,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DevSkill.Application.Tests
+namespace Blog.Application.Tests.Features.Tags.Commands
 {
     public class TagUpdateCommandHandlerTest
     {
         private AutoMock _mock;
-        private TagEditCommandHandler _handler;
+        private TagUpdateCommandHandler _handler;
         private Mock<IApplicationUnitOfWork> _unitOfWorkMock;
         private Mock<ITagRepository> _tagRepositoryMock;
         private Mock<IMapper> _mapperMock;
@@ -43,7 +44,7 @@ namespace DevSkill.Application.Tests
             _unitOfWorkMock.SetupGet(x => x.TagRepository)
                            .Returns(_tagRepositoryMock.Object);
 
-            _handler = _mock.Create<TagEditCommandHandler>();
+            _handler = _mock.Create<TagUpdateCommandHandler>();
         }
 
         [TearDown]
@@ -58,7 +59,7 @@ namespace DevSkill.Application.Tests
         public async Task Handle_ValidCommand_UpdatesTag()
         {
             // Arrange
-            var command = new TagEditCommand
+            var command = new TagUpdateCommand
             {
                 Id = Guid.NewGuid(),
                 Name = "Updated Tag",
@@ -78,11 +79,11 @@ namespace DevSkill.Application.Tests
                        .Returns(mappedTag)
                        .Verifiable();
 
-            _tagRepositoryMock.Setup(r => r.EditAsync(mappedTag))
+            _tagRepositoryMock.Setup(r => r.EditAsync(mappedTag, CancellationToken.None))
                               .Returns(Task.CompletedTask)
                               .Verifiable();
 
-            _unitOfWorkMock.Setup(u => u.SaveAsync())
+            _unitOfWorkMock.Setup(u => u.SaveAsync(CancellationToken.None))
                            .Returns(Task.CompletedTask)
                            .Verifiable();
 

@@ -17,7 +17,7 @@ namespace BlogSite.Application.Features.BlogPosts.Queries
             GetPublicBlogPostsByBlogSiteQuery query, 
             CancellationToken cancellationToken)
         {
-            return await _applicationUnitOfWork.BlogPostRepository.GetPublicBlogPostAsync(query.PageIndex, 
+            return await _applicationUnitOfWork.BlogPostRepository.GetPublicPostByBlogSiteAsync(query.PageIndex, 
                 query.PageSize, 
                 query.BlogSiteId, cancellationToken);
         }
