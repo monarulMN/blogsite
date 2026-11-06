@@ -15,7 +15,7 @@ namespace BlogSite.Infrastructure.Data
         ApplicationRoleClaim,
         ApplicationUserToken>(options)
     {
-        public DbSet<Blogsite> Blogsites { get; set; }
+        public DbSet<Blogsite> BlogShareSites { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }

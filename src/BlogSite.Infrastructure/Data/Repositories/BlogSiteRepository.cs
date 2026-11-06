@@ -22,7 +22,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
 
         public async Task<bool> ActiveAsync(Guid id, CancellationToken cancellationToken)
         {
-            var blogSite = await _applicationDbContext.Blogsites
+            var blogSite = await _applicationDbContext.BlogShareSites
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (blogSite is null)
@@ -58,7 +58,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
-            var blogSite = await _applicationDbContext.Blogsites
+            var blogSite = await _applicationDbContext.BlogShareSites
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (blogSite is null)
@@ -99,13 +99,13 @@ namespace BlogSite.Infrastructure.Data.Repositories
 
         public async Task<Blogsite> GetBlogSiteBySlugAsync(string slug, CancellationToken cancellationToken)
         {
-            return await _applicationDbContext.Blogsites.FirstAsync(s => s.Slug == slug, cancellationToken);
+            return await _applicationDbContext.BlogShareSites.FirstAsync(s => s.Slug == slug, cancellationToken);
         }
 
         public async Task<IList<Blogsite>> GetBlogSiteByStatusAsync(Status status, CancellationToken cancellationToken)
         {
             int count = 20;
-            var query = _applicationDbContext.Blogsites.Where(x => x.Status == status);
+            var query = _applicationDbContext.BlogShareSites.Where(x => x.Status == status);
 
             var total = await query.CountAsync();
 
@@ -125,7 +125,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
 
         public async Task<Blogsite?> GetByAuthorIdAsync(Guid authorId, CancellationToken cancellationToken)
         {
-            return await _applicationDbContext.Blogsites.FirstOrDefaultAsync(b => b.AuthorId == authorId,
+            return await _applicationDbContext.BlogShareSites.FirstOrDefaultAsync(b => b.AuthorId == authorId,
                 cancellationToken);
         }
 
@@ -136,7 +136,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
             CancellationToken cancellationToken)
         {
             var result = await (
-                from blog in _applicationDbContext.Blogsites
+                from blog in _applicationDbContext.BlogShareSites
                 join user in _applicationDbContext.Users
                     on blog.AuthorId equals user.Id
                 where blog.Name.Contains(searchText)
@@ -189,7 +189,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
             CancellationToken cancellationToken)
         {
             var result = await (
-                from blog in _applicationDbContext.Blogsites
+                from blog in _applicationDbContext.BlogShareSites
                 join user in _applicationDbContext.Users
                     on blog.AuthorId equals user.Id
                 where blog.Name.Contains(searchText)

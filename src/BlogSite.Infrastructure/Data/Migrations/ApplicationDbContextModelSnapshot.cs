@@ -153,7 +153,7 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Blogsites");
+                    b.ToTable("BlogShareSites");
                 });
 
             modelBuilder.Entity("BlogSite.Domain.Entities.Category", b =>
