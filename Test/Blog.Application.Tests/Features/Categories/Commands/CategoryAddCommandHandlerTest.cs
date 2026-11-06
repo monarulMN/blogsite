@@ -69,7 +69,7 @@ namespace Blog.Application.Tests.Features.Categories.Commands
             var categoryEntity = new Category
             {
                 Name = command.Name,
-                BlogSiteId = command.BlogSiteId,
+                BlogsiteId = command.BlogSiteId,
                 CreatedAt = command.CreatedAt,
                 UpdatedAt = command.UpdatedAt
             };
@@ -100,7 +100,7 @@ namespace Blog.Application.Tests.Features.Categories.Commands
                 () => result.ShouldBeOfType<Category>(),
                 () => result.Id.ShouldNotBe(Guid.Empty),
                 () => result.Name.ShouldBe(command.Name),
-                () => result.BlogSiteId.ShouldBe(command.BlogSiteId),
+                () => result.BlogsiteId.ShouldBe(command.BlogSiteId),
                 () => _mapperMock.VerifyAll(),
                 () => _categoryRepositoryMock.VerifyAll(),
                 () => _unitOfWorkMock.VerifyAll()

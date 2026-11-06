@@ -30,7 +30,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 filter: x => 
                     x.Name.Contains(searchText) &&
                     x.Status == Status.Active &&
-                    x.BlogSiteId == blogSiteId,
+                    x.BlogsiteId == blogSiteId,
                 include: null);
         }
 
@@ -54,7 +54,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
             CancellationToken cancellationToken)
         {
             return await GetAsync(x => x.Name.Contains(searchText) && 
-                x.BlogSiteId == blogSiteId && 
+                x.BlogsiteId == blogSiteId && 
                 x.Status == Status.Active, 
                 null, cancellationToken);
         }
@@ -62,7 +62,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
         public async Task<IList<CategoryDto>> GetCategoryByBlogSiteId(Guid blogSiteId)
         {
             return await _applicationDbContext.Categories
-                .Where(c => c.BlogSiteId == blogSiteId &&
+                .Where(c => c.BlogsiteId == blogSiteId &&
                     c.Status == Status.Active)
                 .Select(c => new CategoryDto
                 {

@@ -28,7 +28,7 @@ namespace BlogSite.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BlogSiteId")
+                    b.Property<Guid>("BlogsiteId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Body")
@@ -59,7 +59,7 @@ namespace BlogSite.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BlogSiteId");
+                    b.HasIndex("BlogsiteId");
 
                     b.ToTable("BlogPosts");
                 });
@@ -126,18 +126,18 @@ namespace BlogSite.Infrastructure.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -162,7 +162,7 @@ namespace BlogSite.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BlogSiteId")
+                    b.Property<Guid>("BlogsiteId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -181,9 +181,9 @@ namespace BlogSite.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BlogSiteId");
+                    b.HasIndex("BlogsiteId");
 
-                    b.HasIndex("Name", "BlogSiteId")
+                    b.HasIndex("Name", "BlogsiteId")
                         .IsUnique()
                         .HasFilter("[Status] = 0");
 
@@ -199,7 +199,7 @@ namespace BlogSite.Infrastructure.Data.Migrations
                     b.Property<Guid>("BlogPostId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BlogSiteId")
+                    b.Property<Guid>("BlogsiteId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreateAt")
@@ -338,8 +338,8 @@ namespace BlogSite.Infrastructure.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -665,7 +665,7 @@ namespace BlogSite.Infrastructure.Data.Migrations
                 {
                     b.HasOne("BlogSite.Domain.Entities.Blogsite", "Blogsite")
                         .WithMany("BlogPosts")
-                        .HasForeignKey("BlogSiteId")
+                        .HasForeignKey("BlogsiteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -713,7 +713,7 @@ namespace BlogSite.Infrastructure.Data.Migrations
             modelBuilder.Entity("BlogSite.Domain.Entities.Blogsite", b =>
                 {
                     b.HasOne("BlogSite.Infrastructure.Identity.ApplicationUser", null)
-                        .WithOne("BlogSite")
+                        .WithOne("Blogsite")
                         .HasForeignKey("BlogSite.Domain.Entities.Blogsite", "AuthorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -723,7 +723,7 @@ namespace BlogSite.Infrastructure.Data.Migrations
                 {
                     b.HasOne("BlogSite.Domain.Entities.Blogsite", "Blogsite")
                         .WithMany("Categories")
-                        .HasForeignKey("BlogSiteId")
+                        .HasForeignKey("BlogsiteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -871,7 +871,7 @@ namespace BlogSite.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("BlogSite.Infrastructure.Identity.ApplicationUser", b =>
                 {
-                    b.Navigation("BlogSite");
+                    b.Navigation("Blogsite");
 
                     b.Navigation("ReceivedMessages");
 

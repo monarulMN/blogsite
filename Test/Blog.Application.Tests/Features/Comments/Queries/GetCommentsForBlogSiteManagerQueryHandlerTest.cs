@@ -69,8 +69,8 @@ namespace Blog.Application.Tests.Features.Comments.Queries
 
             var expectedComments = new List<Comment>
             {
-                new Comment { Id = Guid.NewGuid(), Name = "Comment 1", BlogSiteId = blogSiteId },
-                new Comment { Id = Guid.NewGuid(), Name = "Comment 2", BlogSiteId = blogSiteId },
+                new Comment { Id = Guid.NewGuid(), Name = "Comment 1", BlogsiteId = blogSiteId },
+                new Comment { Id = Guid.NewGuid(), Name = "Comment 2", BlogsiteId = blogSiteId },
             };
             int total = 2;
             int totalDisplay = 2;

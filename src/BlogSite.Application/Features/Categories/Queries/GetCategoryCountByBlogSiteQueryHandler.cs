@@ -16,7 +16,7 @@ namespace BlogSite.Application.Features.Categories.Queries
             CancellationToken cancellationToken)
         {
             return await _applicationUnitOfWork.CategoryRepository.GetCountAsync(x =>
-                x.BlogSiteId == query.BlogSiteId &&
+                x.BlogsiteId == query.BlogSiteId &&
                 x.Status == Status.Active);
         }
     }

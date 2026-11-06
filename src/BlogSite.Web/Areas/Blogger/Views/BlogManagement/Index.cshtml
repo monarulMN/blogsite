@@ -10,7 +10,7 @@
 }
 
 @{
-    var fullUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/blog/{user?.BlogSite?.Slug}";
+    var fullUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/blog/{user?.Blogsite?.Slug}";
 }
 
 <!DOCTYPE html>
@@ -596,7 +596,7 @@
 
            $(".share-link").click(function (e) {
             e.preventDefault();
-                var siteUrl = window.location.origin + "/blog/@user?.BlogSite?.Slug";
+                var siteUrl = window.location.origin + "/blog/@user?.Blogsite?.Slug";
                 navigator.clipboard.writeText(siteUrl).then(function () {
                     var toast = new bootstrap.Toast(document.getElementById('copyToast'));
                     toast.show();

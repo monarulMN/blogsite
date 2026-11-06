@@ -40,10 +40,10 @@ namespace BlogSite.Web.Areas.Blogger.Controllers
 
             if (user.HasBlog)
             {
-                ApplicationUser? userWithDetails = await _userManager.Users.Include(u => u.BlogSite)
+                ApplicationUser? userWithDetails = await _userManager.Users.Include(u => u.Blogsite)
                     .FirstOrDefaultAsync(u => u.Id == user.Id);
 
-                if(userWithDetails.BlogSite.Status == Domain.Enums.Status.Active)
+                if(userWithDetails.Blogsite.Status == Domain.Enums.Status.Active)
                 {
                     return RedirectToAction("Index", "BlogManagement");
                 }

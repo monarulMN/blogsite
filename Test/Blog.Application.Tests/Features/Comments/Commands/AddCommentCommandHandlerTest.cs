@@ -76,7 +76,7 @@ public class AddCommentCommandHandlerTest
             Email = command.Email,
             Text = command.Text,
             BlogPostId = command.BlogPostId,
-            BlogSiteId = command.BlogSiteId,
+            BlogsiteId = command.BlogSiteId,
             ParentCommentId = command.ParentCommentId,
             CreateAt = command.CreateAt
         };
@@ -104,7 +104,7 @@ public class AddCommentCommandHandlerTest
             () => result.Email.ShouldBe(command.Email),
             () => result.Text.ShouldBe(command.Text),
             () => result.BlogPostId.ShouldBe(command.BlogPostId),
-            () => result.BlogSiteId.ShouldBe(command.BlogSiteId),
+            () => result.BlogsiteId.ShouldBe(command.BlogSiteId),
             () => result.ParentCommentId.ShouldBe(command.ParentCommentId),
             () => _mapperMock.VerifyAll(),
             () => _commentRepositoryMock.VerifyAll(),

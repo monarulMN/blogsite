@@ -44,7 +44,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     query.SearchText == null ||
                     x.Title.Contains(query.SearchText)
                  ) && x.Status == Status.Active
-                   && x.BlogSiteId == query.BlogSiteId,
+                   && x.BlogsiteId == query.BlogSiteId,
                  query.SortOrder,
                  null,
                  query.PageIndex,
@@ -107,7 +107,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 .Where(x => 
                     x.Status == Status.Active &&
                     x.PostStatus == BlogStatus.Publish &&
-                    x.BlogSiteId == blogSiteId)
+                    x.BlogsiteId == blogSiteId)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize + 1)
                 .Select(x => new PublicBlogPostDto
@@ -142,7 +142,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 .Where(x =>
                     x.Status == Status.Active &&
                     x.PostStatus == BlogStatus.Publish &&
-                    x.BlogSiteId == blogSiteId &&
+                    x.BlogsiteId == blogSiteId &&
                     x.BlogPostCategories.Any(y =>
                         y.CategoryId == categoryId &&
                         y.Status == Status.Active &&
@@ -188,7 +188,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 .Where(x =>
                     x.Status == Status.Active &&
                     x.PostStatus == BlogStatus.Publish &&
-                    x.BlogSiteId == blogSiteId &&
+                    x.BlogsiteId == blogSiteId &&
                     x.BlogPostTags.Any(y =>
                         y.TagId == tagId &&
                         y.Status == Status.Active &&

@@ -13,7 +13,7 @@ namespace BlogSite.Domain.Entities
         public string Email { get; set; } = null!;
         public string Text { get; set; } = null!;
         public Guid BlogPostId { get; set; }
-        public Guid BlogSiteId { get; set; }
+        public Guid BlogsiteId { get; set; }
         public BlogPost BlogPost { get; set; } = null!;
         public Status Status { get; set; } = Status.Inactive;
         public DateTime CreateAt { get; set; }

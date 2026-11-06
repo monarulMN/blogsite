@@ -57,8 +57,8 @@ namespace Blog.Application.Tests.Features.Categories.Queries
             var blogSiteId = Guid.NewGuid();
             var categories = new List<Category>
             {
-                new Category { Id = Guid.NewGuid(), Name = "Category 1", BlogSiteId = blogSiteId},
-                new Category { Id = Guid.NewGuid(), Name = "Category 2", BlogSiteId = blogSiteId}
+                new Category { Id = Guid.NewGuid(), Name = "Category 1", BlogsiteId = blogSiteId},
+                new Category { Id = Guid.NewGuid(), Name = "Category 2", BlogsiteId = blogSiteId}
             };
 
             var query = new GetAllCategoriesQuery
@@ -93,7 +93,7 @@ namespace Blog.Application.Tests.Features.Categories.Queries
                 () => result.Item1.Count.ShouldBe(categories.Count),
                 () => result.Item2.ShouldBe(expectedTotal),
                 () => result.Item3.ShouldBe(expectedTotalDisplay),
-                () => result.Item1[0].BlogSiteId.ShouldBe(blogSiteId),
+                () => result.Item1[0].BlogsiteId.ShouldBe(blogSiteId),
                 () => _mockCategoryRepository.VerifyAll());
         }
     }

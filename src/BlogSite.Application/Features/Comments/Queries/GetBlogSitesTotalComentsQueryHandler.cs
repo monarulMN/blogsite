@@ -17,11 +17,11 @@ namespace BlogSite.Application.Features.Comments.Queries
             CancellationToken cancellationToken)
         {
             int approved = await _applicationUnitOfWork.CommentRepository.GetCountAsync(x =>
-                x.BlogSiteId == query.BlogSiteId &&
+                x.BlogsiteId == query.BlogSiteId &&
                 x.Status == Status.Active);
 
             int pending = await _applicationUnitOfWork.CommentRepository.GetCountAsync(x =>
-                x.BlogSiteId == query.BlogSiteId &&
+                x.BlogsiteId == query.BlogSiteId &&
                 x.Status == Status.Inactive);
 
             return (approved, pending);

@@ -8,6 +8,7 @@ using BlogSite.Domain.Enums;
 using Moq;
 using NUnit.Framework;
 using Shouldly;
+using System.Linq.Expressions;
 
 namespace Blog.Application.Tests;
 
@@ -58,7 +59,7 @@ public class GetBlogPostTotalByBlogSiteQueryHandlerTest
         };
 
         _blogPostRepositoryMock
-            .SetupSequence(x => x.GetCountAsync(It.IsAny<System.Linq.Expressions.Expression<Func<BlogPost, bool>>>()))
+            .SetupSequence(x => x.GetCountAsync(It.IsAny<Expression<Func<BlogPost, bool>>>()))
             .ReturnsAsync(5)   // Published count
             .ReturnsAsync(3);  // Draft count
 

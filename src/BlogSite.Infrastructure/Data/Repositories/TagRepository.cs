@@ -51,7 +51,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
         {
             return await _applicationDbContext.BlogPostTags
                 .Where(bpt =>
-                    bpt.BlogPost.BlogSiteId == blogSiteId &&
+                    bpt.BlogPost.BlogsiteId == blogSiteId &&
                     bpt.BlogPost.Status == Status.Active &&
                     bpt.Status == Status.Active &&
                     bpt.Tag.Status == Status.Active)

@@ -16,13 +16,13 @@ namespace BlogSite.Application.Features.Categories.Queries
             if (query.Id != Guid.Empty)
                 return _applicationUnitOfWork.CategoryRepository.GetCount(x =>
                     x.Name == query.Name &&
-                    x.BlogSiteId == query.BlogSiteId &&
+                    x.BlogsiteId == query.BlogSiteId &&
                     x.Id != query.Id &&
                     x.Status == Domain.Enums.Status.Active) > 0;
 
             return _applicationUnitOfWork.CategoryRepository.GetCount(x =>
                     x.Name == query.Name &&
-                    x.BlogSiteId == query.BlogSiteId &&
+                    x.BlogsiteId == query.BlogSiteId &&
                     x.Status == Domain.Enums.Status.Active) > 0;
         }
     }

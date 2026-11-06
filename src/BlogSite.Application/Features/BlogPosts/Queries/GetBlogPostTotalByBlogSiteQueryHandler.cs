@@ -16,12 +16,12 @@ namespace BlogSite.Application.Features.BlogPosts.Queries
             CancellationToken cancellationToken)
         {
             int published = await _applicationUnitOfWork.BlogPostRepository.GetCountAsync(x =>
-                x.BlogSiteId == query.BlogSiteId &&
+                x.BlogsiteId == query.BlogSiteId &&
                 x.Status == Status.Active &&
                 x.PostStatus == BlogStatus.Publish);
 
             int draft = await _applicationUnitOfWork.BlogPostRepository.GetCountAsync(x =>
-                x.BlogSiteId == query.BlogSiteId &&
+                x.BlogsiteId == query.BlogSiteId &&
                 x.Status == Status.Active &&
                 x.PostStatus == BlogStatus.Draft);
 

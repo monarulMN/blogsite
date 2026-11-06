@@ -86,7 +86,7 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                 var query = new GetBlogPostQuery { Id = id };
                 var post = await _mediator.SendQueryAsync<GetBlogPostQuery, BlogPost?>(query);
                 var model = _mapper.Map<UpdateBlogPostModel>(post);
-                model.BlogSiteId = post.BlogSiteId;
+                model.BlogSiteId = post.BlogsiteId;
 
                 model.CategoriesData = post.BlogPostCategories
                     .Select(x => new CategoryViewModel

@@ -47,7 +47,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     x.UserName.Contains(searchText)) 
                     && x.IsBlocked == true, 
                 include: x => 
-                    x.Include(p => p.BlogSite));
+                    x.Include(p => p.Blogsite));
 
             IList<User> users = _mapper.Map<IList<User>>(result.data);
 
@@ -68,7 +68,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     x.UserName.Contains(searchText)) &&
                     x.IsBlocked != true,
                 include: x =>
-                    x.Include(p => p.BlogSite));
+                    x.Include(p => p.Blogsite));
 
             IList<User> users = _mapper.Map<IList<User>>(result.data);
 

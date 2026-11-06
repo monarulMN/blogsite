@@ -43,10 +43,10 @@ namespace BlogSite.Infrastructure.Data
 
                 entity.HasOne(x => x.Blogsite)
                     .WithMany(x => x.Categories)
-                    .HasForeignKey(x => x.BlogSiteId)
+                    .HasForeignKey(x => x.BlogsiteId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasIndex(x => new { x.Name, x.BlogSiteId })
+                entity.HasIndex(x => new { x.Name, x.BlogsiteId })
                     .IsUnique()
                     .HasFilter("[Status] = 0");
                     
@@ -59,15 +59,15 @@ namespace BlogSite.Infrastructure.Data
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(100);
+                    .HasMaxLength(150);
 
                 entity.Property(e => e.Description)
                     .IsRequired()
-                    .HasMaxLength(200);
+                    .HasMaxLength(300);
 
                 entity.Property(e => e.Slug)
                     .IsRequired()
-                    .HasMaxLength(200);
+                    .HasMaxLength(300);
 
                 entity.Property(e => e.CreatedAt).IsRequired();
                 entity.Property(e => e.UpdatedAt).IsRequired();
@@ -77,7 +77,7 @@ namespace BlogSite.Infrastructure.Data
                 entity.HasIndex(e => e.Slug).IsUnique();
 
                 entity.HasOne<ApplicationUser>()
-                    .WithOne(e => e.BlogSite)
+                    .WithOne(e => e.Blogsite)
                     .HasForeignKey<Blogsite>(e => e.AuthorId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
@@ -89,7 +89,7 @@ namespace BlogSite.Infrastructure.Data
 
                 entity.Property(x => x.Name)
                     .IsRequired()
-                    .HasMaxLength(100);
+                    .HasMaxLength(150);
 
                 entity.Property(x => x.Status).IsRequired();
                 entity.Property(x => x.CreatedAt).IsRequired();
@@ -129,7 +129,7 @@ namespace BlogSite.Infrastructure.Data
 
                 entity.HasOne(x => x.Blogsite)
                     .WithMany(x => x.BlogPosts)
-                    .HasForeignKey(x => x.BlogSiteId)
+                    .HasForeignKey(x => x.BlogsiteId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

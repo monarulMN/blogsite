@@ -33,7 +33,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
             blogSite.UpdatedAt = now;
 
             var posts = await _applicationDbContext.BlogPosts
-                .Where(x => x.BlogSiteId == id)
+                .Where(x => x.BlogsiteId == id)
                 .ToListAsync();
 
             foreach (var post in posts)
@@ -43,7 +43,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
             }
 
             var categories = await _applicationDbContext.Categories
-                .Where(x => x.BlogSiteId == id)
+                .Where(x => x.BlogsiteId == id)
                 .ToListAsync();
 
             foreach (var category in categories)
@@ -70,7 +70,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
             blogSite.UpdatedAt = now;
 
             var posts = await _applicationDbContext.BlogPosts
-                .Where(x => x.BlogSiteId == id)
+                .Where(x => x.BlogsiteId == id)
                 .ToListAsync();
 
             foreach (var post in posts)
@@ -80,11 +80,11 @@ namespace BlogSite.Infrastructure.Data.Repositories
             }
 
             await _applicationDbContext.Categories
-                .Where(x => x.BlogSiteId == id && x.Status == Status.Inactive)
+                .Where(x => x.BlogsiteId == id && x.Status == Status.Inactive)
                 .ExecuteDeleteAsync();
 
             var categories = await _applicationDbContext.Categories
-                .Where(x => x.BlogSiteId == id)
+                .Where(x => x.BlogsiteId == id)
                 .ToListAsync();
 
             foreach (var category in categories)
@@ -153,7 +153,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     //    .Count(p => p.BlogSiteId == blog.Id && p.Status == Status.Inactive),
 
                     TotalCategories = _applicationDbContext.Categories
-                        .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
+                        .Count(c => c.BlogsiteId == blog.Id && c.Status == Status.Inactive),
                     CreatedAt = blog.CreatedAt
                 }
             )
@@ -206,7 +206,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                     //    .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
 
                     TotalCategories = _applicationDbContext.Categories
-                        .Count(c => c.BlogSiteId == blog.Id && c.Status == Status.Inactive),
+                        .Count(c => c.BlogsiteId == blog.Id && c.Status == Status.Inactive),
                     CreatedAt = blog.CreatedAt
 
                 })

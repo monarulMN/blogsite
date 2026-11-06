@@ -15,7 +15,7 @@ namespace BlogSite.Infrastructure.Identity
         public DateTime DateOfBirth { get; set; }
         public bool IsBlocked { get; set; } = false;
         public bool HasBlog { get; set; } = false;
-        public Blogsite? BlogSite { get; set; }
+        public Blogsite? Blogsite { get; set; }
 
         public ICollection<Message> SentMessages { get; set; } = new List<Message>();
         public ICollection<Message> ReceivedMessages { get; set; } = new List<Message>();

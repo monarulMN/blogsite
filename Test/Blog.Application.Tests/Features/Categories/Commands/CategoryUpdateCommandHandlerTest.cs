@@ -71,7 +71,7 @@ namespace Blog.Application.Tests.Features.Categories.Commands
             {
                 Id = categoryId,
                 Name = "Old Category",
-                BlogSiteId = blogSiteId,
+                BlogsiteId = blogSiteId,
                 CreatedAt = DateTime.UtcNow.AddDays(-4),
                 UpdatedAt = DateTime.UtcNow.AddDays(-4)
             };
@@ -113,7 +113,7 @@ namespace Blog.Application.Tests.Features.Categories.Commands
                 () => result.ShouldBeOfType<Category>(),
                 () => result.Id.ShouldBe(categoryId),
                 () => result.Name.ShouldBe(command.Name),
-                () => result.BlogSiteId.ShouldBe(blogSiteId),
+                () => result.BlogsiteId.ShouldBe(blogSiteId),
                 () => result.UpdatedAt.ShouldBe(command.UpdatedAt),
                 () => _mockCategoryRepository.VerifyAll(),
                 () => _mockUnitOfWork.VerifyAll(),

@@ -76,11 +76,11 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                         HttpUtility.HtmlEncode($"{user.HasBlog.ToString()}"),
 
                         HttpUtility.HtmlEncode(
-                            user.BlogSite == null
+                            user.Blogsite == null
                                 ? "None"
-                                : user.BlogSite.Status == Status.Inactive
+                                : user.Blogsite.Status == Status.Inactive
                                     ? "<span class = 'badge bg-danger'> Restricted </span>"
-                                    : user.BlogSite.Name
+                                    : user.Blogsite.Name
                         ),
 
                         HttpUtility.HtmlEncode(
@@ -165,11 +165,11 @@ namespace BlogSite.Web.Areas.Admin.Controllers
                                 HttpUtility.HtmlEncode(user.Email),
                                 HttpUtility.HtmlEncode(user.HasBlog.ToString()),
                                 HttpUtility.HtmlEncode(
-                                    user.BlogSite == null?
+                                    user.Blogsite == null?
                                         "None" :
-                                            user.BlogSite.Status == Status.Inactive ?
+                                            user.Blogsite.Status == Status.Inactive ?
                                                 "<span class='badge bg-danger'>Restricted</span>" :
-                                                    user.BlogSite.Name),
+                                                    user.Blogsite.Name),
                                 user.Id.ToString()
                             }).ToArray()
                 };

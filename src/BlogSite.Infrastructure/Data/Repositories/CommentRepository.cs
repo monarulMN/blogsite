@@ -27,7 +27,7 @@ namespace BlogSite.Infrastructure.Data.Repositories
                 orderBy: sortOrder, 
                 filter: x => 
                     x.Text.Contains(searchText) && 
-                    x.BlogSiteId == blogSiteId, 
+                    x.BlogsiteId == blogSiteId, 
                 include: x => 
                     x.Include(inc => inc.BlogPost));
         }
